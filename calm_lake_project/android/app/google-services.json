@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "878275894182",
+    "project_id": "calmlake-f513a",
+    "storage_bucket": "calmlake-f513a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:878275894182:android:81ec37a5defb6ea78b0d67",
+        "android_client_info": {
+          "package_name": "com.calmlake.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzNN4uOZUumJZ8K3HxsgSRtturkndjgUU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
