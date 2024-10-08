@@ -39,7 +39,7 @@ class Login extends StatelessWidget {
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
                         borderSide: BorderSide.none),
-                    fillColor: const Color.fromARGB(255, 253, 228, 155),
+                    fillColor: const Color(0xFFCCE8F9),
                     filled: true,
                     focusedBorder: OutlineInputBorder(
                       borderSide:
@@ -63,7 +63,7 @@ class Login extends StatelessWidget {
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
                         borderSide: BorderSide.none),
-                    fillColor: const Color.fromARGB(255, 253, 228, 155),
+                    fillColor: const Color(0xFFCCE8F9),
                     filled: true,
                     focusedBorder: OutlineInputBorder(
                       borderSide:
@@ -91,10 +91,10 @@ class Login extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFC06044)),
+                          backgroundColor: const Color(0xFFF9D3CC)),
                       child: const Text(
                         'Sign up',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                   ),
@@ -107,10 +107,10 @@ class Login extends StatelessWidget {
                         await allowLogin(id, pw);
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF748D65)),
+                          backgroundColor: const Color(0xFFD7EFC9)),
                       child: const Text(
                         'Log In',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                   ),
@@ -142,7 +142,7 @@ class Login extends StatelessWidget {
   //Functions
   allowLogin(String id, String pw)async{
     bool isDuplicate=await loginHandler.checkActiveJSONData(idController.text.trim());
-    print(isDuplicate);  
+    print(isDuplicate);
     if(isDuplicate){
     Get.snackbar('Error', '이미 접속중인 ID입니다.',
         snackPosition: SnackPosition.BOTTOM,
