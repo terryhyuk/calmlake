@@ -1,6 +1,6 @@
 """
-author      :
-Description :
+author      : ws
+Description : 회원 관리
 Date        :
 Usage       :
 """
@@ -12,8 +12,8 @@ def connect():
     conn = pymysql.connect(
         host='127.0.0.1',
         user='root',
-        password='',
-        db='calm_lake',
+        password='qwer1234',
+        db='calmlake',
         charset='utf8'
     )
     return conn
@@ -51,7 +51,7 @@ async def findid(nickname: str=None):
     except Exception as e:
         conn.close()
         print("Error", e)
-        return{'results':'Error'}
+        return{'results':'Not found'}
     
 # 입력한 id와 일치하는 answer 반환
 @router.get("/findpw")
@@ -170,7 +170,72 @@ async def activeuser(user_id: str=None):
         conn.close()
         print("Error",e)
         return{'results':'Error'}
+    
+# 접속 user 삭제(logout)
+@router.get("/logout")
+async def logout(user_id: str=None):
+    conn=connect()
+    curs=conn.cursor()
+    try:
+        sql="delete from active_user where user_id=%s"
+        curs.execute(sql,(user_id,))
+        conn.commit()
+        conn.close()
+        return{'results':'OK'}
+    except Exception as e:
+        conn.close()
+        print("Error",e)
+        return{'results':'Error'}
+    
+# 회원 정보 확인
+@router.get("/showprofile")
+async def showprofile(id: str=None):
+    conn=connect()
+    curs=conn.cursor()
+    try:
+        sql="select * from user where id=%s"
+        curs.execute(sql,(id,))
+        conn.commit()
+        result=curs.fetchone()
+        conn.close()
+        return{'results': result}
+    except Exception as e:
+        conn.close()
+        print("Error", e)
+        return{'results':'Error'}
+    
+# 회원 정보 변경
+@router.get('/changeuser')
+async def changeuser(password: str=None, id: str=None):
+    conn=connect()
+    curs=conn.cursor()
+    try: 
+        sql='update user set password=%s where id=%s'
+        curs.execute(sql, (password, id))
+        conn.commit()
+        conn.close()
+        return {'results' : 'OK'}
+    except Exception as e:
+        conn.close()
+        print('Error:', e)
+        return {'results':'Error'}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(router, host="127.0.0.1", port=8000)    
+# 회원 탈퇴
+@router.get("/deleteuser")
+async def deleteuser(user_id: str=None):
+    conn=connect()
+    curs=conn.cursor()
+    try:
+        sql="delete from active_user where user_id=%s"
+        curs.execute(sql,(user_id,))
+        conn.commit()
+        conn.close()
+        return{'results':'OK'}
+    except Exception as e:
+        conn.close()
+        print("Error",e)
+        return{'results':'Error'}
+    
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(router, host="127.0.0.1", port=8000)    

@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: TabBarView(
         controller: controller.tabController,
-        children: const [Home(), Friends(), Chat(), Post(), Profile()],
+        children: [Home(), Friends(), Chat(), Post(), Profile()],
       ),
       bottomNavigationBar: Obx(() => BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
