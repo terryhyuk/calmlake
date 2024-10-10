@@ -1,7 +1,8 @@
+import 'package:calm_lake_project/vm/image_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ValidateCheck extends GetxController{
+class ValidateCheck extends ImageHandler{
   String checkResult='';
   Color pwColor=Colors.black;
   String checkEmail='';

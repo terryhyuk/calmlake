@@ -122,6 +122,10 @@ class SignUp extends StatelessWidget {
                       ),
                         onPressed: () {
                           insertAction();
+                          controller.idLabel='';
+                          controller.nickLabel='';
+                          controller.pwColor=Colors.black;
+                          controller.doublePwColor=Colors.black;
                         },
                         child: const Text('Sign Up')),
                   ),
