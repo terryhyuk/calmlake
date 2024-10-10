@@ -8,8 +8,8 @@ import 'package:get_storage/get_storage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class Post extends StatelessWidget {
-  const Post({super.key});
+class Test extends StatelessWidget {
+  const Test({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,19 +22,20 @@ class Post extends StatelessWidget {
         centerTitle: false,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            Get.to(() => Insert())!.then((value) => vmHandler.getJSONData()),
+        onPressed: () => Get.to(() => Insert())!
+            .then((value) => vmHandler.getPostJSONData()),
       ),
       body: GetBuilder<VmHandler>(
         builder: (controller) {
           return FutureBuilder(
-            future: controller.getJSONData(),
+            future: controller.getPostJSONData(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasError) {
+                print(snapshot.error);
                 return Center(
                   child: Text('Error : ${snapshot.error}'),
                 );
@@ -42,39 +43,43 @@ class Post extends StatelessWidget {
                 return Obx(
                   () {
                     return ListView.builder(
-                      itemCount: vmHandler.posts.length,
+                      itemCount: controller.posts.length,
                       itemBuilder: (context, index) {
-                        final post = vmHandler.posts[index];
+                        print(controller.posts[index].seq);
+                        final post = controller.posts[index];
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              children: [CircleAvatar(), Text(post[1])],
+                              children: [CircleAvatar(), Text(post.user_id)],
                             ),
                             Container(
                               width: MediaQuery.of(context).size.width,
                               height: 300,
                               child: Container(
                                 child: Image.network(
-                                  'http://127.0.0.1:8000/query/view/${post[3]}',
+                                  'http://127.0.0.1:8000/query/view/${post.image}',
                                   fit: BoxFit.cover,
                                   width: double.infinity,
                                   height: 300,
                                 ),
                               ),
                             ),
+
                             Row(
                               children: [
                                 // 좋아요 아이콘
                                 GestureDetector(
                                   onTap: () async {
-                                    bool check = await vmHandler.checkFavorite(
-                                            post[7] ?? 'null', post[8] ?? 0) ==
-                                        post[6];
-                                    print(await vmHandler.checkFavorite(
-                                        post[7] ?? 'null', post[8] ?? 0));
+                                    bool check = await controller.checkFavorite(
+                                            post.favorite_user_id ?? 'null',
+                                            post.favorite_post_seq ?? 0) ==
+                                        post.favorite_seq;
+                                    print(await controller.checkFavorite(
+                                        post.favorite_user_id ?? 'null',
+                                        post.favorite_post_seq ?? 0));
                                     int newFavoriteValue =
-                                        post[9] == '1' ? 0 : 1;
+                                        post.favorite == '1' ? 0 : 1;
                                     // favorite 테이블이 있고 hate 테이블이 있는경우
                                     // favorite 1이고 hate가 0이면 updateFavorite
                                     // favorite 1이고 hate가 1이면 updatehate, updatefavorite
@@ -83,33 +88,37 @@ class Post extends StatelessWidget {
                                     // favorite 테이블이 있고 hate 테이블이 없는경우 updateFavorite
                                     if (check) {
                                       if (newFavoriteValue == 1 &&
-                                          post[13] == '1') {
-                                        await vmHandler.updateHate(0, post[12]);
+                                          post.hate == '1') {
+                                        await vmHandler.updateHate(
+                                            0, post.hate_seq);
                                         await vmHandler.updateFavorite(
-                                            newFavoriteValue, post[8]);
+                                            newFavoriteValue,
+                                            post.favorite_post_seq);
                                       }
                                       await vmHandler.updateFavorite(
-                                          newFavoriteValue, post[8]);
+                                          newFavoriteValue,
+                                          post.favorite_post_seq);
                                       // favorite 테이블이 없고 hate 테이블이 없는경우 inserFavorite 1
                                       // favorite 테이블이 없고 hate 테이블이 있는경우
                                       // hate가 1이면 insertfavorite 1, updatehate
                                       // hate가 0이면 insertfavofite 1
                                     } else {
-                                      if (post[13] == '1') {
-                                        await vmHandler.updateHate(0, post[12]);
+                                      if (post.hate == '1') {
+                                        await vmHandler.updateHate(
+                                            0, post.hate_post_seq);
                                         await vmHandler.insertFavorite(
-                                            1, post[0]);
+                                            1, post.seq!);
                                       } else {
                                         await vmHandler.insertFavorite(
-                                            1, post[0]);
+                                            1, post.seq!);
                                       }
                                     }
-                                    await vmHandler.getJSONData();
+                                    await vmHandler.getPostJSONData();
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 10, top: 10),
-                                    child: post[9] == '1'
+                                    child: post.favorite == '1'
                                         ? Icon(Icons.favorite)
                                         : Icon(Icons.favorite_border),
                                   ),
@@ -117,35 +126,38 @@ class Post extends StatelessWidget {
                                 // 싫어요 아이콘
                                 GestureDetector(
                                   onTap: () async {
-                                    bool check = await vmHandler.checkHate(
-                                            post[11] ?? 'null',
-                                            post[12] ?? 0) ==
-                                        post[10];
-                                    int newHateValue = post[13] == '1' ? 0 : 1;
+                                    bool check = await controller.checkHate(
+                                            post.hate_user_id ?? 'null',
+                                            post.hate_post_seq ?? 0) ==
+                                        post.hate_seq;
+                                    int newHateValue = post.hate == '1' ? 0 : 1;
                                     if (check) {
-                                      if (newHateValue == 1 && post[9] == '1') {
+                                      if (newHateValue == 1 &&
+                                          post.favorite == '1') {
                                         await vmHandler.updateFavorite(
-                                            0, post[8]);
+                                            0, post.favorite_seq);
                                         await vmHandler.updateHate(
-                                            newHateValue, post[12]);
+                                            newHateValue, post.hate_post_seq);
                                       }
                                       await vmHandler.updateHate(
-                                          newHateValue, post[12]);
+                                          newHateValue, post.hate_post_seq);
                                     } else {
-                                      if (post[9] == '1') {
+                                      if (post.favorite == '1') {
                                         await vmHandler.updateFavorite(
-                                            0, post[8]);
-                                        await vmHandler.insertHate(1, post[0]);
+                                            0, post.favorite_post_seq);
+                                        await vmHandler.insertHate(
+                                            1, post.seq!);
                                       } else {
-                                        await vmHandler.insertHate(1, post[0]);
+                                        await vmHandler.insertHate(
+                                            1, post.seq!);
                                       }
                                     }
-                                    await vmHandler.getJSONData();
+                                    await vmHandler.getPostJSONData();
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 10, top: 10),
-                                    child: post[13] == '1'
+                                    child: post.hate == '1'
                                         ? Icon(Icons.thumb_down)
                                         : Icon(Icons.thumb_down_alt_outlined),
                                   ),
@@ -153,7 +165,7 @@ class Post extends StatelessWidget {
                                 // 코멘트 아이콘
                                 GestureDetector(
                                   onTap: () {
-                                    controller.getComment(post[0]);
+                                    controller.getComment(post.seq!);
                                     showModalBottomSheet(
                                       context: context,
                                       isScrollControlled:
@@ -254,14 +266,14 @@ class Post extends StatelessWidget {
                                                               .isNotEmpty) {
                                                             await controller
                                                                 .insertCommnet(
-                                                                    post[0],
+                                                                    post.seq!,
                                                                     controller
                                                                         .textController
                                                                         .text
                                                                         .trim());
                                                             await controller
                                                                 .getComment(
-                                                                    post[0]);
+                                                                    post.seq!);
                                                             controller
                                                                 .textController
                                                                 .text = '';
@@ -292,8 +304,9 @@ class Post extends StatelessWidget {
                                 Padding(
                                   padding:
                                       const EdgeInsets.only(left: 10, top: 10),
-                                  child:
-                                      Text(post[14] == 0 ? "" : "${post[14]}"),
+                                  child: Text(post.comment_count == 0
+                                      ? ""
+                                      : "${post.comment_count}"),
                                 )
                               ],
                             ),
@@ -305,8 +318,8 @@ class Post extends StatelessWidget {
                                 children: [
                                   Align(
                                       alignment: Alignment.topLeft,
-                                      child: Text('${post[1]}')),
-                                  Text('${post[4]}'),
+                                      child: Text('${post.user_id}')),
+                                  Text('${post.contents}'),
                                 ],
                               ),
                             ),
