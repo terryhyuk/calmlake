@@ -1,12 +1,8 @@
-import 'package:calm_lake_project/model/favorite.dart';
-import 'package:calm_lake_project/view/insert.dart';
-import 'package:calm_lake_project/vm/commentController.dart';
-import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+
+import '../vm/vm_handler.dart';
+import 'insert.dart';
 
 class Post extends StatelessWidget {
   const Post({super.key});
@@ -14,16 +10,13 @@ class Post extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vmHandler = Get.put(VmHandler());
-    final box = GetStorage();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Posting'),
         centerTitle: false,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            Get.to(() => Insert())!.then((value) => vmHandler.getJSONData()),
+        onPressed: () => Get.to(() => Insert()),
       ),
       body: GetBuilder<VmHandler>(
         builder: (controller) {
@@ -65,239 +58,23 @@ class Post extends StatelessWidget {
                             ),
                             Row(
                               children: [
-                                // 좋아요 아이콘
-                                GestureDetector(
-                                  onTap: () async {
-                                    bool check = await vmHandler.checkFavorite(
-                                            post[7] ?? 'null', post[8] ?? 0) ==
-                                        post[6];
-                                    print(await vmHandler.checkFavorite(
-                                        post[7] ?? 'null', post[8] ?? 0));
-                                    int newFavoriteValue =
-                                        post[9] == '1' ? 0 : 1;
-                                    // favorite 테이블이 있고 hate 테이블이 있는경우
-                                    // favorite 1이고 hate가 0이면 updateFavorite
-                                    // favorite 1이고 hate가 1이면 updatehate, updatefavorite
-                                    // favorite 0이고 hate가 0이면 updateFavorite
-                                    // favorite 0이고 hate가 1이면 updateFavorite
-                                    // favorite 테이블이 있고 hate 테이블이 없는경우 updateFavorite
-                                    if (check) {
-                                      if (newFavoriteValue == 1 &&
-                                          post[13] == '1') {
-                                        await vmHandler.updateHate(0, post[12]);
-                                        await vmHandler.updateFavorite(
-                                            newFavoriteValue, post[8]);
-                                      }
-                                      await vmHandler.updateFavorite(
-                                          newFavoriteValue, post[8]);
-                                      // favorite 테이블이 없고 hate 테이블이 없는경우 inserFavorite 1
-                                      // favorite 테이블이 없고 hate 테이블이 있는경우
-                                      // hate가 1이면 insertfavorite 1, updatehate
-                                      // hate가 0이면 insertfavofite 1
-                                    } else {
-                                      if (post[13] == '1') {
-                                        await vmHandler.updateHate(0, post[12]);
-                                        await vmHandler.insertFavorite(
-                                            1, post[0]);
-                                      } else {
-                                        await vmHandler.insertFavorite(
-                                            1, post[0]);
-                                      }
-                                    }
-                                    await vmHandler.getJSONData();
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10, top: 10),
-                                    child: post[9] == '1'
-                                        ? Icon(Icons.favorite)
-                                        : Icon(Icons.favorite_border),
-                                  ),
-                                ),
-                                // 싫어요 아이콘
-                                GestureDetector(
-                                  onTap: () async {
-                                    bool check = await vmHandler.checkHate(
-                                            post[11] ?? 'null',
-                                            post[12] ?? 0) ==
-                                        post[10];
-                                    int newHateValue = post[13] == '1' ? 0 : 1;
-                                    if (check) {
-                                      if (newHateValue == 1 && post[9] == '1') {
-                                        await vmHandler.updateFavorite(
-                                            0, post[8]);
-                                        await vmHandler.updateHate(
-                                            newHateValue, post[12]);
-                                      }
-                                      await vmHandler.updateHate(
-                                          newHateValue, post[12]);
-                                    } else {
-                                      if (post[9] == '1') {
-                                        await vmHandler.updateFavorite(
-                                            0, post[8]);
-                                        await vmHandler.insertHate(1, post[0]);
-                                      } else {
-                                        await vmHandler.insertHate(1, post[0]);
-                                      }
-                                    }
-                                    await vmHandler.getJSONData();
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10, top: 10),
-                                    child: post[13] == '1'
-                                        ? Icon(Icons.thumb_down)
-                                        : Icon(Icons.thumb_down_alt_outlined),
-                                  ),
-                                ),
-                                // 코멘트 아이콘
-                                GestureDetector(
-                                  onTap: () {
-                                    controller.getComment(post[0]);
-                                    showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled:
-                                          true, // 키보드가 나타날 때 modal 크기를 조정
-                                      builder: (context) {
-                                        return Padding(
-                                          padding: EdgeInsets.only(
-                                              bottom: MediaQuery.of(context)
-                                                  .viewInsets
-                                                  .bottom),
-                                          child: Container(
-                                            height: MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.9 -
-                                                MediaQuery.of(context)
-                                                        .viewInsets
-                                                        .bottom *
-                                                    1,
-                                            child: Column(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 15, bottom: 10),
-                                                  child: Text(
-                                                    'Commnet',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                  ),
-                                                ),
-                                                Divider(),
-                                                Expanded(
-                                                  child: Obx(() {
-                                                    return ListView.builder(
-                                                      shrinkWrap: true,
-                                                      //physics: NeverScrollableScrollPhysics(), // 스크롤 방지
-                                                      itemCount: controller
-                                                          .comments.length,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        return Column(
-                                                          children: [
-                                                            ListTile(
-                                                              leading:
-                                                                  CircleAvatar(),
-                                                              title: Text(
-                                                                  controller
-                                                                      .comments[
-                                                                          index]
-                                                                          [1]
-                                                                      .toString()),
-                                                              subtitle: Text(
-                                                                  controller
-                                                                      .comments[
-                                                                          index]
-                                                                          [3]
-                                                                      .toString()),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    );
-                                                  }),
-                                                ),
-                                                SizedBox(height: 10),
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(left: 20),
-                                                        child: TextField(
-                                                          controller: controller
-                                                              .textController,
-                                                          maxLines: 1,
-                                                          decoration:
-                                                              InputDecoration(
-                                                            hintText:
-                                                                'Enter comment',
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 10,
-                                                              right: 20),
-                                                      child: ElevatedButton(
-                                                        onPressed: () async {
-                                                          if (controller
-                                                              .textController
-                                                              .text
-                                                              .trim()
-                                                              .isNotEmpty) {
-                                                            await controller
-                                                                .insertCommnet(
-                                                                    post[0],
-                                                                    controller
-                                                                        .textController
-                                                                        .text
-                                                                        .trim());
-                                                            await controller
-                                                                .getComment(
-                                                                    post[0]);
-                                                            controller
-                                                                .textController
-                                                                .text = '';
-                                                          }
-                                                        },
-                                                        child: Icon(
-                                                            Icons.arrow_upward),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Container(
-                                                  height: 40,
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10, top: 10),
-                                    child: Icon(Icons.chat_bubble_outline),
-                                  ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 10, top: 10),
+                                  child: Icon(Icons.favorite_border),
                                 ),
                                 Padding(
                                   padding:
                                       const EdgeInsets.only(left: 10, top: 10),
-                                  child:
-                                      Text(post[14] == 0 ? "" : "${post[14]}"),
+                                  child: Icon(Icons.thumb_down_off_alt),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 10, top: 10),
+                                  child: Icon(Icons.chat_bubble_outline),
                                 )
                               ],
                             ),
-                            // posting 내용
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
@@ -324,53 +101,6 @@ class Post extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-
-  showModal(vmHandler, context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                decoration: InputDecoration(
-                  labelText: '메시지를 입력하세요',
-                  border: OutlineInputBorder(),
-                ),
-                onSubmitted: (value) {
-                  //chatController.sendMessage(value);
-                  //Navigator.pop(context); // 메시지를 전송 후 시트를 닫음
-                },
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  // 버튼 클릭 시 메시지 전송
-                  //commentcontroller.comments();
-                  Navigator.pop(context); // 메시지를 전송 후 시트를 닫음
-                },
-                child: Text('메시지 전송'),
-              ),
-              SizedBox(height: 10),
-              Obx(() {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: vmHandler.comments.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(vmHandler.comments[index]),
-                    );
-                  },
-                );
-              }),
-            ],
-          ),
-        );
-      },
     );
   }
 }

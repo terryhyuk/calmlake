@@ -3,7 +3,6 @@ import 'package:calm_lake_project/view/home.dart';
 import 'package:calm_lake_project/view/friends.dart';
 import 'package:calm_lake_project/view/post.dart';
 import 'package:calm_lake_project/view/profile.dart';
-import 'package:calm_lake_project/view/test.dart';
 import 'package:calm_lake_project/vm/NavigationController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
