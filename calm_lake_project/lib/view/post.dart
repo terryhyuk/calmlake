@@ -1,7 +1,8 @@
-import 'package:calm_lake_project/view/insert.dart';
-import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../vm/vm_handler.dart';
+import 'insert.dart';
 
 class Post extends StatelessWidget {
   const Post({super.key});

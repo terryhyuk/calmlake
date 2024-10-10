@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:878275894182:android:81ec37a5defb6ea78b0d67",
+        "mobilesdk_app_id": "1:878275894182:android:d65e3f49d8add9348b0d67",
         "android_client_info": {
-          "package_name": "com.calmlake.app"
+          "package_name": "com.tj.firebaselist"
         }
       },
       "oauth_client": [],

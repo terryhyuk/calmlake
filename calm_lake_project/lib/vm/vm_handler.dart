@@ -3,7 +3,9 @@ import 'package:calm_lake_project/vm/button_controller.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-class VmHandler extends ButtonController {
+import 'list_handler.dart';
+
+class VmHandler extends ListHandler {
   var posts = [].obs;
   String userId = 'user';
 
