@@ -132,7 +132,7 @@ class ProfileEdit extends StatelessWidget {
   }
 
   //회원 정보 수정
-  changeUserAction(LoginHandler loginHandler) async {
+  changeUserAction(LoginHandler loginHandler, Uint8List image) async {
     if (nickNameController.text.trim().isNotEmpty &
         emailController.text.trim().isNotEmpty &
         newPwController.text.trim().isNotEmpty) {
