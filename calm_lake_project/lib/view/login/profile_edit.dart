@@ -12,7 +12,6 @@ import '../../vm/login_handler.dart';
 class ProfileEdit extends StatelessWidget {
   ProfileEdit({super.key});
   final loginHandler = Get.put(LoginHandler());
-  final box = GetStorage();
   final TextEditingController nickNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController newPwController = TextEditingController();
@@ -28,7 +27,7 @@ class ProfileEdit extends StatelessWidget {
           int firstDisp = 0;
           // print(box.read('userId'));
           return FutureBuilder(
-            future: controller.showProfileJSONData(box.read('userId')),
+            future: controller.showProfileJSONData(loginHandler.box.read('userId')),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -94,7 +93,7 @@ class ProfileEdit extends StatelessWidget {
                       // 비밀번호 validate check 삽입하기
                       TextField(
                         controller: newPwController,
-                    decoration: InputDecoration(labelText: newPwController.text=='' ? '새로운 Password를 입력하세요.' : controller.checkResult, labelStyle: TextStyle(
+                    decoration: InputDecoration(labelText: newPwController.text=='' ? 'Password를 입력하세요.' : controller.checkResult, labelStyle: TextStyle(
                       color: controller.pwColor
                     )),
                     onChanged: (value) {
@@ -108,7 +107,7 @@ class ProfileEdit extends StatelessWidget {
                               // String nickName = nickNameController.text.trim();
                               // String email = emailController.text.trim();
                               // String password = newPwController.text.trim();
-                              changeUserAction(loginHandler);
+                              changeUserAction(loginHandler, result.image!);
                             },
                             child: const Text('회원 정보 수정')),
                       ),
@@ -129,14 +128,14 @@ class ProfileEdit extends StatelessWidget {
   }
 
   //회원 정보 수정
-  changeUserAction(LoginHandler loginHandler) async {
+  changeUserAction(LoginHandler loginHandler, Uint8List image) async {
     if (nickNameController.text.trim().isNotEmpty &
         emailController.text.trim().isNotEmpty &
         newPwController.text.trim().isNotEmpty) {
       File imageFile1 = File(loginHandler.imageFile!.path);
       Uint8List getImage = await imageFile1.readAsBytes();
       var userUpdate = Profile(
-          id: box.read('userId'),
+          id: loginHandler.box.read('userId'),
           pw: newPwController.text.trim(),
           email: emailController.text.trim(),
           nickName: nickNameController.text.trim(),

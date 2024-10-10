@@ -12,8 +12,8 @@ def connect():
     conn = pymysql.connect(
         host='127.0.0.1',
         user='root',
-        password='',
-        db='calmlake',
+        password='bar5heart',
+        db='calm_lake',
         charset='utf8'
     )
     return conn

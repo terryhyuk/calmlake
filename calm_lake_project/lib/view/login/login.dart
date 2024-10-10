@@ -15,7 +15,7 @@ class Login extends StatelessWidget {
   final TextEditingController idController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
   final loginHandler = Get.put(LoginHandler());
-  final box = GetStorage();
+  // final box = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +176,7 @@ class Login extends StatelessWidget {
     }
   }
   saveStorage(String id) async{
-    await box.write('userId', id);
+    await loginHandler.box.write('userId', id);
   }
   errorSnackBar() {
     Get.snackbar('Error', 'ID와 비밀번호를 다시 확인해주세요.',
