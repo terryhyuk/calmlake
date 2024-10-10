@@ -2,12 +2,9 @@ import 'package:calm_lake_project/view/insert.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
-class Post extends StatelessWidget {
-  const Post({super.key});
+class MyPost extends StatelessWidget {
+  const MyPost({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,13 +16,13 @@ class Post extends StatelessWidget {
         centerTitle: false,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            Get.to(() => Insert())!.then((value) => vmHandler.getJSONData()),
+        onPressed: () => Get.to(() => Insert())!
+            .then((value) => vmHandler.getUserPostJSONData()),
       ),
       body: GetBuilder<VmHandler>(
         builder: (controller) {
           return FutureBuilder(
-            future: controller.getJSONData(),
+            future: controller.getUserPostJSONData(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -39,21 +36,21 @@ class Post extends StatelessWidget {
                 return Obx(
                   () {
                     return ListView.builder(
-                      itemCount: vmHandler.posts.length,
+                      itemCount: vmHandler.userposts.length,
                       itemBuilder: (context, index) {
-                        final post = vmHandler.posts[index];
+                        final userpost = vmHandler.userposts[index];
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              children: [CircleAvatar(), Text(post[1])],
+                              children: [CircleAvatar(), Text(userpost[1])],
                             ),
                             Container(
                               width: MediaQuery.of(context).size.width,
                               height: 300,
                               child: Container(
                                 child: Image.network(
-                                  'http://127.0.0.1:8000/query/view/${post[3]}',
+                                  'http://127.0.0.1:8000/query/view/${userpost[3]}',
                                   fit: BoxFit.cover,
                                   width: double.infinity,
                                   height: 300,
@@ -65,13 +62,14 @@ class Post extends StatelessWidget {
                                 // 좋아요 아이콘
                                 GestureDetector(
                                   onTap: () async {
+                                    /*
                                     bool check = await vmHandler.checkFavorite(
-                                            post[8] ?? 'null', post[9] ?? 0) ==
-                                        post[7];
+                                            post[7] ?? 'null', post[8] ?? 0) ==
+                                        post[6];
                                     print(await vmHandler.checkFavorite(
-                                        post[8] ?? 'null', post[9] ?? 0));
+                                        post[7] ?? 'null', post[8] ?? 0));
                                     int newFavoriteValue =
-                                        post[10] == '1' ? 0 : 1;
+                                        post[9] == '1' ? 0 : 1;
                                     // favorite 테이블이 있고 hate 테이블이 있는경우
                                     // favorite 1이고 hate가 0이면 updateFavorite
                                     // favorite 1이고 hate가 1이면 updatehate, updatefavorite
@@ -80,78 +78,86 @@ class Post extends StatelessWidget {
                                     // favorite 테이블이 있고 hate 테이블이 없는경우 updateFavorite
                                     if (check) {
                                       if (newFavoriteValue == 1 &&
-                                          post[14] == '1') {
-                                        await vmHandler.updateHate(0, post[13]);
+                                          post[13] == '1') {
+                                        await vmHandler.updateHate(
+                                            0, post[12], post[11]);
                                         await vmHandler.updateFavorite(
-                                            newFavoriteValue, post[9]);
+                                            newFavoriteValue, post[8], post[7]);
                                       }
                                       await vmHandler.updateFavorite(
-                                          newFavoriteValue, post[9]);
+                                          newFavoriteValue, post[8], post[7]);
                                       // favorite 테이블이 없고 hate 테이블이 없는경우 inserFavorite 1
                                       // favorite 테이블이 없고 hate 테이블이 있는경우
                                       // hate가 1이면 insertfavorite 1, updatehate
                                       // hate가 0이면 insertfavofite 1
                                     } else {
-                                      if (post[14] == '1') {
-                                        await vmHandler.updateHate(0, post[13]);
+                                      if (post[13] == '1') {
+                                        await vmHandler.updateHate(
+                                            0, post[12], post[11]);
                                         await vmHandler.insertFavorite(
-                                            1, post[0]);
+                                            1, post[0], 'user');
                                       } else {
                                         await vmHandler.insertFavorite(
-                                            1, post[0]);
+                                            1, post[0], 'user');
                                       }
                                     }
-                                    await vmHandler.getJSONData();
+                                    await vmHandler.getJSONData(); */
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 10, top: 10),
-                                    child: post[10] == '1'
+                                    child:
+                                        /*post[9] == '1'
                                         ? Icon(Icons.favorite)
-                                        : Icon(Icons.favorite_border),
+                                        : */
+                                        Icon(Icons.favorite_border),
                                   ),
                                 ),
                                 // 싫어요 아이콘
                                 GestureDetector(
                                   onTap: () async {
+                                    /*
                                     bool check = await vmHandler.checkHate(
-                                            post[12] ?? 'null',
-                                            post[13] ?? 0) ==
-                                        post[11];
-                                    int newHateValue = post[14] == '1' ? 0 : 1;
+                                            post[11] ?? 'null',
+                                            post[12] ?? 0) ==
+                                        post[10];
+                                    int newHateValue = post[13] == '1' ? 0 : 1;
                                     if (check) {
-                                      if (newHateValue == 1 &&
-                                          post[10] == '1') {
+                                      if (newHateValue == 1 && post[9] == '1') {
                                         await vmHandler.updateFavorite(
-                                            0, post[9]);
+                                            0, post[8], post[7]);
                                         await vmHandler.updateHate(
-                                            newHateValue, post[13]);
+                                            newHateValue, post[12], post[11]);
                                       }
                                       await vmHandler.updateHate(
-                                          newHateValue, post[13]);
+                                          newHateValue, post[12], post[11]);
                                     } else {
-                                      if (post[10] == '1') {
+                                      if (post[9] == '1') {
                                         await vmHandler.updateFavorite(
-                                            0, post[9]);
-                                        await vmHandler.insertHate(1, post[0]);
+                                            0, post[8], post[7]);
+                                        await vmHandler.insertHate(
+                                            1, post[0], 'user');
                                       } else {
-                                        await vmHandler.insertHate(1, post[0]);
+                                        await vmHandler.insertHate(
+                                            1, post[0], 'user');
                                       }
                                     }
-                                    await vmHandler.getJSONData();
+                                    await vmHandler.getJSONData();*/
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 10, top: 10),
-                                    child: post[14] == '1'
+                                    child: /*
+                                        post[13] == '1'
                                         ? Icon(Icons.thumb_down)
-                                        : Icon(Icons.thumb_down_alt_outlined),
+                                        : */
+                                        Icon(Icons.thumb_down_alt_outlined),
                                   ),
                                 ),
                                 // 코멘트 아이콘
                                 GestureDetector(
                                   onTap: () {
-                                    controller.getComment(post[0]);
+                                    controller.getComment(userpost[0]);
                                     showModalBottomSheet(
                                       context: context,
                                       isScrollControlled:
@@ -178,7 +184,7 @@ class Post extends StatelessWidget {
                                                       const EdgeInsets.only(
                                                           top: 15, bottom: 10),
                                                   child: Text(
-                                                    'Commnet',
+                                                    'Commnets',
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.w600),
@@ -252,14 +258,15 @@ class Post extends StatelessWidget {
                                                               .isNotEmpty) {
                                                             await controller
                                                                 .insertCommnet(
-                                                                    post[0],
+                                                                    userpost[0],
                                                                     controller
                                                                         .textController
                                                                         .text
                                                                         .trim());
                                                             await controller
                                                                 .getComment(
-                                                                    post[0]);
+                                                                    userpost[
+                                                                        0]);
                                                             controller
                                                                 .textController
                                                                 .text = '';
@@ -286,13 +293,13 @@ class Post extends StatelessWidget {
                                         left: 10, top: 10),
                                     child: Icon(Icons.chat_bubble_outline),
                                   ),
-                                ),
+                                ), /*
                                 Padding(
                                   padding:
                                       const EdgeInsets.only(left: 10, top: 10),
                                   child:
                                       Text(post[15] == 0 ? "" : "${post[15]}"),
-                                )
+                                )*/
                               ],
                             ),
                             // posting 내용
@@ -303,9 +310,8 @@ class Post extends StatelessWidget {
                                 children: [
                                   Align(
                                       alignment: Alignment.topLeft,
-                                      child: Text('${post[6]}')),
-                                  Text('${post[4]}'),
-                                  Text('${post[2]}'.substring(0, 10)),
+                                      child: Text('  ${userpost[1]}')),
+                                  Text('  ${userpost[4]}'),
                                 ],
                               ),
                             ),

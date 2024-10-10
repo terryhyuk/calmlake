@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:camlake_test_app/model/requestedfriends.dart';
-import 'package:camlake_test_app/vm/serchfriends_controller.dart';
+import 'package:calm_lake_project/model/requestedfriends.dart';
+import 'package:calm_lake_project/vm/login_handler.dart';
+import 'package:calm_lake_project/vm/serchfriends_controller.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:camlake_test_app/vm/login_handler.dart';
 import 'package:get/get.dart';
 
 class FriendsController extends SearchFriendsController {
@@ -13,7 +13,7 @@ class FriendsController extends SearchFriendsController {
   final loginHandler = Get.find<LoginHandler>();
 
   // 전체 친구보기
-  selectfriendsJSONData()async{
+  selectfriendsJSONData() async {
     var url = Uri.parse('http://127.0.0.1:8000/friends/selectfriends');
     var response = await http.get(url);
     allfriendsdata.clear();
@@ -23,13 +23,14 @@ class FriendsController extends SearchFriendsController {
   }
 
 // 신청한 친구 보기
-  requstfriendsJSONData()async{
+  requstfriendsJSONData() async {
     try {
       if (loginHandler.box.read('userId') == null) {
         throw Exception('User not logged in');
       }
 
-      var url = Uri.parse('http://127.0.0.1:8000/friends/selectrequestfriends?seq=${loginHandler.box.read('userId')}');
+      var url = Uri.parse(
+          'http://127.0.0.1:8000/friends/selectrequestfriends?seq=${loginHandler.box.read('userId')}');
       var response = await http.get(url);
 
       if (response.statusCode == 200) {

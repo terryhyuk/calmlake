@@ -52,6 +52,7 @@ class DefaultFirebaseOptions {
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDzNN4uOZUumJZ8K3HxsgSRtturkndjgUU',
     appId: '1:878275894182:android:d65e3f49d8add9348b0d67',
+    appId: '1:878275894182:android:d65e3f49d8add9348b0d67',
     messagingSenderId: '878275894182',
     projectId: 'calmlake-f513a',
     storageBucket: 'calmlake-f513a.appspot.com',
@@ -59,10 +60,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDb4PmRG13GGxZLE-AqgS2lAMpbq5zPPPk',
-    appId: '1:878275894182:ios:bd6564899d4bb1d98b0d67',
+    appId: '1:878275894182:ios:6c41255f84ecd12b8b0d67',
     messagingSenderId: '878275894182',
     projectId: 'calmlake-f513a',
     storageBucket: 'calmlake-f513a.appspot.com',
-    iosBundleId: 'com.example.calmLakeProject',
+    iosBundleId: 'com.example.firebaseList2App',
   );
 }

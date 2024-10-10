@@ -1,5 +1,4 @@
 import 'package:calm_lake_project/view/chat/chatroom.dart';
-import 'package:camlake_test_app/view/chat/chatroom.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -18,13 +17,9 @@ class Chat extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                Get.to(
-                  ()=>Chatroom()
-                );
+                Get.to(() => Chatroom());
               },
-              child: Text(
-                '채팅룸1'
-              ),
+              child: Text('채팅룸1'),
             ),
           ],
         ),

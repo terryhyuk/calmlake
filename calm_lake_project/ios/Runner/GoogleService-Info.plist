@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyBKkKwl0Gz5yS_CWFOUph3_gFTr59_pFzw</string>
+	<string>AIzaSyDb4PmRG13GGxZLE-AqgS2lAMpbq5zPPPk</string>
 	<key>GCM_SENDER_ID</key>
-	<string>570374475076</string>
+	<string>878275894182</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.example.firebaseList2App</string>
 	<key>PROJECT_ID</key>
-	<string>studetns-f2bfd</string>
+	<string>calmlake-f513a</string>
 	<key>STORAGE_BUCKET</key>
-	<string>studetns-f2bfd.appspot.com</string>
+	<string>calmlake-f513a.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:570374475076:ios:2cb53692ad2390ec9d5b11</string>
+	<string>1:878275894182:ios:6c41255f84ecd12b8b0d67</string>
 </dict>
 </plist>

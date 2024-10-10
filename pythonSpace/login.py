@@ -193,7 +193,7 @@ async def showprofile(id: str=None):
     conn=connect()
     curs=conn.cursor()
     try:
-        sql="select password, email, nickname, image from user where id=%s"
+        sql="select password, email, nickname, user_image from user where id=%s"
         curs.execute(sql,(id,))
         conn.commit()
         result=curs.fetchone()
@@ -206,12 +206,12 @@ async def showprofile(id: str=None):
     
 # 회원 정보 변경
 @router.get('/changeuser')
-async def changeuser(nickname: str=None, email: str=None, password: str=None, image: str=None, id: str=None):
+async def changeuser(nickname: str=None, email: str=None, password: str=None, user_image: str=None, id: str=None):
     conn=connect()
     curs=conn.cursor()
     try: 
-        sql='update user set nickname=%s, email=%s, password=%s, image=%s where id=%s'
-        curs.execute(sql, (nickname, email, password, image, id))
+        sql='update user set password=%s, email=%s, nickname=%s, user_image=%s where id=%s'
+        curs.execute(sql, (password, email, nickname, user_image, id))
         conn.commit()
         conn.close()
         return {'results' : 'OK'}
