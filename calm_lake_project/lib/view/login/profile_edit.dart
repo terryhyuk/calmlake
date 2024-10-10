@@ -107,7 +107,7 @@ class ProfileEdit extends StatelessWidget {
                               // String nickName = nickNameController.text.trim();
                               // String email = emailController.text.trim();
                               // String password = newPwController.text.trim();
-                              changeUserAction(loginHandler, result.image!);
+                              changeUserAction(loginHandler);
                             },
                             child: const Text('회원 정보 수정')),
                       ),
@@ -128,7 +128,7 @@ class ProfileEdit extends StatelessWidget {
   }
 
   //회원 정보 수정
-  changeUserAction(LoginHandler loginHandler, Uint8List image) async {
+  changeUserAction(LoginHandler loginHandler) async {
     if (nickNameController.text.trim().isNotEmpty &
         emailController.text.trim().isNotEmpty &
         newPwController.text.trim().isNotEmpty) {
