@@ -1,4 +1,4 @@
-import 'package:calm_lake_project/view/ws/profile_edit.dart';
+import 'package:calm_lake_project/view/login/profile_edit.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
