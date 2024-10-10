@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../model/profile.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,6 +15,22 @@ class LoginHandler extends ValidateCheck {
   RxString findPw = ''.obs;
   String idLabel = '';
   String nickLabel = '';
+
+  final box = GetStorage();
+
+  iniStorage() {
+    box.write('userId','');
+  }
+
+  @override
+  void dispose() {
+    disposeSave();
+    super.dispose();
+  }
+
+  disposeSave(){
+    box.erase();
+  }
 
   //회원가입
   insertJSONData(Profile profile) async {
