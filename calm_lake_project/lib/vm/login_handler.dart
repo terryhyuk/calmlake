@@ -17,8 +17,6 @@ class LoginHandler extends ValidateCheck {
   String idLabel = '';
   String nickLabel = '';
 
-  final box = GetStorage();
-
   iniStorage() {
     box.write('userId', '');
   }
@@ -204,9 +202,9 @@ class LoginHandler extends ValidateCheck {
   }
 
   //유저 정보 수정
-  changeUserJSONData(Profile profile) async{
-    var url =
-        Uri.parse('http://127.0.0.1:8000/login/changeuser?nickname=${profile.nickName}&email=${profile.email}&password=${profile.pw}&user_image=${profile.image}&id=${profile.id}');
+  changeUserJSONData(Profile profile) async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/login/changeuser?nickname=${profile.nickName}&email=${profile.email}&password=${profile.pw}&user_image=${profile.image}&id=${profile.id}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];

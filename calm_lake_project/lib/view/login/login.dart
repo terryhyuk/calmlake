@@ -14,7 +14,8 @@ class Login extends StatelessWidget {
   final TextEditingController idController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
   final loginHandler = Get.put(LoginHandler());
-  // final box = GetStorage();
+  final vmHandler = Get.put(VmHandler());
+  final box = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +184,8 @@ class Login extends StatelessWidget {
       return false;
     }
   }
-  saveStorage(String id) async{
+
+  saveStorage(String id) async {
     await loginHandler.box.write('userId', id);
   }
 

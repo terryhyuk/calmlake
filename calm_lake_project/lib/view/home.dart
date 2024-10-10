@@ -2,27 +2,18 @@ import 'package:calm_lake_project/view/musiclist.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
-
 import '../vm/login_handler.dart';
-import '../vm/vm_handler.dart';
 import '../vm/vm_handler.dart';
 
 class Home extends StatelessWidget {
   Home({super.key});
   final vmHandler = Get.put(VmHandler());
-  final vmHandler = Get.put(VmHandler());
   final loginHandler = Get.put(LoginHandler());
   final box = GetStorage();
-  var value = Get.arguments ?? '__';
   var value = Get.arguments ?? '__';
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).primaryColor;
-    vmHandler.checkaudioPlayer(vmHandler.firebaseMusic);
-    vmHandler.stateCheck();
-    vmHandler.addlistMusic();
     final color = Theme.of(context).primaryColor;
     vmHandler.checkaudioPlayer(vmHandler.firebaseMusic);
     vmHandler.stateCheck();
@@ -58,7 +49,6 @@ class Home extends StatelessWidget {
         ),
         centerTitle: false,
       ),
-      body: SingleChildScrollView(
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -254,7 +244,4 @@ class Home extends StatelessWidget {
     vmHandler.checkaudioPlayer(vmHandler.firebaseMusic);
     vmHandler.stateCheck();
   }
-}
-
-
 }
