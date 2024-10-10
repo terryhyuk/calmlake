@@ -1,4 +1,4 @@
-import 'package:calm_lake_project/view/chat.dart';
+import 'package:calm_lake_project/view/chat/chat.dart';
 import 'package:calm_lake_project/view/home.dart';
 import 'package:calm_lake_project/view/friends.dart';
 import 'package:calm_lake_project/view/post.dart';

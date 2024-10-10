@@ -220,4 +220,9 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+
 # End of https://www.toptal.com/developers/gitignore/api/firebase,windows,macos,visualstudiocode,android,flutter,dart
