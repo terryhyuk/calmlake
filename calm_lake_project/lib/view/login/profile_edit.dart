@@ -9,7 +9,6 @@ import '../../vm/login_handler.dart';
 class ProfileEdit extends StatelessWidget {
   ProfileEdit({super.key});
   final loginHandler = Get.put(LoginHandler());
-  // final box = GetStorage();
   final TextEditingController nickNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController newPwController = TextEditingController();
@@ -25,8 +24,7 @@ class ProfileEdit extends StatelessWidget {
           int firstDisp = 0;
           // print(box.read('userId'));
           return FutureBuilder(
-            future:
-                controller.showProfileJSONData(loginHandler.box.read('userId')),
+            future: controller.showProfileJSONData(loginHandler.box.read('userId')),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -94,16 +92,13 @@ class ProfileEdit extends StatelessWidget {
                       // 비밀번호 validate check 삽입하기
                       TextField(
                         controller: newPwController,
-                        decoration: InputDecoration(
-                            labelText: newPwController.text == ''
-                                ? '새로운 Password를 입력하세요.'
-                                : controller.checkResult,
-                            labelStyle: TextStyle(color: controller.pwColor)),
-                        onChanged: (value) {
-                          controller
-                              .validatePassword(newPwController.text.trim());
-                        },
-                      ),
+                    decoration: InputDecoration(labelText: newPwController.text=='' ? 'Password를 입력하세요.' : controller.checkResult, labelStyle: TextStyle(
+                      color: controller.pwColor
+                    )),
+                    onChanged: (value) {
+                      controller.validatePassword(newPwController.text.trim());
+                    },
+                  ),
                       Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: ElevatedButton(

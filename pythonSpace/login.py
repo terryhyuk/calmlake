@@ -12,8 +12,8 @@ def connect():
     conn = pymysql.connect(
         host='192.168.50.123',
         user='root',
-        password='qwer1234',
-        db='calmlake',
+        password='bar5heart',
+        db='calm_lake',
         charset='utf8'
     )
     return conn
@@ -210,8 +210,8 @@ async def changeuser(nickname: str=None, email: str=None, password: str=None, us
     conn=connect()
     curs=conn.cursor()
     try: 
-        sql='update user set password=%s, email=%s, nickname=%s, user_image=%s where id=%s'
-        curs.execute(sql, (password, email, nickname, user_image, id))
+        sql='update user set nickname=%s, email=%s, password=%s, user_image=%s where id=%s'
+        curs.execute(sql, (nickname, email, password, user_image, id))
         conn.commit()
         conn.close()
         return {'results' : 'OK'}
