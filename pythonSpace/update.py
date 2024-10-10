@@ -19,10 +19,10 @@ if not os.path.exists(UPLOAD_FOLDER): # 업로드 폴더가 없으면 폴더를 
 
 def connection():
     conn = pymysql.connect(
-        host='127.0.0.1',
+        host='192.168.50.123',
         user='root',
         password='qwer1234',
-        db= 'calmlake',
+        db='calmlake',
         charset='utf8'
     )
     return conn

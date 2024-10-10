@@ -10,7 +10,7 @@ router = APIRouter()
 
 def connect():
     conn = pymysql.connect(
-        host='127.0.0.1',
+        host='192.168.50.123',
         user='root',
         password='qwer1234',
         db='calmlake',
@@ -193,7 +193,7 @@ async def showprofile(id: str=None):
     conn=connect()
     curs=conn.cursor()
     try:
-        sql="select * from user where id=%s"
+        sql="select password, email, nickname, image from user where id=%s"
         curs.execute(sql,(id,))
         conn.commit()
         result=curs.fetchone()
@@ -206,12 +206,12 @@ async def showprofile(id: str=None):
     
 # 회원 정보 변경
 @router.get('/changeuser')
-async def changeuser(password: str=None, id: str=None):
+async def changeuser(nickname: str=None, email: str=None, password: str=None, image: str=None, id: str=None):
     conn=connect()
     curs=conn.cursor()
     try: 
-        sql='update user set password=%s where id=%s'
-        curs.execute(sql, (password, id))
+        sql='update user set nickname=%s, email=%s, password=%s, image=%s where id=%s'
+        curs.execute(sql, (nickname, email, password, image, id))
         conn.commit()
         conn.close()
         return {'results' : 'OK'}
@@ -222,12 +222,12 @@ async def changeuser(password: str=None, id: str=None):
 
 # 회원 탈퇴
 @router.get("/deleteuser")
-async def deleteuser(user_id: str=None):
+async def deleteuser(id: str=None):
     conn=connect()
     curs=conn.cursor()
     try:
-        sql="delete from active_user where user_id=%s"
-        curs.execute(sql,(user_id,))
+        sql="delete from user where id=%s"
+        curs.execute(sql,(id,))
         conn.commit()
         conn.close()
         return{'results':'OK'}

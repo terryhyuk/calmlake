@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../model/profile.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,6 +15,22 @@ class LoginHandler extends ValidateCheck {
   RxString findPw = ''.obs;
   String idLabel = '';
   String nickLabel = '';
+
+  final box = GetStorage();
+
+  iniStorage() {
+    box.write('userId','');
+  }
+
+  @override
+  void dispose() {
+    disposeSave();
+    super.dispose();
+  }
+
+  disposeSave(){
+    box.erase();
+  }
 
   //회원가입
   insertJSONData(Profile profile) async {
@@ -123,7 +140,7 @@ class LoginHandler extends ValidateCheck {
   //Password 재설정
   changePwJSONData(String newPw, String id) async {
     var url =
-        Uri.parse('http://127.0.0.1:8000/changepw?password=$newPw&id=$id');
+        Uri.parse('http://127.0.0.1:8000/login/changepw?password=$newPw&id=$id');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
@@ -162,19 +179,39 @@ class LoginHandler extends ValidateCheck {
   }
 
   //유저 프로필 확인
-  showProfileJSONData(String userId)async{
+  Future<Profile>showProfileJSONData(String userId)async{
     var url = Uri.parse('http://127.0.0.1:8000/login/showprofile?id=$userId');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
-    var userProfile=result[0];
+    Uint8List? imageBytes;
+    if(result[3]!=null){
+    List<dynamic> imageData = json.decode(result[3]);
+    imageBytes = Uint8List.fromList(List<int>.from(imageData));
+    }
     return Profile(
-      id: userProfile[0], 
-      pw: userProfile[1], 
-      email: userProfile[2], 
-      nickName: userProfile[3],
-      image: userProfile[5] !=null ? base64Decode(userProfile[5]) : null,
+      id: userId, 
+      pw: result[0] ?? '', 
+      email: result[1] ?? '', 
+      nickName: result[2] ?? '',
+      image: imageBytes,
       );
   }
-
+  //유저 정보 수정
+  changeUserJSONData(Profile profile) async{
+    var url =
+        Uri.parse('http://127.0.0.1:8000/login/changeuser?nickname=${profile.nickName}&email=${profile.email}&password=${profile.pw}&image=${profile.image}&id=${profile.id}');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['results'];
+    return result;
+  }
+  //회원 탈퇴
+  deleteUserJSONData(String userId)async{
+    var url = Uri.parse('http://127.0.0.1:8000/login/deleteuser?id=$userId');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['results'];
+    return result;    
+  }
 }
