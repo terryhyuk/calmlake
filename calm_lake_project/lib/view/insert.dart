@@ -169,8 +169,7 @@ class Insert extends StatelessWidget {
                                       await controller.insertJSONData(
                                           controller.image,
                                           contentController.text.trim(),
-                                          controller.selectedButton.value,
-                                          'test');
+                                          controller.selectedButton.value);
                                       controller.imageFile = null;
                                       controller.selectedButton.value = -1;
                                       controller.isButtonEnabled.value = true;

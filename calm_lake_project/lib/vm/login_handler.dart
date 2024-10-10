@@ -19,7 +19,7 @@ class LoginHandler extends ValidateCheck {
   final box = GetStorage();
 
   iniStorage() {
-    box.write('userId','');
+    box.write('userId', '');
   }
 
   @override
@@ -28,7 +28,7 @@ class LoginHandler extends ValidateCheck {
     super.dispose();
   }
 
-  disposeSave(){
+  disposeSave() {
     box.erase();
   }
 
@@ -72,8 +72,8 @@ class LoginHandler extends ValidateCheck {
 
   //Nickname 중복체크
   checkNickJSONData(String insertNick) async {
-    var url =
-        Uri.parse('http://127.0.0.1:8000/login/checkusernick?nickname=$insertNick');
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/login/checkusernick?nickname=$insertNick');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
@@ -101,7 +101,8 @@ class LoginHandler extends ValidateCheck {
 
   //회원 확인
   checkUserJSONData(String id, String pw) async {
-    var url = Uri.parse('http://127.0.0.1:8000/login/checkuser?id=$id&password=$pw');
+    var url =
+        Uri.parse('http://127.0.0.1:8000/login/checkuser?id=$id&password=$pw');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
@@ -110,7 +111,8 @@ class LoginHandler extends ValidateCheck {
 
   //ID 찾기
   findIdJSONData(String nickName) async {
-    var url = Uri.parse('http://127.0.0.1:8000/login/findid?nickname=$nickName');
+    var url =
+        Uri.parse('http://127.0.0.1:8000/login/findid?nickname=$nickName');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
@@ -139,8 +141,8 @@ class LoginHandler extends ValidateCheck {
 
   //Password 재설정
   changePwJSONData(String newPw, String id) async {
-    var url =
-        Uri.parse('http://127.0.0.1:8000/login/changepw?password=$newPw&id=$id');
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/login/changepw?password=$newPw&id=$id');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
@@ -149,8 +151,8 @@ class LoginHandler extends ValidateCheck {
 
   //활동 유저 확인
   Future<bool> checkActiveJSONData(String userId) async {
-    var url =
-        Uri.parse('http://127.0.0.1:8000/login/checkactiveuser?user_id=$userId');
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/login/checkactiveuser?user_id=$userId');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
@@ -161,8 +163,10 @@ class LoginHandler extends ValidateCheck {
       return false; // 또는 예외를 던질 수 있습니다
     }
   }
+
   activeUserJSONData(String userId) async {
-    var url = Uri.parse('http://127.0.0.1:8000/login/activeuser?user_id=$userId');
+    var url =
+        Uri.parse('http://127.0.0.1:8000/login/activeuser?user_id=$userId');
     var response = await http.post(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
@@ -170,48 +174,50 @@ class LoginHandler extends ValidateCheck {
   }
 
   //활동 유저 삭제(logout)
-  logoutJSONData(String userId)async{
+  logoutJSONData(String userId) async {
     var url = Uri.parse('http://127.0.0.1:8000/login/logout?user_id=$userId');
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    var result = dataConvertedJSON['results'];
-    return result;    
-  }
-
-  //유저 프로필 확인
-  Future<Profile>showProfileJSONData(String userId)async{
-    var url = Uri.parse('http://127.0.0.1:8000/login/showprofile?id=$userId');
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    var result = dataConvertedJSON['results'];
-    Uint8List? imageBytes;
-    if(result[3]!=null){
-    List<dynamic> imageData = json.decode(result[3]);
-    imageBytes = Uint8List.fromList(List<int>.from(imageData));
-    }
-    return Profile(
-      id: userId, 
-      pw: result[0] ?? '', 
-      email: result[1] ?? '', 
-      nickName: result[2] ?? '',
-      image: imageBytes,
-      );
-  }
-  //유저 정보 수정
-  changeUserJSONData(Profile profile) async{
-    var url =
-        Uri.parse('http://127.0.0.1:8000/login/changeuser?nickname=${profile.nickName}&email=${profile.email}&password=${profile.pw}&image=${profile.image}&id=${profile.id}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
     return result;
   }
+
+  //유저 프로필 확인
+  Future<Profile> showProfileJSONData(String userId) async {
+    var url = Uri.parse('http://127.0.0.1:8000/login/showprofile?id=$userId');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['results'];
+    Uint8List? imageBytes;
+    if (result[3] != null) {
+      List<dynamic> imageData = json.decode(result[3]);
+      imageBytes = Uint8List.fromList(List<int>.from(imageData));
+    }
+    return Profile(
+      id: userId,
+      pw: result[0] ?? '',
+      email: result[1] ?? '',
+      nickName: result[2] ?? '',
+      image: imageBytes,
+    );
+  }
+
+  //유저 정보 수정
+  changeUserJSONData(Profile profile) async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/login/changeuser?nickname=${profile.nickName}&email=${profile.email}&password=${profile.pw}&user_image=${profile.image}&id=${profile.id}');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['results'];
+    return result;
+  }
+
   //회원 탈퇴
-  deleteUserJSONData(String userId)async{
+  deleteUserJSONData(String userId) async {
     var url = Uri.parse('http://127.0.0.1:8000/login/deleteuser?id=$userId');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
-    return result;    
+    return result;
   }
 }

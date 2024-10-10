@@ -22,7 +22,7 @@ def connection():
         host='192.168.50.123',
         user='root',
         password='qwer1234',
-        db='calmlake',
+        db= 'calmlake',
         charset='utf8'
     )
     return conn
@@ -35,11 +35,12 @@ async def select(user_id: str=None):
         sql = """
     SELECT 
         p.seq, 
-        p.user_id, 
+        p.post_user_id, 
         p.date, 
         p.image, 
         p.contents, 
-        p.public, 
+        p.public,
+        p.post_nickname,
         f.seq AS favorite_seq, 
         f.user_id AS favorite_user_id, 
         f.post_seq AS favorite_post_seq, 
@@ -58,15 +59,15 @@ async def select(user_id: str=None):
     LEFT JOIN 
         comment AS c ON p.seq = c.post_seq
     WHERE 
-        (p.public = 0 AND p.user_id != %s) 
-        OR (p.public = 2 AND p.user_id IN (
+        (p.public = 0 AND p.post_user_id != %s) 
+        OR (p.public = 2 AND p.post_user_id IN (
             SELECT add_id FROM friends WHERE user_id = %s
         )) 
-        OR (p.public = 2 AND p.user_id IN (
+        OR (p.public = 2 AND p.post_user_id IN (
             SELECT user_id FROM friends WHERE add_id = %s
         ))
     GROUP BY 
-    p.seq, p.user_id, p.date, p.image, p.contents, p.public, 
+    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,p.post_nickname, 
     f.seq, f.user_id, f.post_seq, f.favorite, 
     h.seq, h.user_id, h.post_seq, h.hate
 """
@@ -88,7 +89,7 @@ async def select(user_id: str=None):
         sql = """
             select * 
             From post 
-            where user_id = %s
+            where post_user_id = %s
             """
         curs.execute(sql, (user_id))
         rows = curs.fetchall()

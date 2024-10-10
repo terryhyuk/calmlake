@@ -1,8 +1,8 @@
+import 'package:calm_lake_project/view/login/profile_edit.dart';
 import 'package:calm_lake_project/view/my_post.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
@@ -10,9 +10,7 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vmHandler = Get.put(VmHandler());
-    vmHandler.getUserJSONData();
     vmHandler.getUserPostJSONData();
-    final box = GetStorage();
 
     return Scaffold(
       appBar: AppBar(
@@ -79,14 +77,16 @@ class Profile extends StatelessWidget {
                       children: [
                         ElevatedButton(
                           onPressed: () {},
-                          child: Text('Friends'),
+                          child: Text('Favorite'),
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
                               fixedSize: Size(110, 50)),
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Get.to(ProfileEdit());
+                          },
                           child: Text('Edit Profile'),
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
@@ -129,8 +129,8 @@ class Profile extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                         child: GestureDetector(
                           onTap: () {
-                            Get.to(() => MyPost())!
-                                .then((value) => vmHandler.getUserJSONData());
+                            Get.to(() => MyPost())!.then(
+                                (value) => vmHandler.getUserPostJSONData());
                           },
                           child: Image.network(
                             'http://127.0.0.1:8000/query/view/${post[3]}',

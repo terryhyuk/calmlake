@@ -1,11 +1,7 @@
-import 'package:calm_lake_project/model/favorite.dart';
 import 'package:calm_lake_project/view/insert.dart';
-import 'package:calm_lake_project/vm/commentController.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class MyPost extends StatelessWidget {
   const MyPost({super.key});
@@ -64,7 +60,6 @@ class MyPost extends StatelessWidget {
                             Row(
                               children: [
                                 // 좋아요 아이콘
-
                                 GestureDetector(
                                   onTap: () async {
                                     /*
@@ -189,7 +184,7 @@ class MyPost extends StatelessWidget {
                                                       const EdgeInsets.only(
                                                           top: 15, bottom: 10),
                                                   child: Text(
-                                                    'Commnet',
+                                                    'Commnets',
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.w600),
@@ -303,7 +298,7 @@ class MyPost extends StatelessWidget {
                                   padding:
                                       const EdgeInsets.only(left: 10, top: 10),
                                   child:
-                                      Text(post[14] == 0 ? "" : "${post[14]}"),
+                                      Text(post[15] == 0 ? "" : "${post[15]}"),
                                 )*/
                               ],
                             ),
@@ -315,8 +310,8 @@ class MyPost extends StatelessWidget {
                                 children: [
                                   Align(
                                       alignment: Alignment.topLeft,
-                                      child: Text('${userpost[1]}')),
-                                  Text('${userpost[4]}'),
+                                      child: Text('  ${userpost[1]}')),
+                                  Text('  ${userpost[4]}'),
                                 ],
                               ),
                             ),

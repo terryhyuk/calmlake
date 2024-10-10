@@ -1,18 +1,15 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:calm_lake_project/model/profile.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../vm/login_handler.dart';
 
 class ProfileEdit extends StatelessWidget {
   ProfileEdit({super.key});
   final loginHandler = Get.put(LoginHandler());
-  final box = GetStorage();
+  // final box = GetStorage();
   final TextEditingController nickNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController newPwController = TextEditingController();
@@ -28,13 +25,15 @@ class ProfileEdit extends StatelessWidget {
           int firstDisp = 0;
           // print(box.read('userId'));
           return FutureBuilder(
-            future: controller.showProfileJSONData(box.read('userId')),
+            future:
+                controller.showProfileJSONData(loginHandler.box.read('userId')),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasError) {
+                print(snapshot.error);
                 return Center(
                   child: Text('Error: ${snapshot.error}'),
                 );
@@ -47,10 +46,11 @@ class ProfileEdit extends StatelessWidget {
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     children: [
-                      controller.imageFile != null 
-                      ? Image.file(File(controller.imageFile!.path)): 
-                      result.image != null ? Image.memory(result.image!) : 
-                      const Icon(Icons.person, size: 200),
+                      controller.imageFile != null
+                          ? Image.file(File(controller.imageFile!.path))
+                          : result.image != null
+                              ? Image.memory(result.image!)
+                              : const Icon(Icons.person, size: 200),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -82,25 +82,28 @@ class ProfileEdit extends StatelessWidget {
                       // 중복검사 삽입하기
                       TextField(
                         controller: nickNameController,
-                        decoration:
-                            const InputDecoration(labelText: '수정하실 Nickname을 입력하세요.'),
+                        decoration: const InputDecoration(
+                            labelText: '수정하실 Nickname을 입력하세요.'),
                       ),
                       // email validate check 삽입하기
                       TextField(
                         controller: emailController,
-                        decoration:
-                            const InputDecoration(labelText: '수정하실 email을 입력하세요.'),
+                        decoration: const InputDecoration(
+                            labelText: '수정하실 email을 입력하세요.'),
                       ),
                       // 비밀번호 validate check 삽입하기
                       TextField(
                         controller: newPwController,
-                    decoration: InputDecoration(labelText: newPwController.text=='' ? '새로운 Password를 입력하세요.' : controller.checkResult, labelStyle: TextStyle(
-                      color: controller.pwColor
-                    )),
-                    onChanged: (value) {
-                      controller.validatePassword(newPwController.text.trim());
-                    },
-                  ),
+                        decoration: InputDecoration(
+                            labelText: newPwController.text == ''
+                                ? '새로운 Password를 입력하세요.'
+                                : controller.checkResult,
+                            labelStyle: TextStyle(color: controller.pwColor)),
+                        onChanged: (value) {
+                          controller
+                              .validatePassword(newPwController.text.trim());
+                        },
+                      ),
                       Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: ElevatedButton(
@@ -136,14 +139,14 @@ class ProfileEdit extends StatelessWidget {
       File imageFile1 = File(loginHandler.imageFile!.path);
       Uint8List getImage = await imageFile1.readAsBytes();
       var userUpdate = Profile(
-          id: box.read('userId'),
+          id: loginHandler.box.read('userId'),
           pw: newPwController.text.trim(),
           email: emailController.text.trim(),
           nickName: nickNameController.text.trim(),
           image: getImage);
       var result = await loginHandler.changeUserJSONData(userUpdate);
       if (result == 'OK') {
-        loginHandler.imageFile=null;
+        loginHandler.imageFile = null;
         Get.snackbar('Update', '수정이 완료되었습니다.',
             snackPosition: SnackPosition.BOTTOM,
             duration: const Duration(seconds: 2),
