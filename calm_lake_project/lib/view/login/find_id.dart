@@ -12,7 +12,7 @@ class FindId extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ID 찾기'),
+        title: Text('ID 찾기'),
       ),
       body: GetBuilder<LoginHandler>
       (builder: (controller) {
@@ -21,7 +21,7 @@ class FindId extends StatelessWidget {
             children: [
               TextField(
                 controller: nickNameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: '사용자 Nickname을 입력해주세요.'
                 ),
               ),
@@ -32,7 +32,7 @@ class FindId extends StatelessWidget {
                   nickNameController.text='';
                   print(controller.findId.value);
                 },
-                child: const Text('Id 찾기')),
+                child: Text('Id 찾기')),
                 Text('귀하의 ID는 ${controller.findId.value}입니다.')  //
             ],
           ),

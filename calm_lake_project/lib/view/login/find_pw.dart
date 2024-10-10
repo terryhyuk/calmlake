@@ -16,7 +16,7 @@ class FindPw extends StatelessWidget {
     bool answer=false;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Password 찾기'),
+        title: Text('Password 찾기'),
       ),
       body: GetBuilder<LoginHandler>
       (builder: (controller) {
@@ -25,7 +25,7 @@ class FindPw extends StatelessWidget {
             children: [
               TextField(
                 controller: idController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: '사용자 ID를 입력해주세요.'
                 ),
               ),
@@ -38,13 +38,13 @@ class FindPw extends StatelessWidget {
                   // idController.text='';
                   // print(controller.findId.value);
                 },
-                child: const Text('ID 확인')),
+                child: Text('ID 확인')),
                 screen
                 ? Column(
                   children: [
                     TextField(
                     controller: awController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: '가장 기억에 남는 스승의 이름은 무엇입니까?'
                     ),
                     ),
@@ -57,16 +57,16 @@ class FindPw extends StatelessWidget {
                   answer = aw==controller.findPw.value;
                   print(answer);
                 },
-                child: const Text('확인')),                                  
+                child: Text('확인')),                                  
                   ],
                 )
-                : const Text(''),
+                : Text(''),
                 answer
                 ? Column(
                   children: [
                     TextField(
                     controller: newPwController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: '새로운 Password를 입력해주세요.'
                     ),
                     ),
@@ -74,10 +74,10 @@ class FindPw extends StatelessWidget {
                 onPressed: () {
                   changePwAction(newPwController.text.trim(), idController.text.trim());
                 },
-                child: const Text('Password 재설정')),
+                child: Text('Password 재설정')),
             ],
           )
-          : const Text(''),
+          : Text(''),
           ]
           )
         );

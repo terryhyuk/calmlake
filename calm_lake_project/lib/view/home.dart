@@ -1,15 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_list2_app/view/musiclist.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+
 import '../vm/login_handler.dart';
+import '../vm/vm_handler.dart';
 
 class Home extends StatelessWidget {
   Home({super.key});
+  final vmHandler = Get.put(VmHandler());
   final loginHandler = Get.put(LoginHandler());
   final box = GetStorage();
+  var value = Get.arguments ?? '__';
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).primaryColor;
+    vmHandler.checkaudioPlayer(vmHandler.firebaseMusic);
+    vmHandler.stateCheck();
+    vmHandler.addlistMusic();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -19,15 +29,194 @@ class Home extends StatelessWidget {
           },
           icon: Icon(Icons.logout_outlined)
           ),
-        title: Text(
-          'CalmLake',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+        title: Center(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'CalmLake',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                // 친구 추가 버튼
+                IconButton(
+                  onPressed: () {
+                  print(vmHandler.musicList[0][0]);
+                  }, 
+                  icon: Icon(Icons.person_add_alt)
+                  )
+              ],
+            ),
+          ],
         ),
+      ),
         centerTitle: false,
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
-          children: [Divider()],
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+              child: Divider(
+                thickness: 0.5,
+                color: Colors.grey,
+              ),
+            ),
+            GetBuilder<VmHandler>(
+              builder: (controller) {
+                return Center(
+                  child: Column(children: <Widget>[
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                              child: Text(
+                                '${vmHandler.firendList} Request',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                ),
+                                ),
+                            ),
+                          ],
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(20, 0, 20, 5),
+                          child: Divider(
+                            thickness: 1.5,
+                            color: Color.fromARGB(255, 201, 201, 201),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(20, 5, 20, 20),
+                          child: Divider(
+                            thickness: 1.5,
+                            color: Color.fromARGB(255, 201, 201, 201),
+                          ),
+                        ),
+                        // 음악 이미지
+                        CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(vmHandler.selectImage),
+                          radius: 130,
+                        )
+                      ],
+                    ),
+                    // 음악 이름 출력
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                      child: Text(
+                        vmHandler.selectMusic,
+                        style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    // Slider
+                    Slider(
+                      thumbColor: Colors.lightBlue,
+                      activeColor: Colors.lightBlue,
+                      onChanged: (value) {
+                        final duration = vmHandler.duration;
+                        if (duration == null) {
+                          return;
+                        }
+                        final position = value * duration.inMilliseconds;
+                        vmHandler.player
+                            .seek(Duration(milliseconds: position.round()));
+                      },
+                      value: (vmHandler.position != null &&
+                              vmHandler.duration != null &&
+                              vmHandler.position!.inMilliseconds > 0 &&
+                              vmHandler.position!.inMilliseconds <
+                                  vmHandler.duration!.inMilliseconds)
+                          ? vmHandler.position!.inMilliseconds /
+                              vmHandler.duration!.inMilliseconds
+                          : 0.0,
+                    ),
+                    Text(
+                      vmHandler.position != null
+                          ? '${vmHandler.positionText} / ${vmHandler.durationText}'
+                          : vmHandler.duration != null
+                              ? vmHandler.durationText
+                              : '',
+                      style: const TextStyle(fontSize: 16.0),
+                    ),
+                    // 음악 변경 버튼
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              Get.to(() => Musiclist())!.then(
+                                (value) => reloadData(vmHandler),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.menu,
+                              size: 40,
+                              ))
+                      ],
+                    ),
+                    // 음악 버튼
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          key: const Key('skip_previous'),
+                          onPressed: vmHandler.isPlaying ? null : vmHandler.play,
+                          iconSize: 50.0,
+                          icon: const Icon(
+                            Icons.skip_previous_outlined,
+                            color: Colors.black,
+                          ),
+                          color: color,
+                        ),
+                        // vmHandler.musicState == 0 ?
+                        IconButton(
+                          key: const Key('play_button'),
+                          onPressed: vmHandler.isPlaying ? null : vmHandler.play,
+                          iconSize: 70,
+                          icon: const Icon(
+                            Icons.play_circle,
+                            color: Colors.black,
+                          ),
+                          color: color,
+                        ),
+                        IconButton(
+                          key: const Key('pause_button'),
+                          onPressed: vmHandler.isPlaying ? vmHandler.pause : null,
+                          iconSize: 70.0,
+                          icon: const Icon(Icons.pause),
+                          color: Colors.black,
+                        ),
+            
+                        IconButton(
+                          key: const Key('skip_next'),
+                          onPressed: vmHandler.isPlaying ? null : vmHandler.play,
+                          iconSize: 50.0,
+                          icon: const Icon(
+                            Icons.skip_next_outlined,
+                            color: Colors.black,
+                          ),
+                          color: color,
+                        ),
+            
+                        // 멈춤 버튼
+                        // IconButton(
+                        //   key: const Key('stop_button'),
+                        //   onPressed: vmHandler.isPlaying || vmHandler.isPaused ? vmHandler.stop : null,
+                        //   iconSize: 48.0,
+                        //   icon: const Icon(Icons.stop),
+                        //   color: color,
+                        // ),
+                      ],
+                    ),
+                  ]),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -48,4 +237,11 @@ class Home extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 206, 53, 42),
         colorText: Colors.white);
   }  
+
+    reloadData(VmHandler vmHandler) {
+    vmHandler.checkaudioPlayer(vmHandler.firebaseMusic);
+    vmHandler.stateCheck();
+  }
+
+
 }
