@@ -1,6 +1,6 @@
-import 'package:camlake_test_app/view/musiclist.dart';
-import 'package:camlake_test_app/vm/friends_controller.dart';
-import 'package:camlake_test_app/vm/vm_handler.dart';
+import 'package:calm_lake_project/view/musiclist.dart';
+import 'package:calm_lake_project/vm/friends_controller.dart';
+import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../vm/login_handler.dart';
@@ -25,35 +25,33 @@ class Home extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {
-            logOut(loginHandler.box.read('userId'));
-            Get.back();
-          },
-          icon: Icon(Icons.logout_outlined)
-          ),
+            onPressed: () {
+              logOut(loginHandler.box.read('userId'));
+              Get.back();
+            },
+            icon: Icon(Icons.logout_outlined)),
         title: Center(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'CalmLake',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                // 친구 추가 버튼
-                IconButton(
-                  onPressed: () {
-                    print(friendsController.addfriend);
-                  print(vmHandler.musicList[0][0]);
-                  }, 
-                  icon: Icon(Icons.person_add_alt)
-                  )
-              ],
-            ),
-          ],
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'CalmLake',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  // 친구 추가 버튼
+                  IconButton(
+                      onPressed: () {
+                        print(friendsController.addfriend);
+                        print(vmHandler.musicList[0][0]);
+                      },
+                      icon: Icon(Icons.person_add_alt))
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
         centerTitle: false,
       ),
       body: SingleChildScrollView(
@@ -81,10 +79,9 @@ class Home extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 20,
                                 ),
-                                ),
+                              ),
                             ),
                           ],
-                          
                         ),
                         const Padding(
                           padding: EdgeInsets.fromLTRB(20, 0, 20, 5),
@@ -93,39 +90,39 @@ class Home extends StatelessWidget {
                             color: Color.fromARGB(255, 201, 201, 201),
                           ),
                         ),
-                        Container(
-                          width: 10,
-                          height: 50,
-                          child: Expanded(
-                            child: Row(
-                              children: [
-                                Obx(
-                                ()=> friendsController.addfriend.isEmpty
-                                ? const Center(
-                                  child: Text('data'),
-                                )
-                                : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: friendsController.addfriend.length,
-                                  itemBuilder: (context, index) {
-                                    return Container(
-                                      width: 100,
-                                      margin: EdgeInsets.symmetric(horizontal: 8),
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            friendsController.addfriend[index][0]
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                  },)
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        // Container(
+                        //   width: 10,
+                        //   height: 50,
+                        //   child: Expanded(
+                        //     child: Row(
+                        //       children: [
+                        //         Obx(
+                        //         ()=> friendsController.addfriend.isEmpty
+                        //         ? const Center(
+                        //           child: Text('data'),
+                        //         )
+                        //         : ListView.builder(
+                        //           scrollDirection: Axis.horizontal,
+                        //           itemCount: friendsController.addfriend.length,
+                        //           itemBuilder: (context, index) {
+                        //             return Container(
+                        //               width: 100,
+                        //               margin: EdgeInsets.symmetric(horizontal: 8),
+                        //               child: Column(
+                        //                 mainAxisAlignment: MainAxisAlignment.center,
+                        //                 children: [
+                        //                   Text(
+                        //                     friendsController.addfriend[index][0]
+                        //                   )
+                        //                 ],
+                        //               ),
+                        //             );
+                        //           },)
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
                         const Padding(
                           padding: EdgeInsets.fromLTRB(20, 5, 20, 20),
                           child: Divider(
@@ -135,8 +132,7 @@ class Home extends StatelessWidget {
                         ),
                         // 음악 이미지
                         CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(vmHandler.selectImage),
+                          backgroundImage: NetworkImage(vmHandler.selectImage),
                           radius: 130,
                         )
                       ],
@@ -146,7 +142,8 @@ class Home extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                       child: Text(
                         vmHandler.selectMusic,
-                        style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.bold),
                       ),
                     ),
                     // Slider
@@ -192,7 +189,7 @@ class Home extends StatelessWidget {
                             icon: const Icon(
                               Icons.menu,
                               size: 40,
-                              ))
+                            ))
                       ],
                     ),
                     // 음악 버튼
@@ -201,7 +198,8 @@ class Home extends StatelessWidget {
                       children: [
                         IconButton(
                           key: const Key('skip_previous'),
-                          onPressed: vmHandler.isPlaying ? null : vmHandler.play,
+                          onPressed:
+                              vmHandler.isPlaying ? null : vmHandler.play,
                           iconSize: 50.0,
                           icon: const Icon(
                             Icons.skip_previous_outlined,
@@ -212,7 +210,8 @@ class Home extends StatelessWidget {
                         // vmHandler.musicState == 0 ?
                         IconButton(
                           key: const Key('play_button'),
-                          onPressed: vmHandler.isPlaying ? null : vmHandler.play,
+                          onPressed:
+                              vmHandler.isPlaying ? null : vmHandler.play,
                           iconSize: 70,
                           icon: const Icon(
                             Icons.play_circle,
@@ -222,14 +221,16 @@ class Home extends StatelessWidget {
                         ),
                         IconButton(
                           key: const Key('pause_button'),
-                          onPressed: vmHandler.isPlaying ? vmHandler.pause : null,
+                          onPressed:
+                              vmHandler.isPlaying ? vmHandler.pause : null,
                           iconSize: 70.0,
                           icon: const Icon(Icons.pause),
                           color: Colors.black,
                         ),
                         IconButton(
                           key: const Key('skip_next'),
-                          onPressed: vmHandler.isPlaying ? null : vmHandler.play,
+                          onPressed:
+                              vmHandler.isPlaying ? null : vmHandler.play,
                           iconSize: 50.0,
                           icon: const Icon(
                             Icons.skip_next_outlined,
@@ -237,7 +238,7 @@ class Home extends StatelessWidget {
                           ),
                           color: color,
                         ),
-            
+
                         // 멈춤 버튼
                         // IconButton(
                         //   key: const Key('stop_button'),
@@ -257,7 +258,8 @@ class Home extends StatelessWidget {
       ),
     );
   }
-  logOut(String id)async{
+
+  logOut(String id) async {
     var result = await loginHandler.logoutJSONData(id);
     if (result == 'OK') {
       Get.back();
@@ -266,18 +268,17 @@ class Home extends StatelessWidget {
       print('Error');
     }
   }
+
   errorSnackBar() {
     Get.snackbar('Error', '다시 확인해주세요.',
         snackPosition: SnackPosition.BOTTOM,
         duration: const Duration(seconds: 2),
         backgroundColor: const Color.fromARGB(255, 206, 53, 42),
         colorText: Colors.white);
-  }  
+  }
 
-    reloadData(VmHandler vmHandler) {
+  reloadData(VmHandler vmHandler) {
     vmHandler.checkaudioPlayer(vmHandler.firebaseMusic);
     vmHandler.stateCheck();
   }
-
-
 }

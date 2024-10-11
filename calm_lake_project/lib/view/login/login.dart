@@ -16,7 +16,7 @@ class Login extends StatelessWidget {
   final loginHandler = Get.put(LoginHandler());
   final vmHandler = Get.put(VmHandler());
   final box = GetStorage();
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -184,8 +184,8 @@ class Login extends StatelessWidget {
       return false;
     }
   }
-  
-  saveStorage(String id) async{
+
+  saveStorage(String id) async {
     await loginHandler.box.write('userId', id);
   }
 

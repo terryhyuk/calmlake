@@ -52,7 +52,6 @@ class DefaultFirebaseOptions {
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDzNN4uOZUumJZ8K3HxsgSRtturkndjgUU',
     appId: '1:878275894182:android:d65e3f49d8add9348b0d67',
-    appId: '1:878275894182:android:d65e3f49d8add9348b0d67',
     messagingSenderId: '878275894182',
     projectId: 'calmlake-f513a',
     storageBucket: 'calmlake-f513a.appspot.com',
