@@ -23,26 +23,23 @@ class FriendsController extends SearchFriendsController {
   }
 
 // 신청온 친구 보기
-  requstfriendsJSONData(String userId) async {
-    var url = Uri.parse(
-        'http://127.0.0.1:8000/friends/selectrequestfriends?user_id=$userId');
+  requstfriendsJSONData(String userId)async{
+      var url = Uri.parse('http://127.0.0.1:8000/friends/selectrequestfriends?add_id=$userId');
     var response = await http.get(url);
     addfriend.clear();
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List results = dataConvertedJSON['results'];
     addfriend.addAll(results);
   }
-
-  // 친구추가
-  addfriendsJSONData(Addfriends addfriends) async {
-    var url = Uri.parse('http://127.0.0.1:8000/friends/insertfriends')
-        .replace(queryParameters: {
-      'user_id': addfriends.user_id,
-      'accept': addfriends.accept,
-      'date': addfriends.date,
-      'add_id': addfriends.add_id,
-    });
-
+// 친구추가
+addfriendsJSONData(Addfriends addfriends)async{
+var url = Uri.parse('http://127.0.0.1:8000/friends/insertfriends')
+                  .replace(queryParameters: {
+    'user_id': addfriends.user_id,
+    'accept': addfriends.accept,
+    'date': addfriends.date,
+    'add_id': addfriends.add_id,
+  });
     try {
       var response = await http.get(url);
       var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));

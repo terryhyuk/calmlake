@@ -64,52 +64,65 @@ async def searchfriends(search: str = None):
     except Exception as e:
         conn.close()
         print("Error", e)
-        return {"results": str(e)}
+        return {"results": 'Error'}
 
 # 친구추가
 @router.get("/insertfriends")
-async def insertfriends(user_id: str, accept: str, addid: str, date: str):
+async def insertfriends(user_id: str, accept: str, add_id: str, date: str):
     conn = connect()
     curs = conn.cursor()
-
     try:
-        # 먼저 user 테이블에 해당 id들이 존재하는지 확인
-        check_user_sql = "SELECT id FROM user WHERE id IN (%s, %s)"
-        curs.execute(check_user_sql, (user_id, addid))
-        if len(curs.fetchall()) != 2:
-            return {'results': 'Error', 'message': 'One or both users do not exist'}
-
-        # 중복 체크
-        check_duplicate_sql = "SELECT * FROM addfriends WHERE user_id = %s AND addid = %s"
-        curs.execute(check_duplicate_sql, (user_id, addid))
-        if curs.fetchone() is not None:
-            return {'results': 'Error', 'message': 'Friend request already exists'}
-
-        # addfriends 테이블에 데이터 삽입
-        insert_sql = "INSERT INTO addfriends(user_id, accept, addid, date) VALUES (%s, %s, %s, %s)"
-        curs.execute(insert_sql, (user_id, accept, addid, date))
+        insert_sql = "insert into addfriends(user_id, accept, date, add_id) VALUES (%s, %s, %s, %s)"
+        curs.execute(insert_sql, (user_id, accept, date, add_id))
         conn.commit()
-        return {'results': 'OK'}
+        return {'results': ['OK']}
+    except Exception as e:
+        conn.close()
+        print("Error", e)
+        return {'results': 'Error', 'message': 'Error'}
+    
+        
+# 친구 신청 요청
+@router.get("/insertfriends")
+async def insertfriends(user_id: str, accept: str, add_id: str, date: str):
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        insert_sql = "insert into addfriends(user_id, accept, date, add_id) VALUES (%s, %s, %s, %s)"
+        curs.execute(insert_sql, (user_id, accept, date, add_id))
+        conn.commit()
+        return {'results': ['OK']}
     except Exception as e:
         conn.rollback()
         print("Error", e)
-        return {'results': 'Error', 'message': str(e)}
+        return {'results': ['Error'], 'message': str(e)}
     finally:
         conn.close()
-        
-# 신청 친구 목록
+
+# 신청온 친구 리스트 보기
 @router.get("/selectrequestfriends")
-async def selectrequestfriends(seq: str = None):
+async def selectrequestfriends(add_id: str = None):
     conn = connect()
     curs = conn.cursor()
     try:
-        if seq:
-            sql = "SELECT * FROM addfriends WHERE add_id = %s AND accept = 'false'"
-            curs.execute(sql, (seq,))
-        else:
-            sql = "SELECT * FROM addfriends WHERE accept = 'false'"
-            curs.execute(sql)
-        
+        sql = "select user_id from addfriends where add_id=%s "
+        curs.execute(sql, (add_id,))
+        findfriends = curs.fetchall()
+        conn.close()
+        return {'results': findfriends}
+    except Exception as e:
+        conn.close()
+        print("Error", e)
+        return {'results': 'Error', 'message': str(e)}
+            
+# 친구추가
+@router.get("/addrequestfriends")
+async def selectrequestfriends(add_id: str = None):
+    conn = connect()
+    curs = conn.cursor()
+    try:
+        sql = "inset into friends(add_id) VALUES(%s)"
+        curs.execute(sql, (add_id,))
         findfriends = curs.fetchall()
         conn.close()
         return {'results': findfriends}

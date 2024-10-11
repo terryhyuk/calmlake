@@ -35,14 +35,14 @@ class Home extends StatelessWidget {
               logOut(loginHandler.box.read('userId'));
               Get.back();
             },
-            icon: Icon(Icons.logout_outlined)),
+            icon: const Icon(Icons.logout_outlined)),
         title: Center(
           child: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'CalmLake',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
@@ -52,7 +52,7 @@ class Home extends StatelessWidget {
                         print(friendsController.addfriend);
                         print(vmHandler.musicList[0][0]);
                       },
-                      icon: Icon(Icons.person_add_alt))
+                      icon: const Icon(Icons.person_add_alt))
                 ],
               ),
             ],
@@ -63,7 +63,7 @@ class Home extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
               child: Divider(
                 thickness: 0.5,
@@ -96,39 +96,57 @@ class Home extends StatelessWidget {
                             color: Color.fromARGB(255, 201, 201, 201),
                           ),
                         ),
-                        // Container(
-                        //   width: 10,
-                        //   height: 50,
-                        //   child: Expanded(
-                        //     child: Row(
-                        //       children: [
-                        //         Obx(
-                        //         ()=> friendsController.addfriend.isEmpty
-                        //         ? const Center(
-                        //           child: Text('data'),
-                        //         )
-                        //         : ListView.builder(
-                        //           scrollDirection: Axis.horizontal,
-                        //           itemCount: friendsController.addfriend.length,
-                        //           itemBuilder: (context, index) {
-                        //             return Container(
-                        //               width: 100,
-                        //               margin: EdgeInsets.symmetric(horizontal: 8),
-                        //               child: Column(
-                        //                 mainAxisAlignment: MainAxisAlignment.center,
-                        //                 children: [
-                        //                   Text(
-                        //                     friendsController.addfriend[index][0]
-                        //                   )
-                        //                 ],
-                        //               ),
-                        //             );
-                        //           },)
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),
+                        Container(
+                          height: 100,
+                          width: MediaQuery.of(context).size.width,
+                          child: Obx(
+                            () => friendsController.addfriend.isEmpty
+                                ? const Center(
+                                    child: Text(''),
+                                  )
+                                : ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount:
+                                        friendsController.addfriend.length,
+                                    itemBuilder: (context, index) {
+                                      return Container(
+                                        // width: 100,
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 8),
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Text(friendsController.addfriend[index][0]),
+                                                  ),
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      //
+                                                    }, 
+                                                    icon: const Icon(
+                                                      Icons.cancel,
+                                                      ),
+                                                    ),
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      //
+                                                    }, 
+                                                    icon: const Icon(Icons.check_circle),
+                                                    ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ),
                         const Padding(
                           padding: EdgeInsets.fromLTRB(20, 5, 20, 20),
                           child: Divider(
@@ -213,7 +231,6 @@ class Home extends StatelessWidget {
                           ),
                           color: color,
                         ),
-                        // vmHandler.musicState == 0 ?
                         IconButton(
                           key: const Key('play_button'),
                           onPressed:
@@ -244,15 +261,6 @@ class Home extends StatelessWidget {
                           ),
                           color: color,
                         ),
-
-                        // 멈춤 버튼
-                        // IconButton(
-                        //   key: const Key('stop_button'),
-                        //   onPressed: vmHandler.isPlaying || vmHandler.isPaused ? vmHandler.stop : null,
-                        //   iconSize: 48.0,
-                        //   icon: const Icon(Icons.stop),
-                        //   color: color,
-                        // ),
                       ],
                     ),
                   ]),
@@ -265,6 +273,29 @@ class Home extends StatelessWidget {
     );
   }
 
+// --- Functions ---
+
+_showDialog(int index) {
+  Get.dialog(
+    AlertDialog(
+      title: const Text('친구 추가'),
+      content: Text('${friendsController.addfriend[index][0]}님을 친구로 추가하시겠습니까?'),
+      actions: [
+        TextButton(
+          child: const Text('취소'),
+          onPressed: () => Get.back(),
+        ),
+        TextButton(
+          child: const Text('추가'),
+          onPressed: () {
+            // friendsController.addfriend(index);
+            Get.back();
+          },
+        ),
+      ],
+    ),
+  );
+}
   logOut(String id) async {
     var result = await loginHandler.logoutJSONData(id);
     if (result == 'OK') {
@@ -289,13 +320,4 @@ class Home extends StatelessWidget {
     vmHandler.stateCheck();
   }
 
-    activityInsert()async{
-    var activity=Activity(
-      userId: loginHandler.box.read('userId'), 
-      activity: 'logout', 
-      datetime: DateTime.now().toString());    
-    await loginHandler.useractivityJSONData(activity);
-    await loginHandler.disposeSave();
-  }  
 }
-
