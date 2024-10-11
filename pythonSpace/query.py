@@ -70,6 +70,8 @@ async def select(user_id: str=None):
     p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,p.post_nickname, 
     f.seq, f.user_id, f.post_seq, f.favorite, 
     h.seq, h.user_id, h.post_seq, h.hate
+    order by
+    p.date desc
 """
         curs.execute(sql, (user_id,user_id,user_id,user_id,user_id))
         rows = curs.fetchall()
@@ -80,9 +82,9 @@ async def select(user_id: str=None):
         conn.close()
         print('Error:', e)
         return {'results' : "Error"}
-    
+
 @router.get('/userpost')
-async def select(user_id: str=None):
+async def userpost(user_id: str=None):
     conn = connection()
     curs= conn.cursor()
     try:
@@ -90,6 +92,7 @@ async def select(user_id: str=None):
             select * 
             From post 
             where post_user_id = %s
+            order by date desc;
             """
         curs.execute(sql, (user_id))
         rows = curs.fetchall()
@@ -102,7 +105,7 @@ async def select(user_id: str=None):
 
 
 @router.get('/user')
-async def select(id: str=None):
+async def user(id: str=None):
     conn = connection()
     curs= conn.cursor()
     try:
@@ -122,7 +125,7 @@ async def select(id: str=None):
         return {'results' : "Error"}
 
 @router.get('/favorite')
-async def select(user_id: str=None):
+async def favorite(user_id: str=None):
     conn = connection()
     curs= conn.cursor()
     try:
@@ -142,7 +145,7 @@ async def select(user_id: str=None):
         return {'results' : "Error"}
 
 @router.get('/comment')
-async def select(post_seq: str=None):
+async def comment(post_seq: str=None):
     conn = connection()
     curs= conn.cursor()
     try:
@@ -163,7 +166,7 @@ async def select(post_seq: str=None):
 
 
 @router.get('/insert_comment')
-async def insert(user_id: str=None, post_seq: int=None, text: str=None):
+async def insertcomment(user_id: str=None, post_seq: int=None, text: str=None):
     conn = connection()
     curs= conn.cursor()
     try:
@@ -196,21 +199,8 @@ async def upload_file(file: UploadFile=File(...)):
         print("Error:", e)
         return ({'results' : 'Error'})
 
-# 이미지 폴더에서 삭제된 목록의 이미지 삭제
-@router.delete('/deleteFile/{file_name}')
-async def delete_file(file_name: str):
-    # print("delete file :", file_name) 
-    try:
-        file_path = os.path.join(UPLOAD_FOLDER, file_name)
-        if os.path.exists(file_path):
-            os.remove(file_path)
-        return {'results' : 'OK'}
-    except Exception as e:
-        print('Error:', e)
-        return {'results' : 'Error'}
-
 @router.get('/checkfavorite')
-async def select(user_id: str=None, post_seq: str=None):
+async def checkfavorite(user_id: str=None, post_seq: str=None):
     conn = connection()
     curs= conn.cursor()
     try:
@@ -235,7 +225,7 @@ async def select(user_id: str=None, post_seq: str=None):
         return {'results' : "Error"}
 
 @router.get('/checkhate')
-async def select(user_id: str=None, post_seq: str=None):
+async def checkhate(user_id: str=None, post_seq: str=None):
     conn = connection()
     curs= conn.cursor()
     try:
@@ -259,14 +249,41 @@ async def select(user_id: str=None, post_seq: str=None):
         print('Error:', e)
         return {'results' : "Error"}
     
-@router.get('/delete')
-async def delete(seq: str=None):
+@router.delete('/deleteimage/{file_name}')
+async def delete_file(file_name: str):
+    print("delete file :", file_name)
+    print("--------------------------------")
+    try:
+        file_path = os.path.join(UPLOAD_FOLDER, file_name)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        return {'result' : 'OK'}
+    except Exception as e:
+        print('result:' 'Error')
+        return ({'result' : 'Error'})
+
+@router.get('/deletepost')
+async def deletepost(seq: int=None):
     conn = connection()
     curs = conn.cursor()
-
     try:
-        sql ="delete from post where seq = %s"
+        sql ="delete from post where seq =%s"
         curs.execute(sql, (seq,))
+        conn.commit()
+        conn.close()
+        return {'results' : 'OK'}
+    except Exception as e:
+        conn.close()
+        print("Error :" , e)
+        return {'results': 'Error'}
+
+@router.get('/deletecomment')
+async def delete(user_id: str=None):
+    conn = connection()
+    curs = conn.cursor()
+    try:
+        sql ="delete from comment where user_id = %s"
+        curs.execute(sql, (user_id,))
         conn.commit()
         conn.close()
         return {'results' : 'OK'}
@@ -274,7 +291,7 @@ async def delete(seq: str=None):
         conn.close()
         print("Error :", e)
         return {'results': 'Error'}
-    
+
     # Update favorite 추가
 @router.get('/update_favorite')
 async def update(favorite: int = None, post_seq: int = None, user_id: str = None):  
@@ -337,3 +354,38 @@ async def insert(hate: int=None, post_seq: int=None, user_id: str=None):
         conn.close()
         print('Error:', e)
         return {'result' : "Error"}
+    
+    # 이미지를 바꿨을때 수정하는 부분
+@router.get('/updateAll')
+async def insert(image: str=None, contents: str=None, public: int=None, seq: int=None):
+    conn = connection()
+    curs= conn.cursor()
+
+    try:
+        sql = "update post set image = %s, contents = %s, public = %s where seq = %s"
+        curs.execute(sql, (image, contents, public, seq))
+        conn.commit()
+        conn.close()
+        return {'result' : 'OK'}
+    except Exception as e:
+        conn.close()
+        print('Error:', e)
+        return {'result' : "Error"}
+    
+# 이미지를 바꾸지 않고 수정하는 부분
+@router.get('/update')
+async def insert(contents: str=None, public: int=None, seq: int=None):
+    conn = connection()
+    curs= conn.cursor()
+
+    try:
+        sql = "update addmusteat set name = %s, phone = %s, favorite = %s, comment = %s, evaluate = %s where seq = %s and user_id = %s"
+        curs.execute(sql, (contents, public, seq))
+        conn.commit()
+        conn.close()
+        return {'result' : 'OK'}
+    except Exception as e:
+        conn.close()
+        print('Error:', e)
+        return {'result' : "Error"}
+    

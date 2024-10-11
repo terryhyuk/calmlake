@@ -6,8 +6,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
-class Insert extends StatelessWidget {
-  Insert({super.key});
+class EditPost extends StatelessWidget {
+  EditPost({super.key});
   final GetStorage box = GetStorage();
   final TextEditingController contentController = TextEditingController();
 
@@ -15,10 +15,16 @@ class Insert extends StatelessWidget {
   Widget build(BuildContext context) {
     @override
     final VmHandler vmHandler = Get.put(VmHandler());
-    String userId = box.read('userId');
+    int firstDisp = 0;
+    var value = Get.arguments ?? '__';
+    vmHandler.selectButton(value[5]);
+    vmHandler.isButtonEnabled.value = true;
+    //contentController.text.trim() = value[4];
+    int post_seq = value[0];
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("New Post"),
+        title: Text("Edit Post"),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new),
           onPressed: () {
@@ -58,19 +64,17 @@ class Insert extends StatelessWidget {
                                 width: MediaQuery.of(context).size.width,
                                 height: 300,
                                 child: Center(
-                                  child: controller.imageFile == null
-                                      ? Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              "        What’s a photo\nthat makes you feel good?",
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w400,
-                                                  color: Colors.black54),
-                                            ),
-                                          ],
+                                  child: firstDisp == 0
+                                      ? ClipRRect(
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(20),
+                                              topRight: Radius.circular(20)),
+                                          child: Image.network(
+                                            "http://127.0.0.1:8000/query/view/${value[3]}",
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: 300,
+                                          ),
                                         )
                                       : ClipRRect(
                                           borderRadius: BorderRadius.only(
@@ -91,26 +95,39 @@ class Insert extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Obx(() => ElevatedButton(
-                                        onPressed: controller
-                                                .isButtonEnabled.value
-                                            ? () => controller.selectButton(0)
-                                            : null,
+                                        onPressed: () {
+                                          if (value[5] == 0) {
+                                            controller.isButtonEnabled.value =
+                                                true;
+                                            controller.selectedButton.value = 0;
+                                            controller.selectButton(0);
+                                          }
+                                          print(
+                                              controller.isButtonEnabled.value);
+                                          print(
+                                              controller.selectedButton.value);
+                                        },
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              controller.selectedButton.value ==
-                                                      0
-                                                  ? Colors.green
-                                                  : Colors.blue,
+                                          backgroundColor: controller
+                                                      .selectedButton.value ==
+                                                  0
+                                              ? Colors.green // 선택된 버튼은 녹색
+                                              : Colors.blue, // 선택되지 않은 버튼은 파란색
                                         ),
-                                        child: Text('all'))),
+                                        child: Text('All'))),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
                                     SizedBox(
                                       width: 10,
                                     ),
                                     Obx(() => ElevatedButton(
-                                        onPressed: controller
-                                                .isButtonEnabled.value
-                                            ? () => controller.selectButton(1)
-                                            : null,
+                                        onPressed:
+                                            controller.isButtonEnabled.value
+                                                ? () {
+                                                    controller.selectButton(1);
+                                                  }
+                                                : null,
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:
                                               controller.selectedButton.value ==
@@ -123,10 +140,12 @@ class Insert extends StatelessWidget {
                                       width: 10,
                                     ),
                                     Obx(() => ElevatedButton(
-                                        onPressed: controller
-                                                .isButtonEnabled.value
-                                            ? () => controller.selectButton(2)
-                                            : null,
+                                        onPressed:
+                                            controller.isButtonEnabled.value
+                                                ? () {
+                                                    controller.selectButton(2);
+                                                  }
+                                                : null,
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:
                                               controller.selectedButton.value ==
@@ -165,10 +184,21 @@ class Insert extends StatelessWidget {
                                   child: Icon(Icons.image)),
                               ElevatedButton(
                                   onPressed: () async {
+                                    /*
+                                    if (firstDisp == 0) {
+                                      await controller.updateJSONData(
+                                        contentController.text.trim(), controller.selectedButton.value, post_seq
+                                      );
+                                    } else {
+                                      await controller.updateJSONDataAll(
+                                        image, contents, public, seq
+                                        )
+                                    }
                                     if (controller.imageFile != null &&
                                         contentController.text.trim() != '' &&
                                         controller.selectedButton.value != -1) {
                                       await controller.uploadImage();
+                                      
                                       await controller.insertJSONData(
                                           controller.image,
                                           contentController.text.trim(),
@@ -182,10 +212,10 @@ class Insert extends StatelessWidget {
                                     } else {
                                       Get.snackbar(
                                           'Error', 'please complete the form',
-                                          duration: Duration(seconds: 2));
-                                    }
+                                          duration: Duration(seconds: 1));
+                                    }*/
                                   },
-                                  child: Text('Post')),
+                                  child: Text('Edit')),
                               ElevatedButton(
                                   onPressed: () {
                                     controller.getImageFromGallery(
