@@ -1,19 +1,19 @@
 import 'dart:convert';
 
-import 'package:calm_lake_project/model/requestedfriends.dart';
-import 'package:calm_lake_project/vm/login_handler.dart';
-import 'package:calm_lake_project/vm/serchfriends_controller.dart';
+import 'package:camlake_test_app/model/addfriends.dart';
+import 'package:camlake_test_app/vm/serchfriends_controller.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:camlake_test_app/vm/login_handler.dart';
 import 'package:get/get.dart';
 
 class FriendsController extends SearchFriendsController {
-  List allfriendsdata = [].obs;
-  List requestedFriends = <RequestedFriend>[].obs;
+  List allfriendsdata = [].obs; // 전체친구보기
+  List addfriend = [].obs;  // 친구추가요청 리스트
   final loginHandler = Get.find<LoginHandler>();
 
   // 전체 친구보기
-  selectfriendsJSONData() async {
+  selectfriendsJSONData()async{
     var url = Uri.parse('http://127.0.0.1:8000/friends/selectfriends');
     var response = await http.get(url);
     allfriendsdata.clear();
@@ -22,33 +22,54 @@ class FriendsController extends SearchFriendsController {
     allfriendsdata.addAll(results);
   }
 
-// 신청한 친구 보기
-  requstfriendsJSONData() async {
-    try {
-      if (loginHandler.box.read('userId') == null) {
-        throw Exception('User not logged in');
-      }
-
-      var url = Uri.parse(
-          'http://127.0.0.1:8000/friends/selectrequestfriends?seq=${loginHandler.box.read('userId')}');
-      var response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-        if (dataConvertedJSON['results'] is List) {
-          requestedFriends.assignAll((dataConvertedJSON['results'] as List)
-              .map((item) => RequestedFriend.fromMap(item)));
-        } else {
-          throw Exception('Invalid data format');
-        }
-      } else {
-        throw Exception('Failed to load friend requests');
-      }
-    } catch (e) {
-      print("Error fetching friend requests: $e");
-      requestedFriends.clear();
-    }
+// 신청온 친구 보기
+  requstfriendsJSONData(String userId)async{
+      var url = Uri.parse('http://127.0.0.1:8000/friends/selectrequestfriends?user_id=$userId');
+    var response = await http.get(url);
+    addfriend.clear();
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    List results = dataConvertedJSON['results'];
+    addfriend.addAll(results);
   }
+
+  // 친구추가
+  addfriendsJSONData(Addfriends addfriends)async{
+var url = Uri.parse('http://127.0.0.1:8000/friends/insertfriends')
+                  .replace(queryParameters: {
+    'user_id': addfriends.user_id,
+    'accept': addfriends.accept,
+    'date': addfriends.date,
+    'add_id': addfriends.add_id,
+  });
+
+  try {
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    
+    if (dataConvertedJSON['results'] is List) {
+      List results = dataConvertedJSON['results'];
+      if (results.isNotEmpty && results[0] == 'OK') {
+        print("Friend added successfully");
+        return 'OK';
+      } else {
+        print("Error: ${dataConvertedJSON['message']}");
+        return 'Error';
+      }
+    } else {
+      print("Unexpected response format");
+      return 'Error';
+    }
+  } catch (e) {
+    print("Exception occurred: $e");
+    return 'Error';
+  }
+   // var response = await http.get(url);
+    // addfriend.clear();
+    // var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    // List results = dataConvertedJSON['results'];
+    // addfriend.addAll(results);
+  }
+
   //   var url = Uri.parse('http://127.0.0.1:8000/friends/selectrequestfriends?seq=${loginHandler.box.read('userId')}');
   //   var response = await http.get(url);
   //   allfriendsdata.clear();
