@@ -1,14 +1,19 @@
+import 'package:calm_lake_project/view/edit_post.dart';
 import 'package:calm_lake_project/view/insert.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 
 class MyPost extends StatelessWidget {
-  const MyPost({super.key});
+  final GetStorage box = GetStorage();
+  MyPost({super.key});
 
   @override
   Widget build(BuildContext context) {
     final vmHandler = Get.put(VmHandler());
+    String userId = box.read('userId');
 
     return Scaffold(
       appBar: AppBar(
@@ -17,12 +22,12 @@ class MyPost extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.to(() => Insert())!
-            .then((value) => vmHandler.getUserPostJSONData()),
+            .then((value) => vmHandler.getUserPostJSONData(userId)),
       ),
       body: GetBuilder<VmHandler>(
         builder: (controller) {
           return FutureBuilder(
-            future: controller.getUserPostJSONData(),
+            future: controller.getUserPostJSONData(userId),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -43,7 +48,63 @@ class MyPost extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              children: [CircleAvatar(), Text(userpost[1])],
+                              children: [
+                                CircleAvatar(),
+                                Text(userpost[1]),
+                                Spacer(),
+                                PopupMenuButton(
+                                  onSelected: (value) {
+                                    if (value == 'Edit') {
+                                      Get.to(EditPost(), arguments: userpost);
+                                    } else {
+                                      Get.defaultDialog(
+                                          title: 'Delete',
+                                          titleStyle: TextStyle(fontSize: 20),
+                                          content: Text(
+                                              'Do you want to delete the comment?'),
+                                          onConfirm: () async {
+                                            var result = await vmHandler
+                                                .deleteCommentJSONData(userId);
+                                            if (result == 'OK') {
+                                              Get.back();
+                                              await vmHandler
+                                                  .getComment(userpost[0]);
+                                            } else {
+                                              Get.snackbar('Error', 'error');
+                                            }
+                                          },
+                                          buttonColor: Colors.grey,
+                                          contentPadding: EdgeInsets.all(10));
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext bc) {
+                                    return const [
+                                      PopupMenuItem(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text("Edit"),
+                                            Icon(Icons.edit)
+                                          ],
+                                        ),
+                                        value: 'Edit',
+                                      ),
+                                      PopupMenuItem(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text("Delete"),
+                                            Icon(Icons.delete)
+                                          ],
+                                        ),
+                                        value: 'Delete',
+                                      ),
+                                    ];
+                                  },
+                                )
+                              ],
                             ),
                             Container(
                               width: MediaQuery.of(context).size.width,
@@ -262,7 +323,8 @@ class MyPost extends StatelessWidget {
                                                                     controller
                                                                         .textController
                                                                         .text
-                                                                        .trim());
+                                                                        .trim(),
+                                                                    userId);
                                                             await controller
                                                                 .getComment(
                                                                     userpost[
@@ -308,10 +370,10 @@ class MyPost extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Text('  ${userpost[1]}')),
-                                  Text('  ${userpost[4]}'),
+                                  Text('${userpost[6]}\t${userpost[4]}'),
+                                  Text(
+                                      '${DateFormat("MMMM d").format(DateTime.parse(userpost[2]))}',
+                                      style: TextStyle(color: Colors.black54)),
                                 ],
                               ),
                             ),

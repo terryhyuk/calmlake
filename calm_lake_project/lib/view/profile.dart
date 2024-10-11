@@ -3,21 +3,34 @@ import 'package:calm_lake_project/view/my_post.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 class Profile extends StatelessWidget {
-  const Profile({super.key});
+  final GetStorage box = GetStorage();
+
+  Profile({super.key});
 
   @override
   Widget build(BuildContext context) {
     final vmHandler = Get.put(VmHandler());
-    vmHandler.getUserPostJSONData();
+    String userId = box.read('userId');
+    vmHandler.getUserPostJSONData(userId);
+    vmHandler.getUserJSONData(userId);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Padding(
+          padding: const EdgeInsets.only(left: 10, bottom: 15, top: 10),
+          child: Text('Profile',
+              style: TextStyle(
+                  fontSize: 25, fontWeight: FontWeight.w500, letterSpacing: 1)),
+        ),
+        automaticallyImplyLeading: false, // 뒤로 가기 버튼을 없앰
+        centerTitle: false,
       ),
       body: Obx(() {
         var user = vmHandler.user.isNotEmpty ? vmHandler.user[0] : null;
+        print(user);
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
@@ -129,8 +142,8 @@ class Profile extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                         child: GestureDetector(
                           onTap: () {
-                            Get.to(() => MyPost())!.then(
-                                (value) => vmHandler.getUserPostJSONData());
+                            Get.to(() => MyPost())!.then((value) =>
+                                vmHandler.getUserPostJSONData(userId));
                           },
                           child: Image.network(
                             'http://127.0.0.1:8000/query/view/${post[3]}',

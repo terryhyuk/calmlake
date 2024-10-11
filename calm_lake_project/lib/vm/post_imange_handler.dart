@@ -41,4 +41,37 @@ class PostImageHandler extends NavigationController {
       print('Image upload failed');
     }
   }
+
+  Future<void> editPostImage() async {
+    if (imageFile == null) {
+      print('No image selected');
+      return;
+    }
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('http://127.0.0.1:8000/query/upload'));
+    var multipartFile =
+        await http.MultipartFile.fromPath('file', imageFile!.path);
+    request.files.add(multipartFile);
+    // 파일 이름 추출
+    print(imageFile!.path);
+    List<String> preFileName = imageFile!.path.split('/');
+    image = preFileName.last;
+    print('upload file name: $image');
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      print("Image uploaded successfully");
+    } else {
+      print('Image upload failed');
+    }
+  }
+
+  deletePostImage(String filename) async {
+    final response = await http
+        .delete(Uri.parse('http://127.0.0.1:8000/query/deleteimage/$filename'));
+    if (response.statusCode == 200) {
+      print("Image deleted successfully");
+    } else {
+      print("image deletion failed.");
+    }
+  }
 }

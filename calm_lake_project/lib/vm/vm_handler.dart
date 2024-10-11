@@ -11,8 +11,7 @@ class VmHandler extends ListHandler {
   var userposts = [].obs;
   var favorite = [].obs;
 
-  getJSONData() async {
-    userId = box.read('userId') ?? '';
+  getJSONData(String userId) async {
     var url = Uri.parse('http://127.0.0.1:8000/query/select?user_id=$userId');
     var response = await http.get(url);
     posts.clear();
@@ -67,8 +66,7 @@ class VmHandler extends ListHandler {
     });
   }
 
-  getUserPostJSONData() async {
-    userId = box.read('userId') ?? '';
+  getUserPostJSONData(String userId) async {
     var url = Uri.parse('http://127.0.0.1:8000/query/userpost?user_id=$userId');
     var response = await http.get(url);
     userposts.clear();
@@ -77,9 +75,8 @@ class VmHandler extends ListHandler {
     userposts.addAll(result);
   }
 
-  insertJSONData(String image, String contents, int public) async {
-    userId = box.read('userId') ?? '';
-    nickname = box.read('nickname') ?? '';
+  insertJSONData(String image, String contents, int public, String userId,
+      String nickname) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/insert/insert?post_user_id=$userId&date=${DateTime.now()}&image=$image&contents=$contents&public=$public&post_nickname=$nickname');
     var response = await http.get(url);
@@ -88,16 +85,12 @@ class VmHandler extends ListHandler {
     print(dataConvertedJSON);
     if (result == 'OK') {
       print('Success');
-      print('Stored userId: $userId');
-      print('Stored usernickname: $nickname');
     } else {
       print('Error');
     }
   }
 
-  checkFavorite(String user_id, int post_id) async {
-    userId = box.read('userId') ?? '';
-
+  checkFavorite(String userId, int post_id) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/checkfavorite?user_id=$userId&post_seq=$post_id');
     var response = await http.get(url);
@@ -106,9 +99,7 @@ class VmHandler extends ListHandler {
     return result;
   }
 
-  Future<void> insertFavorite(int favorite, int seq) async {
-    userId = box.read('userId') ?? '';
-
+  Future<void> insertFavorite(int favorite, int seq, String userId) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/insert_favorite?favorite=$favorite&user_id=$userId&post_seq=$seq');
     var response = await http.get(url);
@@ -121,9 +112,7 @@ class VmHandler extends ListHandler {
     }
   }
 
-  Future<void> updateFavorite(int favorite, int postSeq) async {
-    userId = box.read('userId') ?? '';
-
+  Future<void> updateFavorite(int favorite, int postSeq, String userId) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/update_favorite?favorite=$favorite&post_seq=$postSeq&user_id=$userId');
     var response = await http.get(url);
@@ -131,9 +120,7 @@ class VmHandler extends ListHandler {
     var result = dataConvertedJSON['results'];
   }
 
-  checkHate(String user_id, int post_id) async {
-    userId = box.read('userId') ?? '';
-
+  checkHate(String userId, int post_id) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/checkhate?user_id=$userId&post_seq=$post_id');
     var response = await http.get(url);
@@ -142,9 +129,7 @@ class VmHandler extends ListHandler {
     return result;
   }
 
-  Future<void> updateHate(int hate, int postSeq) async {
-    userId = box.read('userId') ?? '';
-
+  Future<void> updateHate(int hate, int postSeq, String userId) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/update_hate?hate=$hate&post_seq=$postSeq&user_id=$userId');
     var response = await http.get(url);
@@ -152,9 +137,7 @@ class VmHandler extends ListHandler {
     var result = dataConvertedJSON['results'];
   }
 
-  Future<void> insertHate(int hate, int seq) async {
-    userId = box.read('userId') ?? '';
-
+  Future<void> insertHate(int hate, int seq, String userId) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/insert_hate?hate=$hate&user_id=$userId&post_seq=$seq');
     var response = await http.get(url);
@@ -166,10 +149,19 @@ class VmHandler extends ListHandler {
       print('error');
     }
   }
-/*
-  updateJSONDataAll(date) async {
+
+  deleteCommentJSONData(String userId) async {
+    var url =
+        Uri.parse('http://127.0.0.1:8000/query/deletecomment?user_id=$userId');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['results'];
+    return result;
+  }
+
+  updateJSONDataAll(String image, String contents, int public, int seq) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/update/updateAll?seq=${value[0]}&name=${nameControl.text}&image=$filename&phone=${phoneControl.text}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
+        'http://127.0.0.1:8000/query/updateAll?image=$image&contents=$contents&public=$public&seq=$seq');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -180,9 +172,9 @@ class VmHandler extends ListHandler {
     }
   }
 
-  updateJSONData(date) async {
+  updateJSONData(String contents, int public, int seq) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/update/update?seq=${value[0]}&name=${nameControl.text}&phone=${phoneControl.text}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
+        'http://127.0.0.1:8000/query/update?contents=$contents&public=$public&seq=$seq');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -192,5 +184,4 @@ class VmHandler extends ListHandler {
       print('Error');
     }
   }
-  */
 }

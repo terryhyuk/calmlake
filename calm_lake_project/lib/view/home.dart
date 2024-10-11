@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import '../vm/login_handler.dart';
 import 'package:get_storage/get_storage.dart';
 
-
 import '../model/activity.dart';
 import '../vm/login_handler.dart';
 import '../vm/vm_handler.dart';
@@ -116,27 +115,34 @@ class Home extends StatelessWidget {
                                         child: Column(
                                           children: [
                                             Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: Row(
                                                 children: [
                                                   Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Text(friendsController.addfriend[index][0]),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Text(
+                                                        friendsController
+                                                                .addfriend[
+                                                            index][0]),
                                                   ),
                                                   IconButton(
                                                     onPressed: () {
                                                       //
-                                                    }, 
+                                                    },
                                                     icon: const Icon(
                                                       Icons.cancel,
-                                                      ),
                                                     ),
+                                                  ),
                                                   IconButton(
                                                     onPressed: () {
                                                       //
-                                                    }, 
-                                                    icon: const Icon(Icons.check_circle),
-                                                    ),
+                                                    },
+                                                    icon: const Icon(
+                                                        Icons.check_circle),
+                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -275,27 +281,29 @@ class Home extends StatelessWidget {
 
 // --- Functions ---
 
-_showDialog(int index) {
-  Get.dialog(
-    AlertDialog(
-      title: const Text('친구 추가'),
-      content: Text('${friendsController.addfriend[index][0]}님을 친구로 추가하시겠습니까?'),
-      actions: [
-        TextButton(
-          child: const Text('취소'),
-          onPressed: () => Get.back(),
-        ),
-        TextButton(
-          child: const Text('추가'),
-          onPressed: () {
-            // friendsController.addfriend(index);
-            Get.back();
-          },
-        ),
-      ],
-    ),
-  );
-}
+  _showDialog(int index) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('친구 추가'),
+        content:
+            Text('${friendsController.addfriend[index][0]}님을 친구로 추가하시겠습니까?'),
+        actions: [
+          TextButton(
+            child: const Text('취소'),
+            onPressed: () => Get.back(),
+          ),
+          TextButton(
+            child: const Text('추가'),
+            onPressed: () {
+              // friendsController.addfriend(index);
+              Get.back();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   logOut(String id) async {
     var result = await loginHandler.logoutJSONData(id);
     if (result == 'OK') {
@@ -320,4 +328,12 @@ _showDialog(int index) {
     vmHandler.stateCheck();
   }
 
+  activityInsert() async {
+    var activity = Activity(
+        userId: loginHandler.box.read('userId'),
+        activity: 'logout',
+        datetime: DateTime.now().toString());
+    await loginHandler.useractivityJSONData(activity);
+    await loginHandler.disposeSave();
+  }
 }

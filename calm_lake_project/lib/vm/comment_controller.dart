@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:calm_lake_project/vm/button_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
 class commentcontroller extends ButtonController {
@@ -26,7 +27,7 @@ class commentcontroller extends ButtonController {
     print(comments);
   }
 
-  insertCommnet(int postSeq, String text) async {
+  insertCommnet(int postSeq, String text, String userId) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/insert_comment?user_id=$userId&post_seq=$postSeq&text=$text');
     var response = await http.get(url);
