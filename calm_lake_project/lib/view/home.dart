@@ -4,6 +4,12 @@ import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../vm/login_handler.dart';
+import 'package:get_storage/get_storage.dart';
+
+
+import '../model/activity.dart';
+import '../vm/login_handler.dart';
+import '../vm/vm_handler.dart';
 
 class Home extends StatelessWidget {
   Home({super.key});
@@ -262,6 +268,7 @@ class Home extends StatelessWidget {
   logOut(String id) async {
     var result = await loginHandler.logoutJSONData(id);
     if (result == 'OK') {
+      await activityInsert();
       Get.back();
     } else {
       errorSnackBar();
@@ -281,4 +288,14 @@ class Home extends StatelessWidget {
     vmHandler.checkaudioPlayer(vmHandler.firebaseMusic);
     vmHandler.stateCheck();
   }
+
+    activityInsert()async{
+    var activity=Activity(
+      userId: loginHandler.box.read('userId'), 
+      activity: 'logout', 
+      datetime: DateTime.now().toString());    
+    await loginHandler.useractivityJSONData(activity);
+    await loginHandler.disposeSave();
+  }  
 }
+

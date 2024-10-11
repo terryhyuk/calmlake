@@ -4,11 +4,16 @@ import 'package:calm_lake_project/view/friends.dart';
 import 'package:calm_lake_project/view/post.dart';
 import 'package:calm_lake_project/view/profile.dart';
 import 'package:calm_lake_project/vm/NavigationController.dart';
+import 'package:calm_lake_project/vm/login_handler.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'model/activity.dart';
+
 class HomeScreen extends StatelessWidget {
   final NavigationController controller = Get.put(NavigationController());
+  final LoginHandler loginHandler=Get.put(LoginHandler());
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +33,7 @@ class HomeScreen extends StatelessWidget {
             currentIndex: controller.currentIndex.value,
             onTap: (index) {
               controller.tabController.index = index;
+              activityInsert(index);
             },
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -41,5 +47,12 @@ class HomeScreen extends StatelessWidget {
             ],
           )),
     );
+  }
+  activityInsert(int index)async{
+    var activity=Activity(
+      userId: loginHandler.box.read('userId'), 
+      activity: index==0? 'home': index==1 ? 'friends' : index==2 ? 'chat' : index==3 ? 'posting' : 'my profile', 
+      datetime: DateTime.now().toString());    
+    await loginHandler.useractivityJSONData(activity);
   }
 }
