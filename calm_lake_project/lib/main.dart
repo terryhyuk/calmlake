@@ -1,6 +1,7 @@
 import 'package:calm_lake_project/HomeScreen.dart';
 import 'package:calm_lake_project/firebase_options.dart';
 import 'package:calm_lake_project/view/login/login.dart';
+import 'package:calm_lake_project/vm/app_lifecycle_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,11 +11,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AppLifecycleController lifecycleHandler=Get.put(AppLifecycleController());
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,25 @@ class MyApp extends StatelessWidget {
         useMaterial3: true, 
       ),
       home: Login(),
+      navigatorObservers: [
+        AutoLogoutObserver(resetTimer: lifecycleHandler.resetTimer)
+      ],
     );
+  }  
+}
+
+class AutoLogoutObserver extends NavigatorObserver {
+  final Function resetTimer;
+
+  AutoLogoutObserver({required this.resetTimer});
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    resetTimer();
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    resetTimer();
   }
 }

@@ -1,6 +1,5 @@
-import 'package:camlake_test_app/model/message.dart';
-import 'package:camlake_test_app/view/chat/chatroom.dart';
-import 'package:camlake_test_app/vm/chating_controller.dart';
+import 'package:calm_lake_project/view/chat/chatroom.dart';
+import 'package:calm_lake_project/vm/chating_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -36,7 +35,8 @@ class Chat extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () async {
                     if (roomNameController.text.isNotEmpty) {
-                      await chatController.createChatRoom(roomNameController.text);
+                      await chatController
+                          .createChatRoom(roomNameController.text);
                       roomNameController.clear();
                       print(chatController.chatRooms);
                     }
@@ -48,21 +48,21 @@ class Chat extends StatelessWidget {
           ),
           Expanded(
             child: Obx(() => ListView.builder(
-              itemCount: chatController.chatRooms.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(chatController.chatRooms[index]),
-                  onTap: () {
-                    Get.to(
-                      Chatroom(
-                        roomId: chatController.chatRooms[index],
-                        roomName: roomNameController.text,
-                        ),
-                      );
+                  itemCount: chatController.chatRooms.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(chatController.chatRooms[index]),
+                      onTap: () {
+                        Get.to(
+                          Chatroom(
+                            roomId: chatController.chatRooms[index],
+                            roomName: roomNameController.text,
+                          ),
+                        );
+                      },
+                    );
                   },
-                );
-              },
-            )),
+                )),
           ),
         ],
       ),

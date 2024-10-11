@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:calm_lake_project/model/activity.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../model/profile.dart';
 import 'package:http/http.dart' as http;
-
 import 'validate_check.dart';
 
 class LoginHandler extends ValidateCheck {
+
   final box = GetStorage();
   //Property
   var users = <Profile>[].obs;
@@ -19,6 +20,7 @@ class LoginHandler extends ValidateCheck {
 
   iniStorage() {
     box.write('userId','');
+    box.write('nickname','');
   }
 
   @override
@@ -156,7 +158,6 @@ class LoginHandler extends ValidateCheck {
     if (result > 0) {
       return result > 0;
     } else {
-      print('Unexpected result type: $result');
       return false; // 또는 예외를 던질 수 있습니다
     }
   }
@@ -175,6 +176,25 @@ class LoginHandler extends ValidateCheck {
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
     return result;    
+  }
+
+  //유저 로그
+  useractivityJSONData(Activity activity)async{
+    var url =
+        Uri.parse('http://127.0.0.1:8000/login/useractivity?user_id=${activity.userId}&activity=${activity.activity}&datetime=${activity.datetime}');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['results'];
+    return result;    
+  }
+
+  //유저 로그 datetime 반환(active_user에 insert_id 있을 경우 사용)
+  findActiveIdJSONData(String insertId) async {
+    var url = Uri.parse('http://127.0.0.1:8000/login/findactiveid?user_id=$insertId');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['results'];
+    return result != 'Not found' ? DateTime.parse(result) : result;
   }
 
   //유저 프로필 확인
@@ -197,9 +217,9 @@ class LoginHandler extends ValidateCheck {
       );
   }
   //유저 정보 수정
-  changeUserJSONData(Profile profile) async{
-    var url =
-        Uri.parse('http://127.0.0.1:8000/login/changeuser?nickname=${profile.nickName}&email=${profile.email}&password=${profile.pw}&user_image=${profile.image}&id=${profile.id}');
+  changeUserJSONData(Profile profile) async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/login/changeuser?nickname=${profile.nickName}&email=${profile.email}&password=${profile.pw}&user_image=${profile.image}&id=${profile.id}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];

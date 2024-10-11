@@ -1,11 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:calm_lake_project/model/profile.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../vm/login_handler.dart';
 
@@ -24,8 +21,6 @@ class ProfileEdit extends StatelessWidget {
       ),
       body: GetBuilder<LoginHandler>(
         builder: (controller) {
-          int firstDisp = 0;
-          // print(box.read('userId'));
           return FutureBuilder(
             future: controller.showProfileJSONData(loginHandler.box.read('userId')),
             builder: (context, snapshot) {
@@ -59,7 +54,6 @@ class ProfileEdit extends StatelessWidget {
                                 onPressed: () async {
                                   controller
                                       .getImageFromGallery(ImageSource.gallery);
-                                  firstDisp = 1;
                                   print(result.image);
                                 },
                                 child: const Text('갤러리')),
@@ -68,7 +62,6 @@ class ProfileEdit extends StatelessWidget {
                               onPressed: () {
                                 controller
                                     .getImageFromGallery(ImageSource.camera);
-                                firstDisp = 1;
                               },
                               child: const Text('카메라')),
                         ],
@@ -84,20 +77,16 @@ class ProfileEdit extends StatelessWidget {
                         decoration:
                             const InputDecoration(labelText: '수정하실 Nickname을 입력하세요.'),
                       ),
-                      // email validate check 삽입하기
                       TextField(
                         controller: emailController,
                         decoration:
-                            const InputDecoration(labelText: '수정하실 email을 입력하세요.'),
+                            InputDecoration(errorText: controller.checkEmail.isNotEmpty ? controller.checkEmail : null,
+                    errorStyle: TextStyle(color: controller.emailColor)),
                       ),
-                      // 비밀번호 validate check 삽입하기
                       TextField(
                         controller: newPwController,
                     decoration: 
                     InputDecoration(
-                    //   labelText: newPwController.text=='' ? 'Password를 입력하세요.' : controller.checkResult, labelStyle: TextStyle(
-                    //   color: controller.pwColor
-                    // ),
                     errorText: controller.checkResult.isNotEmpty ? controller.checkResult : null,
                     errorStyle: TextStyle(color: controller.pwColor)
                     ),
@@ -106,11 +95,9 @@ class ProfileEdit extends StatelessWidget {
                         padding: const EdgeInsets.all(15.0),
                         child: ElevatedButton(
                             onPressed: () {
-                              controller.validatePassword(newPwController.text.trim());                      
-                              // String nickName = nickNameController.text.trim();
-                              // String email = emailController.text.trim();
-                              // String password = newPwController.text.trim();
-                              controller.checkResult !='비밀번호는 한글 또는 영문과 숫자를 포함한 4자 이상 15자 이내로 입력하세요.' ? changeUserAction(loginHandler)
+                              controller.validatePassword(newPwController.text.trim());    
+                              controller.validateEmail(emailController.text.trim());                  
+                              controller.checkResult !='비밀번호는 한글 또는 영문과 숫자를 포함한 4자 이상 15자 이내로 입력하세요.' &&controller.checkEmail !='올바른 email 형식으로 입력해주세요.' ? changeUserAction(loginHandler, result.image!)
                               : errorSnackBar();
                             },
                             child: const Text('회원 정보 수정')),
@@ -132,12 +119,15 @@ class ProfileEdit extends StatelessWidget {
   }
 
   //회원 정보 수정
-  changeUserAction(LoginHandler loginHandler) async {
+  changeUserAction(LoginHandler loginHandler, Uint8List orignImage) async {
     if (nickNameController.text.trim().isNotEmpty &
         emailController.text.trim().isNotEmpty &
         newPwController.text.trim().isNotEmpty) {
-      File imageFile1 = File(loginHandler.imageFile!.path);
-      Uint8List getImage = await imageFile1.readAsBytes();
+    Uint8List getImage;
+      if(loginHandler.imageFile!=null){
+        File imageFile1 = File(loginHandler.imageFile!.path);
+        getImage = await imageFile1.readAsBytes();
+        }else{getImage=orignImage;}
       var userUpdate = Profile(
           id: loginHandler.box.read('userId'),
           pw: newPwController.text.trim(),
@@ -172,12 +162,14 @@ class ProfileEdit extends StatelessWidget {
       AlertDialog(
         backgroundColor: Colors.red,
         title: const Text(
-          '회원 탈퇴',
+          '정말 탈퇴하시겠습니까?',
           style: TextStyle(color: Colors.white),
         ),
         content: const Text(
-          '정말 탈퇴하시겠습니까?',
-          style: TextStyle(color: Colors.white),
+          '작성하신 게시물과 댓글, 채팅 기록은\n자동 삭제되지 않습니다.',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white,
+          ),
         ),
         actions: [
           TextButton(

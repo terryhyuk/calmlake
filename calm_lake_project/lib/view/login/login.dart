@@ -3,8 +3,8 @@ import 'package:calm_lake_project/view/login/find_pw.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import '../../model/activity.dart';
 import '../../vm/login_handler.dart';
 import 'find_id.dart';
 import 'sign_up.dart';
@@ -15,8 +15,8 @@ class Login extends StatelessWidget {
   final TextEditingController pwController = TextEditingController();
   final loginHandler = Get.put(LoginHandler());
   final vmHandler = Get.put(VmHandler());
-  final box = GetStorage();
-  
+  // final box = GetStorage();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,7 +107,7 @@ class Login extends StatelessWidget {
                         await allowLogin(id, pw);
                         if (vmHandler.user.isNotEmpty) {
                           print(vmHandler.user);
-                          await box.write(
+                          await loginHandler.box.write(
                               'nickname', vmHandler.user[0]['nickname']);
                         } else {
                           print('User data not found');
@@ -151,15 +151,28 @@ class Login extends StatelessWidget {
         await loginHandler.checkActiveJSONData(idController.text.trim());
     print(isDuplicate);
     if (isDuplicate) {
+      DateTime? lastActiveTime=await loginHandler.findActiveIdJSONData(id);
+      Duration difference=DateTime.now().difference(lastActiveTime!);
+      if(difference.inMinutes<5){
       Get.snackbar('Error', '이미 접속중인 ID입니다.',
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 2),
           backgroundColor: const Color.fromARGB(255, 206, 53, 42),
-          colorText: Colors.white);
+          colorText: Colors.white);}
+          else{
+            loginHandler.box.write('userId', id);
+            loginHandler.logoutJSONData(id);
+            await loginHandler.activeUserJSONData(id);
+            await activityInsert();
+            Get.to(HomeScreen());
+            idController.text = '';
+            pwController.text = '';            
+            }
     } else {
       bool isAuthenticated = await checkUserJSONData(id, pw);
       if (isAuthenticated) {
         await loginHandler.activeUserJSONData(id);
+        await activityInsert();
         Get.to(HomeScreen());
         idController.text = '';
         pwController.text = '';
@@ -184,7 +197,6 @@ class Login extends StatelessWidget {
       return false;
     }
   }
-  
   saveStorage(String id) async{
     await loginHandler.box.write('userId', id);
   }
@@ -195,5 +207,13 @@ class Login extends StatelessWidget {
         duration: const Duration(seconds: 2),
         backgroundColor: const Color.fromARGB(255, 206, 53, 42),
         colorText: Colors.white);
+  }
+
+    activityInsert()async{
+    var activity=Activity(
+      userId: loginHandler.box.read('userId'), 
+      activity: 'login', 
+      datetime: DateTime.now().toString());    
+    await loginHandler.useractivityJSONData(activity);
   }
 }

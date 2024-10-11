@@ -12,8 +12,8 @@ def connect():
     conn = pymysql.connect(
         host='192.168.50.123',
         user='root',
-        password='bar5heart',
-        db='calm_lake',
+        password='qwer1234',
+        db= 'calmlake',
         charset='utf8'
     )
     return conn
@@ -171,6 +171,22 @@ async def activeuser(user_id: str=None):
         print("Error",e)
         return{'results':'Error'}
     
+# 접속 user activity log
+@router.get("/useractivity")
+async def useractivity(user_id: str=None, activity: str=None, datetime: str=None):
+    conn=connect()
+    curs=conn.cursor()
+    try:
+        sql="insert into activity(user_id, activity, datetime) values (%s,%s,%s)"
+        curs.execute(sql,(user_id, activity, datetime))
+        conn.commit()
+        conn.close()
+        return{'results':'OK'}
+    except Exception as e:
+        conn.close()
+        print("Error",e)
+        return{'results':'Error'}
+    
 # 접속 user 삭제(logout)
 @router.get("/logout")
 async def logout(user_id: str=None):
@@ -186,6 +202,24 @@ async def logout(user_id: str=None):
         conn.close()
         print("Error",e)
         return{'results':'Error'}
+    
+# active_user에 login insert_id가 있는 경우 -> 
+# insert_id activity[datetime] - datetime.now()가 5min 이상이면 logout시키고, allowLogin
+@router.get("/findactiveid")
+async def findactiveid(user_id: str=None):
+    conn=connect()
+    curs=conn.cursor()
+    try:
+        sql="select datetime from activity where user_id=%s order by datetime desc limit 1"
+        curs.execute(sql,(user_id,))
+        conn.commit()
+        result=curs.fetchone()[0]
+        conn.close()
+        return{'results': result}
+    except Exception as e:
+        conn.close()
+        print("Error", e)
+        return{'results':'Not found'}
     
 # 회원 정보 확인
 @router.get("/showprofile")

@@ -1,9 +1,15 @@
-import 'package:camlake_test_app/view/musiclist.dart';
-import 'package:camlake_test_app/vm/friends_controller.dart';
-import 'package:camlake_test_app/vm/vm_handler.dart';
+import 'package:calm_lake_project/view/musiclist.dart';
+import 'package:calm_lake_project/vm/friends_controller.dart';
+import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../vm/login_handler.dart';
+import 'package:get_storage/get_storage.dart';
+
+
+import '../model/activity.dart';
+import '../vm/login_handler.dart';
+import '../vm/vm_handler.dart';
 
 class Home extends StatelessWidget {
   Home({super.key});
@@ -290,10 +296,10 @@ _showDialog(int index) {
     ),
   );
 }
-
   logOut(String id) async {
     var result = await loginHandler.logoutJSONData(id);
     if (result == 'OK') {
+      await activityInsert();
       Get.back();
     } else {
       errorSnackBar();
@@ -313,4 +319,5 @@ _showDialog(int index) {
     vmHandler.checkaudioPlayer(vmHandler.firebaseMusic);
     vmHandler.stateCheck();
   }
+
 }
