@@ -1,28 +1,33 @@
-import 'package:camlake_test_app/model/message.dart';
-import 'package:camlake_test_app/vm/login_handler.dart';
+import 'package:calm_lake_project/model/message.dart';
+import 'package:calm_lake_project/vm/login_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
-class ChatingController extends GetxController{
+class ChatingController extends GetxController {
   final messages = <Message>[].obs;
   final chatRooms = <String>[].obs; // 채팅방 생성 리스트
   final loginhandler = Get.put(LoginHandler());
-  
+
   final CollectionReference _messages = FirebaseFirestore.instance
-                                        .collection('chat')
-                                        .doc('grup')
-                                        .collection('room1');
+      .collection('chat')
+      .doc('grup')
+      .collection('room1');
 
   @override
   void onInit() {
     super.onInit();
-    _messages.orderBy('timestamp', descending: true).snapshots().listen((event) {
-      messages.value = event.docs.map((doc)=> Message.fromMap(doc.data() as Map<String, dynamic>, doc.id)).toList();
-    },);
+    _messages.orderBy('timestamp', descending: true).snapshots().listen(
+      (event) {
+        messages.value = event.docs
+            .map((doc) =>
+                Message.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+            .toList();
+      },
+    );
     loadUserChatRooms();
   }
 
-loadUserChatRooms() {
+  loadUserChatRooms() {
     String userId = loginhandler.box.read('userId');
     FirebaseFirestore.instance
         .collection('users')
@@ -35,48 +40,49 @@ loadUserChatRooms() {
   }
 
   createChatRoom(String roomName) async {
-  String userId = loginhandler.box.read('userId');
-  String nickname = loginhandler.box.read('nickname') ?? 'Anonymous';
+    String userId = loginhandler.box.read('userId');
+    String nickname = loginhandler.box.read('nickname') ?? 'Anonymous';
 
-  // Create a new document with an auto-generated ID
-  DocumentReference roomRef = FirebaseFirestore.instance
-      .collection('chat')
-      .doc('grup')
-      .collection('rooms')
-      .doc();
+    // Create a new document with an auto-generated ID
+    DocumentReference roomRef = FirebaseFirestore.instance
+        .collection('chat')
+        .doc('grup')
+        .collection('rooms')
+        .doc();
 
-  // 방생성
-  await roomRef.set({
-    'roomId': roomRef.id,
-    'roomName': roomName,  // 방이름
-    'createdAt': Timestamp.now(),
-    'createdBy': userId,
-    'participants': [userId],
-  });
+    // 방생성
+    await roomRef.set({
+      'roomId': roomRef.id,
+      'roomName': roomName, // 방이름
+      'createdAt': Timestamp.now(),
+      'createdBy': userId,
+      'participants': [userId],
+    });
 
-  // Add room to user's chat rooms
-  await FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('chatRooms')
-      .doc(roomRef.id)
-      .set({
-    'roomId': roomRef.id,
-    'roomName': roomName,
-    'joinedAt': Timestamp.now(),
-  });
+    // Add room to user's chat rooms
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('chatRooms')
+        .doc(roomRef.id)
+        .set({
+      'roomId': roomRef.id,
+      'roomName': roomName,
+      'joinedAt': Timestamp.now(),
+    });
 
-  // Add first message
-  await roomRef.collection('messages').add({
-    'roomId': roomRef.id,
-    'roomName': roomName,
-    'userID': userId,
-    'nickname': nickname,
-    'contents': '$nickname님이 채팅방을 생성했습니다.',
-    'timestamp': Timestamp.now(),
-  });
-}
-joinChatRoom(String roomId, String roomName) async {
+    // Add first message
+    await roomRef.collection('messages').add({
+      'roomId': roomRef.id,
+      'roomName': roomName,
+      'userID': userId,
+      'nickname': nickname,
+      'contents': '$nickname님이 채팅방을 생성했습니다.',
+      'timestamp': Timestamp.now(),
+    });
+  }
+
+  joinChatRoom(String roomId, String roomName) async {
     String userId = loginhandler.box.read('userId');
     String nickname = loginhandler.box.read('nickname') ?? 'Anonymous';
 
@@ -117,18 +123,15 @@ joinChatRoom(String roomId, String roomName) async {
     });
   }
 
-  addMessage(String userID, String contents){
+  addMessage(String userID, String contents) {
     messages.clear();
-    _messages.add(
-      {
+    _messages.add({
       // 'roomNane': roomNane,
       'userID': userID,
       'contents': contents,
       // 'nickname': nickname,
       'timestamp': Timestamp.now()
-      }
-    );
+    });
     print(messages);
   }
-  
 }
