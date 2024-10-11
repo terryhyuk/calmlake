@@ -13,7 +13,7 @@ def connect():
         host='192.168.50.123',
         user='root',
         password='qwer1234',
-        db= 'calmlake',
+        db='calmlake',
         charset='utf8'
     )
     return conn
@@ -154,7 +154,7 @@ async def checkuserid(user_id: str=None):
         conn.close()
         print("Error",e)
         return{'results': result}
-    
+
 # 접속 user 삽입
 @router.post("/activeuser")
 async def activeuser(user_id: str=None):
@@ -202,7 +202,7 @@ async def logout(user_id: str=None):
         conn.close()
         print("Error",e)
         return{'results':'Error'}
-    
+
 # active_user에 login insert_id가 있는 경우 -> 
 # insert_id activity[datetime] - datetime.now()가 5min 이상이면 logout시키고, allowLogin
 @router.get("/findactiveid")
