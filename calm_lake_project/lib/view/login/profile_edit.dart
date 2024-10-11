@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:calm_lake_project/model/profile.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../vm/login_handler.dart';
 
@@ -31,7 +34,6 @@ class ProfileEdit extends StatelessWidget {
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasError) {
-                print(snapshot.error);
                 return Center(
                   child: Text('Error: ${snapshot.error}'),
                 );
@@ -44,11 +46,10 @@ class ProfileEdit extends StatelessWidget {
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     children: [
-                      controller.imageFile != null
-                          ? Image.file(File(controller.imageFile!.path))
-                          : result.image != null
-                              ? Image.memory(result.image!)
-                              : const Icon(Icons.person, size: 200),
+                      controller.imageFile != null 
+                      ? Image.file(File(controller.imageFile!.path)): 
+                      result.image != null ? Image.memory(result.image!) : 
+                      const Icon(Icons.person, size: 200),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -80,33 +81,37 @@ class ProfileEdit extends StatelessWidget {
                       // 중복검사 삽입하기
                       TextField(
                         controller: nickNameController,
-                        decoration: const InputDecoration(
-                            labelText: '수정하실 Nickname을 입력하세요.'),
+                        decoration:
+                            const InputDecoration(labelText: '수정하실 Nickname을 입력하세요.'),
                       ),
                       // email validate check 삽입하기
                       TextField(
                         controller: emailController,
-                        decoration: const InputDecoration(
-                            labelText: '수정하실 email을 입력하세요.'),
+                        decoration:
+                            const InputDecoration(labelText: '수정하실 email을 입력하세요.'),
                       ),
                       // 비밀번호 validate check 삽입하기
                       TextField(
                         controller: newPwController,
-                    decoration: InputDecoration(labelText: newPwController.text=='' ? 'Password를 입력하세요.' : controller.checkResult, labelStyle: TextStyle(
-                      color: controller.pwColor
-                    )),
-                    onChanged: (value) {
-                      controller.validatePassword(newPwController.text.trim());
-                    },
+                    decoration: 
+                    InputDecoration(
+                    //   labelText: newPwController.text=='' ? 'Password를 입력하세요.' : controller.checkResult, labelStyle: TextStyle(
+                    //   color: controller.pwColor
+                    // ),
+                    errorText: controller.checkResult.isNotEmpty ? controller.checkResult : null,
+                    errorStyle: TextStyle(color: controller.pwColor)
+                    ),
                   ),
                       Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: ElevatedButton(
                             onPressed: () {
+                              controller.validatePassword(newPwController.text.trim());                      
                               // String nickName = nickNameController.text.trim();
                               // String email = emailController.text.trim();
                               // String password = newPwController.text.trim();
-                              changeUserAction(loginHandler);
+                              controller.checkResult !='비밀번호는 한글 또는 영문과 숫자를 포함한 4자 이상 15자 이내로 입력하세요.' ? changeUserAction(loginHandler)
+                              : errorSnackBar();
                             },
                             child: const Text('회원 정보 수정')),
                       ),
@@ -141,7 +146,7 @@ class ProfileEdit extends StatelessWidget {
           image: getImage);
       var result = await loginHandler.changeUserJSONData(userUpdate);
       if (result == 'OK') {
-        loginHandler.imageFile = null;
+        loginHandler.imageFile=null;
         Get.snackbar('Update', '수정이 완료되었습니다.',
             snackPosition: SnackPosition.BOTTOM,
             duration: const Duration(seconds: 2),
