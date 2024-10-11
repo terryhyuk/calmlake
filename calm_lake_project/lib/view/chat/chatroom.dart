@@ -1,22 +1,39 @@
-import 'package:calm_lake_project/model/message.dart';
-import 'package:calm_lake_project/vm/chating_controller.dart';
-import 'package:calm_lake_project/vm/login_handler.dart';
+import 'package:camlake_test_app/model/message.dart';
+import 'package:camlake_test_app/vm/chating_controller.dart';
+import 'package:camlake_test_app/vm/login_handler.dart';
 import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class Chatroom extends StatelessWidget {
-  Chatroom({super.key});
+  final String roomId;
+  final String roomName;
+
+  Chatroom({Key? key, required this.roomId, required this.roomName}) : super(key: key);
+
+
   final ChatingController messageController = Get.put(ChatingController());
   final loginhandler = Get.put(LoginHandler());
   final TextEditingController sendController = TextEditingController();
+  final value = Get.arguments ?? '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('chatRoom1'),
+        title: Text(
+          roomName
+        ),
+        centerTitle: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              //
+            }, 
+            icon: const Icon(Icons.group_add_outlined),
+            )
+        ],
       ),
       body: Column(
         children: [
@@ -24,10 +41,10 @@ class Chatroom extends StatelessWidget {
             child: Obx(
               () => ListView.builder(
                 reverse: true,
-                itemCount: messageController.messages.length,
+                itemCount: messageController.messages.where((m) => m.roomName == roomName).length,
                 itemBuilder: (context, index) {
-                  Message message = messageController.messages[index];
-                  // print(message.userID);
+                  List<Message> roomMessages = messageController.messages.where((m) => m.roomName == roomName).toList();
+                  Message message = roomMessages[index];
                   return ListTile(
                     title: Column(
                       children: [
@@ -45,36 +62,8 @@ class Chatroom extends StatelessWidget {
                                   : const Color(0xFF2196F3),
                               tail: true,
                               textStyle:
-                                  TextStyle(color: Colors.white, fontSize: 16),
+                                  const TextStyle(color: Colors.white, fontSize: 16),
                             ),
-                            // Container(
-                            //   padding: const EdgeInsets.symmetric(
-                            //       vertical: 10, horizontal: 16),
-                            //   margin: const EdgeInsets.symmetric(
-                            //       vertical: 4, horizontal: 8),
-                            //   decoration: BoxDecoration(
-                            //     color: message.userID ==
-                            //             loginhandler.box.read('userId')
-                            //         ? Colors.blue[200]
-                            //         : Colors.blue[500],
-                            //     borderRadius: message.userID ==
-                            //             loginhandler.box.read('userId')
-                            //         ? const BorderRadius.only(
-                            //             topLeft: Radius.circular(14),
-                            //             topRight: Radius.circular(14),
-                            //             bottomLeft: Radius.circular(14),
-                            //           )
-                            //         : const BorderRadius.only(
-                            //             topLeft: Radius.circular(14),
-                            //             topRight: Radius.circular(14),
-                            //             bottomRight: Radius.circular(14),
-                            //           ),
-                            //   ),
-                            //   child: Text(
-                            //       message.contents,
-                            //     style: const TextStyle(fontSize: 16),
-                            //   ),
-                            // ),
                           ],
                         ),
                         Row(
@@ -105,7 +94,7 @@ class Chatroom extends StatelessWidget {
                 boxShadow: [
                   BoxShadow(color:  Color.fromARGB(18, 0, 0, 0), blurRadius: 10)
                 ],
-            // color:  내중에 테마따라서 ,
+            // color:  나중에 테마따라서 ,
               ),
               child: Expanded(
                 child: TextField(
@@ -154,9 +143,17 @@ class Chatroom extends StatelessWidget {
   }
 
 
-  sendMessage() {
+sendMessage() {
     messageController.addMessage(
-        loginhandler.box.read('userId'), sendController.text);
+      loginhandler.box.read('userId'),
+      sendController.text,
+    );
     sendController.text = '';
   }
+
+  // sendMessage() {
+  //   messageController.addMessage(
+  //       loginhandler.box.read('userId'), sendController.text);
+  //   sendController.text = '';
+  // }
 } // END
