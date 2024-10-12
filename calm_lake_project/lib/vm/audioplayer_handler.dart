@@ -1,32 +1,34 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:firebase_list2_app/vm/button_controller.dart';
+import 'package:calm_lake_project/vm/button_controller.dart';
+import 'package:calm_lake_project/vm/comment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class AudioplayerHandler extends ButtonController{
-    PlayerState? playerState;
-    Duration? duration;
-    Duration? position;
-    int musicState = 1;
+class AudioplayerHandler extends commentcontroller {
+  PlayerState? playerState;
+  Duration? duration;
+  Duration? position;
+  int musicState = 1;
+  double imageLocation = 0;
 
   StreamSubscription? durationSubscription;
   StreamSubscription? positionSubscription;
   StreamSubscription? playerCompleteSubscription;
   StreamSubscription? playerStateChangeSubscription;
 
-    bool get isPlaying => playerState == PlayerState.playing;
+  bool get isPlaying => playerState == PlayerState.playing;
 
-    bool get isPaused => playerState == PlayerState.paused;
+  bool get isPaused => playerState == PlayerState.paused;
 
-    String get durationText => duration?.toString().split('.').first ?? '';
+  String get durationText => duration?.toString().split('.').first ?? '';
 
-    String get positionText => position?.toString().split('.').first ?? '';
+  String get positionText => position?.toString().split('.').first ?? '';
 
-    AudioPlayer player = AudioPlayer();
+  AudioPlayer player = AudioPlayer();
 
-  checkaudioPlayer(String musicName)async{
+  checkaudioPlayer(String musicName) async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // await player.setSource(AssetSource('$musicName.mp3'));
       await player.setSource(UrlSource(musicName));
@@ -35,16 +37,17 @@ class AudioplayerHandler extends ButtonController{
     player.setReleaseMode(ReleaseMode.stop);
     initStreams();
   }
-    stateCheck(){
-      playerState = player.state;
-      player.getDuration().then((value) {
-        duration = value;
-        update();
-      });
-      player.getCurrentPosition().then((value) {
-        position = value;
-        update();
-        });
+
+  stateCheck() {
+    playerState = player.state;
+    player.getDuration().then((value) {
+      duration = value;
+      update();
+    });
+    player.getCurrentPosition().then((value) {
+      position = value;
+      update();
+    });
   }
 
   initStreams() {
@@ -53,24 +56,20 @@ class AudioplayerHandler extends ButtonController{
       update();
     });
 
-    positionSubscription = player.onPositionChanged.listen(
-      (p) {
-        position = p;
-        update();
-        }
-      
-    );
-
-    playerCompleteSubscription = player.onPlayerComplete.listen((event) {
-        playerState = PlayerState.stopped;
-        position = Duration.zero;
-        update();
+    positionSubscription = player.onPositionChanged.listen((p) {
+      position = p;
+      update();
     });
 
-    playerStateChangeSubscription =
-        player.onPlayerStateChanged.listen((state) {
-        playerState = state;
-        update();
+    playerCompleteSubscription = player.onPlayerComplete.listen((event) {
+      playerState = PlayerState.stopped;
+      position = Duration.zero;
+      update();
+    });
+
+    playerStateChangeSubscription = player.onPlayerStateChanged.listen((state) {
+      playerState = state;
+      update();
     });
   }
 
@@ -88,20 +87,19 @@ class AudioplayerHandler extends ButtonController{
 
   Future<void> stop() async {
     await player.stop();
-      playerState = PlayerState.stopped;
-      position = Duration.zero;
-      update();
+    playerState = PlayerState.stopped;
+    position = Duration.zero;
+    update();
   }
 
-  musicPause(){
-    isPlaying ? pause : null;
-    musicState = 1;
+  imageSlider(double location) {
+    imageLocation = ((position != null &&
+                duration != null &&
+                position!.inMilliseconds > 0 &&
+                position!.inMilliseconds < duration!.inMilliseconds)
+            ? position!.inMilliseconds / duration!.inMilliseconds
+            : 0.0) *
+        100;
+    update();
   }
-
-    musicPlay(){
-      isPlaying ? null : play;
-      musicState = 0;
-  }
-
-
 }

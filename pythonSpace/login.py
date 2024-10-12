@@ -154,7 +154,7 @@ async def checkuserid(user_id: str=None):
         conn.close()
         print("Error",e)
         return{'results': result}
-    
+
 # 접속 user 삽입
 @router.post("/activeuser")
 async def activeuser(user_id: str=None):
@@ -163,6 +163,22 @@ async def activeuser(user_id: str=None):
     try:
         sql="insert into active_user(user_id) values (%s)"
         curs.execute(sql,(user_id,))
+        conn.commit()
+        conn.close()
+        return{'results':'OK'}
+    except Exception as e:
+        conn.close()
+        print("Error",e)
+        return{'results':'Error'}
+    
+# 접속 user activity log
+@router.get("/useractivity")
+async def useractivity(user_id: str=None, activity: str=None, datetime: str=None):
+    conn=connect()
+    curs=conn.cursor()
+    try:
+        sql="insert into activity(user_id, activity, datetime) values (%s,%s,%s)"
+        curs.execute(sql,(user_id, activity, datetime))
         conn.commit()
         conn.close()
         return{'results':'OK'}
@@ -186,6 +202,24 @@ async def logout(user_id: str=None):
         conn.close()
         print("Error",e)
         return{'results':'Error'}
+
+# active_user에 login insert_id가 있는 경우 -> 
+# insert_id activity[datetime] - datetime.now()가 5min 이상이면 logout시키고, allowLogin
+@router.get("/findactiveid")
+async def findactiveid(user_id: str=None):
+    conn=connect()
+    curs=conn.cursor()
+    try:
+        sql="select datetime from activity where user_id=%s order by datetime desc limit 1"
+        curs.execute(sql,(user_id,))
+        conn.commit()
+        result=curs.fetchone()[0]
+        conn.close()
+        return{'results': result}
+    except Exception as e:
+        conn.close()
+        print("Error", e)
+        return{'results':'Not found'}
     
 # 회원 정보 확인
 @router.get("/showprofile")
@@ -193,7 +227,7 @@ async def showprofile(id: str=None):
     conn=connect()
     curs=conn.cursor()
     try:
-        sql="select password, email, nickname, image from user where id=%s"
+        sql="select password, email, nickname, user_image from user where id=%s"
         curs.execute(sql,(id,))
         conn.commit()
         result=curs.fetchone()
@@ -206,12 +240,12 @@ async def showprofile(id: str=None):
     
 # 회원 정보 변경
 @router.get('/changeuser')
-async def changeuser(nickname: str=None, email: str=None, password: str=None, image: str=None, id: str=None):
+async def changeuser(nickname: str=None, email: str=None, password: str=None, user_image: str=None, id: str=None):
     conn=connect()
     curs=conn.cursor()
     try: 
-        sql='update user set nickname=%s, email=%s, password=%s, image=%s where id=%s'
-        curs.execute(sql, (nickname, email, password, image, id))
+        sql='update user set nickname=%s, email=%s, password=%s, user_image=%s where id=%s'
+        curs.execute(sql, (nickname, email, password, user_image, id))
         conn.commit()
         conn.close()
         return {'results' : 'OK'}

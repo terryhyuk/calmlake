@@ -1,6 +1,6 @@
+import 'package:calm_lake_project/model/music.dart';
+import 'package:calm_lake_project/vm/audioplayer_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_list2_app/model/music.dart';
-import 'package:firebase_list2_app/vm/audioplayer_handler.dart';
 
 class ListHandler extends AudioplayerHandler{
   String firebaseMusic = 'https://firebasestorage.googleapis.com/v0/b/calmlake-f513a.appspot.com/o/mp3%2FVivaldi_Spring.mp3?alt=media&token=2f669228-bb52-4e2d-b337-c4ed52316839';

@@ -36,13 +36,13 @@ async def get_file(file_name: str):
     return {'results' : 'Error'}
 
 @router.get('/insert')
-async def insert(date: str=None, image: str=None, contents: str=None, public: str=None, user_id: str=None):
+async def insert(date: str=None, image: str=None, contents: str=None, public: str=None, post_nickname: str=None,post_user_id: str=None):
     conn = connection()
     curs= conn.cursor()
 
     try:
-        sql = "insert into post(date, image, contents, public, user_id) values (%s,%s,%s,%s,%s)"
-        curs.execute(sql, (date, image, contents, public, user_id))
+        sql = "insert into post(post_user_id, date, image, contents, public, post_nickname) values (%s,%s,%s,%s,%s,%s)"
+        curs.execute(sql, (post_user_id, date, image, contents, public, post_nickname))
         conn.commit()
         conn.close()
         return {'result' : 'OK'}
@@ -50,6 +50,7 @@ async def insert(date: str=None, image: str=None, contents: str=None, public: st
         conn.close()
         print('Error:', e)
         return {'result' : "Error"}
+
 
 # post방식 업로드
 @router.post('/upload') # post 방식
