@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:calm_lake_project/vm/button_controller.dart';
+import 'package:calm_lake_project/vm/musicinsert.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 import 'list_handler.dart';
 
-class VmHandler extends ListHandler {
+class VmHandler extends Musicinsert {
   var posts = [].obs;
   var user = [].obs;
   var userposts = [].obs;
