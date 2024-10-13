@@ -4,9 +4,17 @@ Description : 회원 관리
 Date        :
 Usage       :
 """
-from fastapi import APIRouter
+from fastapi import APIRouter, File, UploadFile
+from fastapi.responses import FileResponse
 import pymysql
+import os
+import shutil
+
 router = APIRouter()
+
+UPLOAD_FOLDER = 'profile_uploads' 
+if not os.path.exists(UPLOAD_FOLDER): # 업로드 폴더가 없으면 폴더를 만들어라
+    os.makedirs(UPLOAD_FOLDER)
 
 def connect():
     conn = pymysql.connect(
@@ -17,6 +25,38 @@ def connect():
         charset='utf8'
     )
     return conn
+
+@router.get("/view/{file_name}")
+async def get_file(file_name: str):
+    file_path = os.path.join(UPLOAD_FOLDER, file_name)
+    if os.path.exists(file_path):
+        return FileResponse(path=file_path, filename=file_name)
+    return {'results': 'Error'}
+
+# image upload
+@router.post('/upload') # post 방식
+async def upload_file(file: UploadFile=File(...)):
+    try:
+        file_path = os.path.join(UPLOAD_FOLDER, file.filename) # 업로드 폴더 경로에 파일네임을 만들겠다
+        with open(file_path, "wb") as buffer:  # write binary
+            shutil.copyfileobj(file.file, buffer)
+        return {'result' : 'OK'}
+    except Exception as e:
+        print("Error:", e)
+        return ({'result' : 'Error'})
+    
+# 이미지 폴더에서 삭제된 목록의 이미지 삭제
+@router.delete('/deleteFile/{file_name}')
+async def delete_file(file_name: str):
+    # print("delete file :", file_name) 
+    try:
+        file_path = os.path.join(UPLOAD_FOLDER, file_name)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        return {'results' : 'OK'}
+    except Exception as e:
+        print('Error:', e)
+        return {'results' : 'Error'}    
 
 # 입력한 id, pw와 일치하는 유저가 있는지 확인
 @router.get("/checkuser")
@@ -272,4 +312,4 @@ async def deleteuser(id: str=None):
     
 # if __name__ == "__main__":
 #     import uvicorn
-#     uvicorn.run(router, host="127.0.0.1", port=8000)    
+#     uvicorn.run(router, host="127.0.0.1", port=8000)

@@ -6,7 +6,7 @@ class Profile {
   String email;
   String nickName;
   String? pwAnswer;
-  Uint8List? image;
+  String? image;
 
   Profile({
     required this.id,

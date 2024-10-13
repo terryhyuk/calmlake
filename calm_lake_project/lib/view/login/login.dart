@@ -15,7 +15,6 @@ class Login extends StatelessWidget {
   final TextEditingController pwController = TextEditingController();
   final loginHandler = Get.put(LoginHandler());
   final vmHandler = Get.put(VmHandler());
-  // final box = GetStorage();
 
   @override
   Widget build(BuildContext context) {

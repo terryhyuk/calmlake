@@ -11,7 +11,7 @@ class LoginHandler extends ValidateCheck {
 
   final box = GetStorage();
   //Property
-  var users = <Profile>[].obs;
+  // var users = <Profile>[].obs;
   RxString id = ''.obs;
   RxString findId = ''.obs;
   RxString findPw = ''.obs;
@@ -158,7 +158,7 @@ class LoginHandler extends ValidateCheck {
     if (result > 0) {
       return result > 0;
     } else {
-      return false; // 또는 예외를 던질 수 있습니다
+      return false; 
     }
   }
   activeUserJSONData(String userId) async {
@@ -203,17 +203,12 @@ class LoginHandler extends ValidateCheck {
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
-    Uint8List? imageBytes;
-    if(result[3]!=null){
-    List<dynamic> imageData = json.decode(result[3]);
-    imageBytes = Uint8List.fromList(List<int>.from(imageData));
-    }
     return Profile(
       id: userId, 
       pw: result[0] ?? '', 
       email: result[1] ?? '', 
       nickName: result[2] ?? '',
-      image: imageBytes,
+      image: result[3],
       );
   }
   //유저 정보 수정
