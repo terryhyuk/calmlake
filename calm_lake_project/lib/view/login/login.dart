@@ -14,8 +14,7 @@ class Login extends StatelessWidget {
   final TextEditingController idController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
   final loginHandler = Get.put(LoginHandler());
-  // final vmHandler = Get.put(VmHandler());
-  // final box = GetStorage();
+  final vmHandler = Get.put(VmHandler());
 
   @override
   Widget build(BuildContext context) {
@@ -102,16 +101,16 @@ class Login extends StatelessWidget {
                       onPressed: () async {
                         String id = idController.text.trim();
                         String pw = pwController.text.trim();
-                        // await vmHandler.getUserJSONData(id);
-                        // print(vmHandler.user);
+                        await vmHandler.getUserJSONData(id);
+                        print(vmHandler.user);
                         await allowLogin(id, pw);
-                        // if (vmHandler.user.isNotEmpty) {
-                        //   print(vmHandler.user);
-                        //   await loginHandler.box.write(
-                        //       'nickname', vmHandler.user[0]['nickname']);
-                        // } else {
-                        //   print('User data not found');
-                        // }
+                        if (vmHandler.user.isNotEmpty) {
+                          print(vmHandler.user);
+                          await loginHandler.box.write(
+                              'nickname', vmHandler.user[0]['nickname']);
+                        } else {
+                          print('User data not found');
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFD7EFC9)),
