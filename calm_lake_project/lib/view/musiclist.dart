@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../model/music.dart';
 import '../vm/vm_handler.dart';
+import 'musicinsert.dart';
 
 class Musiclist extends StatelessWidget {
   Musiclist({super.key});
@@ -14,6 +15,14 @@ class Musiclist extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Music'),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Get.to(() => MusicInsert());
+              }, 
+              icon: const Icon(Icons.add_outlined)
+              )
+          ],
         ),
         body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance.collection('music').snapshots(),
@@ -40,9 +49,9 @@ class Musiclist extends StatelessWidget {
         singer: doc['singer']);
     return GestureDetector(
       onTap: () {
-        // vmHandler.firebaseMusicFunction(music.mp3, music.image, music.name);
-        print(doc);
-        // Get.back();
+        vmHandler.firebaseMusicFunction(music.mp3, music.image, music.name);
+        // print(doc);
+        Get.back();
       },
       child: Card(
         child: ListTile(

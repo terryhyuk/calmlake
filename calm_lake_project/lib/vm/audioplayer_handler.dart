@@ -11,6 +11,7 @@ class AudioplayerHandler extends commentcontroller {
   Duration? duration;
   Duration? position;
   int musicState = 1;
+  double imageLocation = 0;
 
   StreamSubscription? durationSubscription;
   StreamSubscription? positionSubscription;
@@ -91,13 +92,14 @@ class AudioplayerHandler extends commentcontroller {
     update();
   }
 
-  musicPause() {
-    isPlaying ? pause : null;
-    musicState = 1;
-  }
-
-  musicPlay() {
-    isPlaying ? null : play;
-    musicState = 0;
+  imageSlider(double location) {
+    imageLocation = ((position != null &&
+                duration != null &&
+                position!.inMilliseconds > 0 &&
+                position!.inMilliseconds < duration!.inMilliseconds)
+            ? position!.inMilliseconds / duration!.inMilliseconds
+            : 0.0) *
+        100;
+    update();
   }
 }
