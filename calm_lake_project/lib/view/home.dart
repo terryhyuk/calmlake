@@ -301,6 +301,7 @@ _showDialog(int index) {
 }
 
   logOut(String id) async {
+    await activityInsert();
     var result = await loginHandler.logoutJSONData(id);
     if (result == 'OK') {
       Get.back();
@@ -321,5 +322,14 @@ _showDialog(int index) {
   reloadData(VmHandler vmHandler) {
     vmHandler.checkaudioPlayer(vmHandler.firebaseMusic);
     vmHandler.stateCheck();
+  }
+
+  activityInsert() async {
+    var activity = Activity(
+        userId: loginHandler.box.read('userId'),
+        activity: 'logout',
+        datetime: DateTime.now().toString());
+    await loginHandler.useractivityJSONData(activity);
+    await loginHandler.disposeSave();
   }
 }

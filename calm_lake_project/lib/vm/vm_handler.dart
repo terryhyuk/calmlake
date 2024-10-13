@@ -19,35 +19,35 @@ class VmHandler extends Musicinsert {
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List result = dataCovertedJSON['results'];
     posts.addAll(result);
-    print(posts);
+    //print(posts);
   }
-/*
-  getPostJSONData() async {
+
+  getPostJSONData(String userId) async {
     var url = Uri.parse('http://127.0.0.1:8000/query/select?user_id=$userId');
     var response = await http.get(url);
     posts.clear();
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List<dynamic> result = dataCovertedJSON['results'];
-    for (var item in result) {
-      posts.add(Post(
-        seq: item[0],
-        user_id: item[1],
-        date: DateTime.parse(item[2]),
-        image: item[3],
-        contents: item[4],
-        public: item[5],
-        favorite_seq: item[6] ?? -1,
-        favorite_user_id: item[7] ?? "",
-        favorite_post_seq: item[8] ?? -1,
-        favorite: item[9] ?? "",
-        hate_seq: item[10] ?? -1,
-        hate_user_id: item[11] ?? "",
-        hate_post_seq: item[12] ?? -1,
-        hate: item[1] ?? "",
-        comment_count: item[14] ?? 0,
-      ));
-    }
-  }*/
+    var post = result[0];
+    posts.add({
+      'seq': post[0],
+      'user_id': post[1],
+      'date': post[2],
+      'image': post[3],
+      'contents': post[4],
+      'public': post[5],
+      'post_nickname': post[6],
+      'favorite_seq': post[7],
+      'favorite_user_id': post[8],
+      'favorite_post_seq': post[9],
+      'favorite': post[10],
+      'hate_seq': post[11],
+      'hate_user_id': post[12],
+      'hate_post_seq': post[13],
+      'hate': post[14],
+      'comment_count': post[14],
+    });
+  }
 
   getUserJSONData(String userId) async {
     var url = Uri.parse('http://127.0.0.1:8000/query/user?id=$userId');
@@ -151,15 +151,6 @@ class VmHandler extends Musicinsert {
     }
   }
 
-  deleteCommentJSONData(String userId) async {
-    var url =
-        Uri.parse('http://127.0.0.1:8000/query/deletecomment?user_id=$userId');
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    var result = dataConvertedJSON['results'];
-    return result;
-  }
-
   updateJSONDataAll(String image, String contents, int public, int seq) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/updateAll?image=$image&contents=$contents&public=$public&seq=$seq');
@@ -183,6 +174,17 @@ class VmHandler extends Musicinsert {
       print('Success');
     } else {
       print('Error');
+    }
+  }
+
+  deletePost(seq, filename) async {
+    await deletePostImage(filename);
+    var url = Uri.parse('http://127.0.0.1:8000/query/deletepost?seq=$seq');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['results'];
+    if (result == 'OK') {
+      print('success');
     }
   }
 }

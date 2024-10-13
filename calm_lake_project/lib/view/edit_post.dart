@@ -15,13 +15,12 @@ class EditPost extends StatelessWidget {
   Widget build(BuildContext context) {
     @override
     final VmHandler vmHandler = Get.put(VmHandler());
-    int firstDisp = 0;
     var value = Get.arguments ?? '__';
     vmHandler.selectButton(value[5]);
     vmHandler.isButtonEnabled.value = true;
-    //contentController.text.trim() = value[4];
+    contentController.text = value[4];
     int post_seq = value[0];
-
+    String userId = box.read('userId');
     return Scaffold(
       appBar: AppBar(
         title: Text("Edit Post"),
@@ -64,7 +63,7 @@ class EditPost extends StatelessWidget {
                                 width: MediaQuery.of(context).size.width,
                                 height: 300,
                                 child: Center(
-                                  child: firstDisp == 0
+                                  child: controller.firstDisp == 0
                                       ? ClipRRect(
                                           borderRadius: BorderRadius.only(
                                               topLeft: Radius.circular(20),
@@ -95,18 +94,12 @@ class EditPost extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Obx(() => ElevatedButton(
-                                        onPressed: () {
-                                          if (value[5] == 0) {
-                                            controller.isButtonEnabled.value =
-                                                true;
-                                            controller.selectedButton.value = 0;
-                                            controller.selectButton(0);
-                                          }
-                                          print(
-                                              controller.isButtonEnabled.value);
-                                          print(
-                                              controller.selectedButton.value);
-                                        },
+                                        onPressed:
+                                            controller.isButtonEnabled.value
+                                                ? () {
+                                                    controller.selectButton(0);
+                                                  }
+                                                : null,
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: controller
                                                       .selectedButton.value ==
@@ -177,43 +170,43 @@ class EditPost extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               ElevatedButton(
-                                  onPressed: () {
-                                    controller.getImageFromGallery(
+                                  onPressed: () async {
+                                    await controller.changeImageFromGallery(
                                         ImageSource.gallery);
                                   },
                                   child: Icon(Icons.image)),
                               ElevatedButton(
                                   onPressed: () async {
-                                    /*
-                                    if (firstDisp == 0) {
+                                    print("firstDisp ${controller.firstDisp}");
+                                    if (controller.firstDisp == 0 &&
+                                        contentController.text.trim() != '') {
                                       await controller.updateJSONData(
-                                        contentController.text.trim(), controller.selectedButton.value, post_seq
-                                      );
-                                    } else {
-                                      await controller.updateJSONDataAll(
-                                        image, contents, public, seq
-                                        )
-                                    }
-                                    if (controller.imageFile != null &&
-                                        contentController.text.trim() != '' &&
-                                        controller.selectedButton.value != -1) {
+                                          contentController.text.trim(),
+                                          controller.selectedButton.value,
+                                          post_seq);
+                                      controller.firstDisp = 0;
+                                      print('update');
+                                      Get.back();
+                                    } else if (controller.firstDisp != 0 &&
+                                        contentController.text.trim() != '') {
+                                      await controller
+                                          .deletePostImage(value[3]);
                                       await controller.uploadImage();
-                                      
-                                      await controller.insertJSONData(
+                                      await controller.updateJSONDataAll(
                                           controller.image,
                                           contentController.text.trim(),
                                           controller.selectedButton.value,
-                                          controller.user[0]['id'],
-                                          controller.user[0]['nickname']);
-                                      controller.imageFile = null;
-                                      controller.selectedButton.value = -1;
-                                      controller.isButtonEnabled.value = true;
+                                          post_seq);
+                                      controller.firstDisp = 0;
+                                      print('updateall');
                                       Get.back();
                                     } else {
                                       Get.snackbar(
                                           'Error', 'please complete the form',
                                           duration: Duration(seconds: 1));
-                                    }*/
+                                    }
+                                    print(value);
+                                    await vmHandler.getUserPostJSONData(userId);
                                   },
                                   child: Text('Edit')),
                               ElevatedButton(
