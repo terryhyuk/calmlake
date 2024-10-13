@@ -1,4 +1,5 @@
 import 'package:calm_lake_project/view/insert.dart';
+import 'package:calm_lake_project/vm/comment_controller.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,6 +17,7 @@ class Post extends StatelessWidget {
   Widget build(BuildContext context) {
     final vmHandler = Get.put(VmHandler());
     String userId = box.read('userId');
+    //vmHandler.getReply();
 
     return Scaffold(
       appBar: AppBar(
@@ -112,7 +114,7 @@ class Post extends StatelessWidget {
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 10, top: 10),
+                                        left: 15, top: 10),
                                     child: post[10] == '1'
                                         ? Icon(Icons.favorite)
                                         : Icon(Icons.favorite_border),
@@ -159,8 +161,13 @@ class Post extends StatelessWidget {
                                 ),
                                 // 코멘트 아이콘
                                 GestureDetector(
-                                  onTap: () {
-                                    controller.getComment(post[0]);
+                                  onTap: () async {
+                                    await controller.getCommentReply(post[0]);
+                                    /*if (controller.comments.isNotEmpty) {
+                                      var comment_seq = vmHandler.comments[0];
+                                      await controller.getReply(
+                                          comment_seq[0], post[0]);
+                                    }*/
                                     showModalBottomSheet(
                                       context: context,
                                       isScrollControlled:
@@ -187,7 +194,7 @@ class Post extends StatelessWidget {
                                                       const EdgeInsets.only(
                                                           top: 15, bottom: 10),
                                                   child: Text(
-                                                    'Commnet',
+                                                    'Commnets',
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.w600),
@@ -195,70 +202,134 @@ class Post extends StatelessWidget {
                                                 ),
                                                 Divider(),
                                                 Expanded(
-                                                  child: Obx(() {
-                                                    return ListView.builder(
-                                                      shrinkWrap: true,
-                                                      //physics: NeverScrollableScrollPhysics(), // 스크롤 방지
-                                                      itemCount: controller
-                                                          .comments.length,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        return Column(
-                                                          children: [
-                                                            GestureDetector(
-                                                              onLongPress: () {
-                                                                if (controller.comments[
-                                                                            index]
-                                                                        [1] ==
-                                                                    userId) {
-                                                                  _showDefaultDialog(
-                                                                      context,
-                                                                      index,
-                                                                      vmHandler,
-                                                                      userId,
-                                                                      post);
-                                                                } else {
-                                                                  Get.snackbar(
-                                                                    '권한 없음',
-                                                                    '댓글 작성자만 삭제할 수 있습니다.',
-                                                                    snackPosition:
-                                                                        SnackPosition
-                                                                            .BOTTOM,
-                                                                    backgroundColor:
-                                                                        Colors
-                                                                            .red,
-                                                                    colorText:
-                                                                        Colors
-                                                                            .white,
-                                                                  );
-                                                                }
-                                                              },
-                                                              child: ListTile(
-                                                                leading:
-                                                                    CircleAvatar(),
-                                                                title: Text(controller
-                                                                    .comments[
-                                                                        index]
-                                                                        [1]
-                                                                    .toString()),
-                                                                subtitle: Text(
-                                                                    controller
-                                                                        .comments[
-                                                                            index]
-                                                                            [3]
-                                                                        .toString()),
-                                                                trailing: TextButton(
-                                                                    onPressed:
-                                                                        () {},
+                                                  child: SingleChildScrollView(
+                                                    child: Column(
+                                                      children: [
+                                                        GetBuilder<VmHandler>(
+                                                          builder:
+                                                              (controller) {
+                                                            if (controller
+                                                                .commentreply
+                                                                .isEmpty) {
+                                                              return Center(
+                                                                child: SizedBox(
+                                                                  height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .height *
+                                                                      0.7,
+                                                                  child: Align(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .center,
                                                                     child: Text(
-                                                                        'reply')),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    );
-                                                  }),
+                                                                      'No comments yet',
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            }
+                                                            return ListView
+                                                                .builder(
+                                                              shrinkWrap: true,
+                                                              physics:
+                                                                  NeverScrollableScrollPhysics(), // 부모 스크롤만 사용
+                                                              itemCount: controller
+                                                                  .commentreply
+                                                                  .length,
+                                                              itemBuilder:
+                                                                  (context,
+                                                                      index) {
+                                                                var comment =
+                                                                    controller
+                                                                            .commentreply[
+                                                                        index];
+                                                                return Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    GestureDetector(
+                                                                      onLongPress:
+                                                                          () {
+                                                                        if (comment[1] ==
+                                                                            userId) {
+                                                                          _showDefaultDialog(
+                                                                              context,
+                                                                              index,
+                                                                              vmHandler,
+                                                                              userId,
+                                                                              post,
+                                                                              comment);
+                                                                        } else {
+                                                                          Get.snackbar(
+                                                                            '권한 없음',
+                                                                            '댓글 작성자만 삭제할 수 있습니다.',
+                                                                            snackPosition:
+                                                                                SnackPosition.BOTTOM,
+                                                                            backgroundColor:
+                                                                                Colors.red,
+                                                                            colorText:
+                                                                                Colors.white,
+                                                                          );
+                                                                        }
+                                                                      },
+                                                                      child:
+                                                                          ListTile(
+                                                                        leading:
+                                                                            CircleAvatar(),
+                                                                        title: Text(
+                                                                            comment[1]),
+                                                                        subtitle:
+                                                                            Text(comment[3]),
+                                                                        trailing: TextButton(
+                                                                            onPressed: () {
+                                                                              controller.commentIndex = index;
+                                                                              controller.replyTextController.text = '';
+                                                                              showBottomeSheet(context, index, vmHandler, post, comment, userId);
+                                                                            },
+                                                                            child: Text('reply')),
+                                                                      ),
+                                                                    ),
+                                                                    // Replies List
+                                                                    if (comment[
+                                                                            4]
+                                                                        .isNotEmpty) ...[
+                                                                      for (var reply
+                                                                          in comment[
+                                                                              4]) ...[
+                                                                        Padding(
+                                                                          padding: const EdgeInsets
+                                                                              .only(
+                                                                              left: 40.0),
+                                                                          child:
+                                                                              Row(
+                                                                            children: [
+                                                                              Expanded(
+                                                                                  child: ListTile(
+                                                                                leading: CircleAvatar(
+                                                                                  radius: 18,
+                                                                                ),
+                                                                                title: Text(reply[2]),
+                                                                                subtitle: Text(
+                                                                                  reply[4], // Reply text
+                                                                                  style: TextStyle(color: Colors.grey[700]),
+                                                                                ),
+                                                                              )),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      ], // for
+                                                                    ], // if
+                                                                  ],
+                                                                );
+                                                              },
+                                                            );
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
                                                 ),
                                                 SizedBox(height: 10),
                                                 Row(
@@ -300,9 +371,7 @@ class Post extends StatelessWidget {
                                                                         .text
                                                                         .trim(),
                                                                     userId);
-                                                            await controller
-                                                                .getComment(
-                                                                    post[0]);
+                                                            //await controller.getComment(post[0]);
                                                             controller
                                                                 .textController
                                                                 .text = '';
@@ -310,6 +379,9 @@ class Post extends StatelessWidget {
                                                           await vmHandler
                                                               .getJSONData(
                                                                   userId);
+                                                          await vmHandler
+                                                              .getCommentReply(
+                                                                  post[0]);
                                                         },
                                                         child: Icon(
                                                             Icons.arrow_upward),
@@ -343,7 +415,7 @@ class Post extends StatelessWidget {
                             ),
                             // posting 내용
                             Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.only(left: 15, top: 5),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -371,7 +443,80 @@ class Post extends StatelessWidget {
     );
   }
 
-  _showDefaultDialog(context, index, vmHandler, userId, post) async {
+  showBottomeSheet(context, index, vmHandler, post, comment, userId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Wrap(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              child: Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(top: 10, left: 10, right: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Reply',
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.w600),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (vmHandler.replyTextController.text
+                                  .trim()
+                                  .isNotEmpty) {
+                                await vmHandler.insertReply(
+                                    post[0],
+                                    userId,
+                                    comment[0],
+                                    vmHandler.replyTextController.text.trim());
+                                vmHandler.replyTextController.text = '';
+                                //await controller.getComment(post[0]);
+                                await vmHandler.getCommentReply(post[0]);
+                                Get.back();
+                              }
+                            },
+                            child: Icon(
+                              Icons.check,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary),
+                          )
+                        ],
+                      ),
+                    ),
+                    TextFormField(
+                      controller: vmHandler.replyTextController,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                        enabledBorder:
+                            UnderlineInputBorder(borderSide: BorderSide()),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  _showDefaultDialog(context, index, vmHandler, userId, post, comment) async {
     showDialog(
         context: context,
         builder: (context) {
@@ -400,15 +545,17 @@ class Post extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary),
                     onPressed: () async {
-                      var result =
-                          await vmHandler.deleteCommentJSONData(userId);
+                      /*var result = await vmHandler.deleteCommentJSONData(
+                          userId,
+                          comment[0],
+                          comment[4].length == 0 ? -1 : comment[4][0][3]);
                       if (result == 'OK') {
                         Get.back();
-                        await vmHandler.getComment(post[0]);
+                        await vmHandler.getCommentReply(post[0]);
                         await vmHandler.getJSONData(userId);
                       } else {
                         Get.snackbar('Error', 'error');
-                      }
+                      }*/
                     }, // alert 없애기
                     child: Text(
                       'OK',
@@ -422,4 +569,107 @@ class Post extends StatelessWidget {
           );
         });
   }
+/*
+  showReply(context, controller, vmHandler, userId, post) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // 키보드가 나타날 때 modal 크기를 조정
+      builder: (context) {
+        return Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.9 -
+                MediaQuery.of(context).viewInsets.bottom * 1,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 15, bottom: 10),
+                  child: Text(
+                    'reply',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+                Divider(),
+                Expanded(
+                  child: Obx(() {
+                    return ListView.builder(
+                      //comments list
+                      shrinkWrap: true,
+                      itemCount: controller.replys.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            GestureDetector(
+                              onLongPress: () {
+                                /*
+                                if (controller.replys[index][2] == userId) {
+                                  //_showDefaultDialog( context, index, vmHandler, userId, post);
+                                } else {
+                                  Get.snackbar(
+                                    '권한 없음',
+                                    '댓글 작성자만 삭제할 수 있습니다.',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.red,
+                                    colorText: Colors.white,
+                                  );
+                                }*/
+                              },
+                              child: ListTile(
+                                leading: CircleAvatar(),
+                                title: Text(controller.commentreply[index][1]),
+                                subtitle:
+                                    Text(controller.commentreply[index][3]),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }),
+                ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: TextField(
+                          controller: controller.textController,
+                          maxLines: 1,
+                          decoration: InputDecoration(
+                            hintText: 'Enter comment',
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 20),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (controller.textController.text
+                              .trim()
+                              .isNotEmpty) {
+                            await controller.insertCommnet(post[0],
+                                controller.textController.text.trim(), userId);
+                            await controller.getComment(post[0]);
+                            controller.textController.text = '';
+                          }
+                          await vmHandler.getJSONData(userId);
+                        },
+                        child: Icon(Icons.arrow_upward),
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  height: 40,
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }*/
 }

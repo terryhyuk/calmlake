@@ -17,7 +17,7 @@ class MyPost extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Posting'),
+        title: const Text('My Posts'),
         centerTitle: false,
       ),
       floatingActionButton: FloatingActionButton(
@@ -61,17 +61,16 @@ class MyPost extends StatelessWidget {
                                           title: 'Delete',
                                           titleStyle: TextStyle(fontSize: 20),
                                           content: Text(
-                                              'Do you want to delete the comment?'),
+                                              'Do you want to delete the post?'),
                                           onConfirm: () async {
-                                            var result = await vmHandler
-                                                .deleteCommentJSONData(userId);
+                                            /* var result = await vmHandler.deletePost(seq, filename)
                                             if (result == 'OK') {
                                               Get.back();
                                               await vmHandler
                                                   .getComment(userpost[0]);
                                             } else {
                                               Get.snackbar('Error', 'error');
-                                            }
+                                            }*/
                                           },
                                           buttonColor: Colors.grey,
                                           contentPadding: EdgeInsets.all(10));
@@ -123,14 +122,15 @@ class MyPost extends StatelessWidget {
                                 // 좋아요 아이콘
                                 GestureDetector(
                                   onTap: () async {
-                                    /*
                                     bool check = await vmHandler.checkFavorite(
-                                            post[7] ?? 'null', post[8] ?? 0) ==
-                                        post[6];
+                                            userpost[8] ?? 'null',
+                                            userpost[9] ?? 0) ==
+                                        userpost[7];
                                     print(await vmHandler.checkFavorite(
-                                        post[7] ?? 'null', post[8] ?? 0));
+                                        userpost[8] ?? 'null',
+                                        userpost[9] ?? 0));
                                     int newFavoriteValue =
-                                        post[9] == '1' ? 0 : 1;
+                                        userpost[10] == '1' ? 0 : 1;
                                     // favorite 테이블이 있고 hate 테이블이 있는경우
                                     // favorite 1이고 hate가 0이면 updateFavorite
                                     // favorite 1이고 hate가 1이면 updatehate, updatefavorite
@@ -139,86 +139,88 @@ class MyPost extends StatelessWidget {
                                     // favorite 테이블이 있고 hate 테이블이 없는경우 updateFavorite
                                     if (check) {
                                       if (newFavoriteValue == 1 &&
-                                          post[13] == '1') {
+                                          userpost[14] == '1') {
                                         await vmHandler.updateHate(
-                                            0, post[12], post[11]);
+                                            0, userpost[13], userId);
                                         await vmHandler.updateFavorite(
-                                            newFavoriteValue, post[8], post[7]);
+                                            newFavoriteValue,
+                                            userpost[9],
+                                            userId);
                                       }
                                       await vmHandler.updateFavorite(
-                                          newFavoriteValue, post[8], post[7]);
+                                          newFavoriteValue,
+                                          userpost[9],
+                                          userId);
                                       // favorite 테이블이 없고 hate 테이블이 없는경우 inserFavorite 1
                                       // favorite 테이블이 없고 hate 테이블이 있는경우
                                       // hate가 1이면 insertfavorite 1, updatehate
                                       // hate가 0이면 insertfavofite 1
                                     } else {
-                                      if (post[13] == '1') {
+                                      if (userpost[14] == '1') {
                                         await vmHandler.updateHate(
-                                            0, post[12], post[11]);
+                                            0, userpost[13], userId);
                                         await vmHandler.insertFavorite(
-                                            1, post[0], 'user');
+                                            1, userpost[0], userId);
                                       } else {
                                         await vmHandler.insertFavorite(
-                                            1, post[0], 'user');
+                                            1, userpost[0], userId);
                                       }
                                     }
-                                    await vmHandler.getJSONData(); */
+                                    await vmHandler.getUserPostJSONData(userId);
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 10, top: 10),
-                                    child:
-                                        /*post[9] == '1'
+                                        left: 15, top: 10),
+                                    child: userpost[10] == '1'
                                         ? Icon(Icons.favorite)
-                                        : */
-                                        Icon(Icons.favorite_border),
+                                        : Icon(Icons.favorite_border),
                                   ),
                                 ),
                                 // 싫어요 아이콘
                                 GestureDetector(
                                   onTap: () async {
-                                    /*
                                     bool check = await vmHandler.checkHate(
-                                            post[11] ?? 'null',
-                                            post[12] ?? 0) ==
-                                        post[10];
-                                    int newHateValue = post[13] == '1' ? 0 : 1;
+                                            userpost[12] ?? 'null',
+                                            userpost[13] ?? 0) ==
+                                        userpost[11];
+                                    int newHateValue =
+                                        userpost[14] == '1' ? 0 : 1;
                                     if (check) {
-                                      if (newHateValue == 1 && post[9] == '1') {
+                                      if (newHateValue == 1 &&
+                                          userpost[10] == '1') {
                                         await vmHandler.updateFavorite(
-                                            0, post[8], post[7]);
+                                            0, userpost[9], userId);
                                         await vmHandler.updateHate(
-                                            newHateValue, post[12], post[11]);
+                                            newHateValue, userpost[13], userId);
                                       }
                                       await vmHandler.updateHate(
-                                          newHateValue, post[12], post[11]);
+                                          newHateValue, userpost[13], userId);
                                     } else {
-                                      if (post[9] == '1') {
+                                      if (userpost[10] == '1') {
                                         await vmHandler.updateFavorite(
-                                            0, post[8], post[7]);
+                                            0, userpost[9], userId);
                                         await vmHandler.insertHate(
-                                            1, post[0], 'user');
+                                            1, userpost[0], userId);
                                       } else {
                                         await vmHandler.insertHate(
-                                            1, post[0], 'user');
+                                            1, userpost[0], userId);
                                       }
                                     }
-                                    await vmHandler.getJSONData();*/
+                                    await vmHandler.getUserPostJSONData(userId);
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 10, top: 10),
-                                    child: /*
-                                        post[13] == '1'
+                                    child: userpost[14] == '1'
                                         ? Icon(Icons.thumb_down)
-                                        : */
-                                        Icon(Icons.thumb_down_alt_outlined),
+                                        : Icon(Icons.thumb_down_alt_outlined),
                                   ),
                                 ),
                                 // 코멘트 아이콘
                                 GestureDetector(
-                                  onTap: () {
-                                    controller.getComment(userpost[0]);
+                                  onTap: () async {
+                                    await controller
+                                        .getCommentReply(userpost[0]);
                                     showModalBottomSheet(
                                       context: context,
                                       isScrollControlled:
@@ -253,37 +255,135 @@ class MyPost extends StatelessWidget {
                                                 ),
                                                 Divider(),
                                                 Expanded(
-                                                  child: Obx(() {
-                                                    return ListView.builder(
-                                                      shrinkWrap: true,
-                                                      //physics: NeverScrollableScrollPhysics(), // 스크롤 방지
-                                                      itemCount: controller
-                                                          .comments.length,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        return Column(
-                                                          children: [
-                                                            ListTile(
-                                                              leading:
-                                                                  CircleAvatar(),
-                                                              title: Text(
-                                                                  controller
-                                                                      .comments[
-                                                                          index]
-                                                                          [1]
-                                                                      .toString()),
-                                                              subtitle: Text(
-                                                                  controller
-                                                                      .comments[
-                                                                          index]
-                                                                          [3]
-                                                                      .toString()),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    );
-                                                  }),
+                                                  child: SingleChildScrollView(
+                                                    child: Column(
+                                                      children: [
+                                                        GetBuilder<VmHandler>(
+                                                          builder:
+                                                              (controller) {
+                                                            if (controller
+                                                                .commentreply
+                                                                .isEmpty) {
+                                                              return Center(
+                                                                child: SizedBox(
+                                                                  height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .height *
+                                                                      0.7,
+                                                                  child: Align(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .center,
+                                                                    child: Text(
+                                                                      'No comments yet',
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            }
+
+                                                            return ListView
+                                                                .builder(
+                                                              shrinkWrap: true,
+                                                              physics:
+                                                                  NeverScrollableScrollPhysics(), // 부모 스크롤만 사용
+                                                              itemCount: controller
+                                                                  .commentreply
+                                                                  .length,
+                                                              itemBuilder:
+                                                                  (context,
+                                                                      index) {
+                                                                var comment =
+                                                                    controller
+                                                                            .commentreply[
+                                                                        index];
+                                                                return Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    GestureDetector(
+                                                                      onLongPress:
+                                                                          () {
+                                                                        if (comment[1] ==
+                                                                            userId) {
+                                                                          _showDefaultDialog(
+                                                                              context,
+                                                                              index,
+                                                                              vmHandler,
+                                                                              userId,
+                                                                              userpost,
+                                                                              comment);
+                                                                        } else {
+                                                                          Get.snackbar(
+                                                                            '권한 없음',
+                                                                            '댓글 작성자만 삭제할 수 있습니다.',
+                                                                            snackPosition:
+                                                                                SnackPosition.BOTTOM,
+                                                                            backgroundColor:
+                                                                                Colors.red,
+                                                                            colorText:
+                                                                                Colors.white,
+                                                                          );
+                                                                        }
+                                                                      },
+                                                                      child:
+                                                                          ListTile(
+                                                                        leading:
+                                                                            CircleAvatar(),
+                                                                        title: Text(
+                                                                            comment[1]),
+                                                                        subtitle:
+                                                                            Text(comment[3]),
+                                                                        trailing: TextButton(
+                                                                            onPressed: () {
+                                                                              controller.commentIndex = index;
+                                                                              controller.replyTextController.text = '';
+                                                                              showBottomeSheet(context, index, vmHandler, userpost, comment, userId);
+                                                                            },
+                                                                            child: Text('reply')),
+                                                                      ),
+                                                                    ),
+                                                                    // Replies List
+                                                                    if (comment[
+                                                                            4]
+                                                                        .isNotEmpty) ...[
+                                                                      for (var reply
+                                                                          in comment[
+                                                                              4]) ...[
+                                                                        Padding(
+                                                                          padding: const EdgeInsets
+                                                                              .only(
+                                                                              left: 40.0),
+                                                                          child:
+                                                                              Row(
+                                                                            children: [
+                                                                              Expanded(
+                                                                                  child: ListTile(
+                                                                                leading: CircleAvatar(
+                                                                                  radius: 18,
+                                                                                ),
+                                                                                title: Text(reply[2]),
+                                                                                subtitle: Text(
+                                                                                  reply[4], // Reply text
+                                                                                  style: TextStyle(color: Colors.grey[700]),
+                                                                                ),
+                                                                              )),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      ], // for
+                                                                    ], // if
+                                                                  ],
+                                                                );
+                                                              },
+                                                            );
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
                                                 ),
                                                 SizedBox(height: 10),
                                                 Row(
@@ -325,14 +425,17 @@ class MyPost extends StatelessWidget {
                                                                         .text
                                                                         .trim(),
                                                                     userId);
-                                                            await controller
-                                                                .getComment(
-                                                                    userpost[
-                                                                        0]);
+                                                            //await controller.getComment(userpost[0]);
                                                             controller
                                                                 .textController
                                                                 .text = '';
                                                           }
+                                                          await vmHandler
+                                                              .getUserPostJSONData(
+                                                                  userId);
+                                                          await vmHandler
+                                                              .getCommentReply(
+                                                                  userpost[0]);
                                                         },
                                                         child: Icon(
                                                             Icons.arrow_upward),
@@ -355,18 +458,19 @@ class MyPost extends StatelessWidget {
                                         left: 10, top: 10),
                                     child: Icon(Icons.chat_bubble_outline),
                                   ),
-                                ), /*
+                                ),
                                 Padding(
                                   padding:
                                       const EdgeInsets.only(left: 10, top: 10),
-                                  child:
-                                      Text(post[15] == 0 ? "" : "${post[15]}"),
-                                )*/
+                                  child: Text(userpost[15] == 0
+                                      ? ""
+                                      : "${userpost[15]}"),
+                                )
                               ],
                             ),
                             // posting 내용
                             Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.only(top: 5, left: 15),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -392,5 +496,133 @@ class MyPost extends StatelessWidget {
         },
       ),
     );
+  }
+
+  showBottomeSheet(context, index, vmHandler, userpost, comment, userId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Wrap(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              child: Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(top: 10, left: 10, right: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Reply',
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.w600),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (vmHandler.replyTextController.text
+                                  .trim()
+                                  .isNotEmpty) {
+                                await vmHandler.insertReply(
+                                    userpost[0],
+                                    userId,
+                                    comment[0],
+                                    vmHandler.replyTextController.text.trim());
+                                vmHandler.replyTextController.text = '';
+                                //await controller.getComment(post[0]);
+                                await vmHandler.getCommentReply(userpost[0]);
+                                Get.back();
+                              }
+                            },
+                            child: Icon(
+                              Icons.check,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary),
+                          )
+                        ],
+                      ),
+                    ),
+                    TextFormField(
+                      controller: vmHandler.replyTextController,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                        enabledBorder:
+                            UnderlineInputBorder(borderSide: BorderSide()),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  _showDefaultDialog(
+      context, index, vmHandler, userId, userpost, comment) async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title:
+                Align(alignment: Alignment.center, child: const Text('Delete')),
+            content: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 300), // 최대 너비 설정
+              child: Text(
+                'Do you want to delete\nthe comment?',
+                textAlign: TextAlign.center, // 텍스트 중앙 정렬
+              ),
+            ),
+            actions: [
+              // 액션으로 버튼 추가
+              Center(
+                  child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        Get.back();
+                      },
+                      child: Text('Cancel')),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary),
+                    onPressed: () async {
+                      /*var result = await vmHandler.deleteCommentJSONData(
+                          userId,
+                          comment[0],
+                          comment[4].length == 0 ? -1 : comment[4][0][3]);
+                      if (result == 'OK') {
+                        Get.back();
+                        await vmHandler.getCommentReply(userpost[0]);
+                        await vmHandler.getJSONData(userId);
+                      } else {
+                        Get.snackbar('Error', 'error');
+                      }*/
+                    }, // alert 없애기
+                    child: Text(
+                      'OK',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary),
+                    ),
+                  ),
+                ],
+              ))
+            ],
+          );
+        });
   }
 }
