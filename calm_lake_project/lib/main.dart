@@ -1,4 +1,3 @@
-import 'package:calm_lake_project/HomeScreen.dart';
 import 'package:calm_lake_project/firebase_options.dart';
 import 'package:calm_lake_project/view/login/login.dart';
 import 'package:calm_lake_project/vm/app_lifecycle_controller.dart';
