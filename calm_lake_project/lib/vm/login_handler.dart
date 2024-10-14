@@ -115,7 +115,7 @@ class LoginHandler extends ValidateCheck {
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
-    findId.value = result.toString();
+    findId.value = result;
     update();
   }
 

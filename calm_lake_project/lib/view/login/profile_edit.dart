@@ -15,135 +15,168 @@ class ProfileEdit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile Edit'),
-      ),
-      body: GetBuilder<LoginHandler>(
-        builder: (controller) {
-          return FutureBuilder(
-            future:
-                controller.showProfileJSONData(loginHandler.box.read('userId')),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${snapshot.error}'),
-                );
-              } else {
-                Profile result = snapshot.data!;
-                nickNameController.text = result.nickName;
-                emailController.text = result.email;
-                // newPwController.text = result.pw;
-                return Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      Container(
-                          width: 200,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                          ),
-                          child: ClipOval(
-                            child: controller.imageFile != null
-                                ? Image.file(File(controller.imageFile!.path))
-                                : result.image != null && result.image != 'null'
-                                    ? Image.network(
-                                        'http://127.0.0.1:8000/login/view/${result.image}')
-                                    : const Icon(Icons.person, size: 200),
-                          )),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('images/background.png'),
+          fit: BoxFit.fill
+          ),
+      ),      
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Edit Profile',
+          style: TextStyle(
+            fontWeight: FontWeight.bold
+          ),
+          ),
+        ),
+        body: GetBuilder<LoginHandler>(
+          builder: (controller) {
+            return FutureBuilder(
+              future:
+                  controller.showProfileJSONData(loginHandler.box.read('userId')),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                } else {
+                  Profile result = snapshot.data!;
+                  nickNameController.text = result.nickName;
+                  emailController.text = result.email;
+                  // newPwController.text = result.pw;
+                  return Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: SingleChildScrollView(
+                      child: Column(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: ElevatedButton(
-                                onPressed: () async {
-                                  controller
-                                      .getImageFromGallery(ImageSource.gallery);
-                                  print(result.image);
-                                },
-                                child: const Text('갤러리')),
+                          Container(
+                              width: 200,
+                              height: 200,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                              ),
+                              child: ClipOval(
+                                child: controller.imageFile != null
+                                    ? Image.file(File(controller.imageFile!.path))
+                                    : result.image != null && result.image != 'null'
+                                        ? Image.network(
+                                            'http://127.0.0.1:8000/login/view/${result.image}')
+                                        : const Icon(Icons.person, size: 200),
+                              )),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFCCE8F9),
+                                    foregroundColor: Colors.black
+                                  ),
+                                    onPressed: () async {
+                                      await controller
+                                          .getImageFromGallery(ImageSource.gallery);
+                                      print(result.image);
+                                    },
+                                    child: const Text('갤러리')),
+                              const SizedBox(width: 20,),      
+                              ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color.fromARGB(255, 255, 250, 198),
+                                    foregroundColor: Colors.black
+                                  ),                                
+                                  onPressed: () async{
+                                    await controller
+                                        .getImageFromGallery(ImageSource.camera);
+                                  },
+                                  child: const Text('카메라')),
+                            ],
                           ),
-                          ElevatedButton(
+                          Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Text(
+                              '${result.id}님 안녕하세요.',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 23),
+                            ),
+                          ),
+                          // 중복검사 삽입하기
+                          TextField(
+                            controller: nickNameController,
+                            decoration: const InputDecoration(
+                                labelText: '수정하실 Nickname을 입력하세요.'),
+                          ),
+                          TextField(
+                            controller: emailController,
+                            decoration: InputDecoration(
+                                labelText: 'email을 입력하세요.',
+                                errorText: controller.checkEmail.isNotEmpty
+                                    ? controller.checkEmail
+                                    : null,
+                                errorStyle:
+                                    TextStyle(color: controller.emailColor)),
+                          ),
+                          TextField(
+                            controller: newPwController,
+                            decoration: InputDecoration(
+                                labelText: '비밀번호를 입력하세요.',
+                                errorText: controller.checkResult.isNotEmpty
+                                    ? controller.checkResult
+                                    : null,
+                                errorStyle: TextStyle(color: controller.pwColor)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFD7EFC9),
+                                    foregroundColor: Colors.black
+                                  ),                              
+                                onPressed: () {
+                                  String? selectedImage;
+                                  loginHandler.imageFile != null
+                                      ? selectedImage = loginHandler.imageFile!.path
+                                      : result.image != null &&
+                                              result.image != 'null'
+                                          ? selectedImage = result.image
+                                          : selectedImage = result.image;
+                                  controller.validatePassword(
+                                      newPwController.text.trim());
+                                  controller
+                                      .validateEmail(emailController.text.trim());
+                                  controller.checkResult !=
+                                              '비밀번호는 한글 또는 영문과 숫자를 포함한 4자 이상 15자 이내로 입력하세요.' &&
+                                          controller.checkEmail !=
+                                              '올바른 email 형식으로 입력해주세요.'
+                                      ? changeUserAction(
+                                          loginHandler, selectedImage, result.image)
+                                      : errorSnackBar();
+                                },
+                                child: const Text('회원 정보 수정')),
+                          ),
+                          TextButton(
                               onPressed: () {
-                                controller
-                                    .getImageFromGallery(ImageSource.camera);
+                                deleteAction(result.id, result.image!);
                               },
-                              child: const Text('카메라')),
+                              child: const Text('회원 탈퇴',
+                              style: TextStyle(
+                                color: Colors.black54
+                              ),
+                              )),
                         ],
                       ),
-                      Text(
-                        '${result.id}님 안녕하세요.',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 23),
-                      ),
-                      // 중복검사 삽입하기
-                      TextField(
-                        controller: nickNameController,
-                        decoration: const InputDecoration(
-                            labelText: '수정하실 Nickname을 입력하세요.'),
-                      ),
-                      TextField(
-                        controller: emailController,
-                        decoration: InputDecoration(
-                            labelText: 'email을 입력하세요.',
-                            errorText: controller.checkEmail.isNotEmpty
-                                ? controller.checkEmail
-                                : null,
-                            errorStyle:
-                                TextStyle(color: controller.emailColor)),
-                      ),
-                      TextField(
-                        controller: newPwController,
-                        decoration: InputDecoration(
-                            labelText: '비밀번호를 입력하세요.',
-                            errorText: controller.checkResult.isNotEmpty
-                                ? controller.checkResult
-                                : null,
-                            errorStyle: TextStyle(color: controller.pwColor)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: ElevatedButton(
-                            onPressed: () {
-                              String? selectedImage;
-                              loginHandler.imageFile != null
-                                  ? selectedImage = loginHandler.imageFile!.path
-                                  : result.image != null &&
-                                          result.image != 'null'
-                                      ? selectedImage = result.image
-                                      : selectedImage = result.image;
-                              controller.validatePassword(
-                                  newPwController.text.trim());
-                              controller
-                                  .validateEmail(emailController.text.trim());
-                              controller.checkResult !=
-                                          '비밀번호는 한글 또는 영문과 숫자를 포함한 4자 이상 15자 이내로 입력하세요.' &&
-                                      controller.checkEmail !=
-                                          '올바른 email 형식으로 입력해주세요.'
-                                  ? changeUserAction(
-                                      loginHandler, selectedImage, result.image)
-                                  : errorSnackBar();
-                            },
-                            child: const Text('회원 정보 수정')),
-                      ),
-                      TextButton(
-                          onPressed: () {
-                            deleteAction(result.id, result.image!);
-                          },
-                          child: const Text('회원 탈퇴')),
-                    ],
-                  ),
-                );
-              }
-            },
-          );
-        },
+                    ),
+                  );
+                }
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -178,7 +211,7 @@ class ProfileEdit extends StatelessWidget {
       if (result == 'OK') {
         loginHandler.imageFile = null;
         if (imageFilename != filename && filename != null) {
-          deleteImage(filename);
+          await deleteImage(filename);
         }
         Get.snackbar('Update', '수정이 완료되었습니다.',
             snackPosition: SnackPosition.BOTTOM,
@@ -186,8 +219,10 @@ class ProfileEdit extends StatelessWidget {
             backgroundColor: const Color.fromARGB(255, 159, 184, 172),
             colorText: Colors.white);
       } else {
-        loginHandler.nickDoublecheck(nickNameController.text.trim());
+        await loginHandler.nickDoublecheck(nickNameController.text.trim());
         if(loginHandler.nickLabel=='사용할 수 없는 Nickname입니다.'){
+          await deleteImage(imageFilename);
+          loginHandler.imageFile=null;       
           nickErrorSnackBar();
         print('nickname 중복');}
       }
@@ -195,7 +230,7 @@ class ProfileEdit extends StatelessWidget {
       Get.snackbar('Error', '다시 확인해주세요.',
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 2),
-          backgroundColor: const Color.fromARGB(255, 206, 53, 42),
+          backgroundColor: const Color.fromARGB(255, 243, 130, 122),
           colorText: Colors.white);
     }
   }
@@ -205,11 +240,11 @@ class ProfileEdit extends StatelessWidget {
   }
 
   //회원 탈퇴
-  deleteAction(String userId, String? filename) {
+  deleteAction(String userId, String? filename) async{
     Get.dialog(
       barrierDismissible: false,
       AlertDialog(
-        backgroundColor: Colors.red,
+        backgroundColor: const Color.fromARGB(255, 243, 130, 122),
         title: const Text(
           '정말 탈퇴하시겠습니까?',
           style: TextStyle(color: Colors.white),
@@ -261,14 +296,14 @@ class ProfileEdit extends StatelessWidget {
     Get.snackbar('Error', '다시 확인해주세요.',
         snackPosition: SnackPosition.BOTTOM,
         duration: const Duration(seconds: 2),
-        backgroundColor: const Color.fromARGB(255, 206, 53, 42),
+        backgroundColor: const Color.fromARGB(255, 243, 130, 122),
         colorText: Colors.white);
   }
   nickErrorSnackBar() {
     Get.snackbar('Nickname 중복', '사용할 수 없는 Nickname입니다.',
         snackPosition: SnackPosition.BOTTOM,
         duration: const Duration(seconds: 2),
-        backgroundColor: const Color.fromARGB(255, 206, 53, 42),
+        backgroundColor: const Color.fromARGB(255, 243, 130, 122),
         colorText: Colors.white);
   }
 }
