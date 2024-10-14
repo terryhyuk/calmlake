@@ -18,6 +18,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: TabBarView(
         controller: controller.tabController,
         children: [Home(), Friends(), Chat(), Post(), Profile()],
@@ -29,14 +30,14 @@ class HomeScreen extends StatelessWidget {
             //showUnselectedLabels: F,
             iconSize: 25,
             selectedFontSize: 14,
-            selectedItemColor: const Color.fromARGB(255, 58, 186, 159),
+            selectedItemColor: const Color.fromARGB(255, 101, 186, 255),
             currentIndex: controller.currentIndex.value,
             onTap: (index) {
               controller.tabController.index = index;
               activityInsert(index);
             },
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home',),
               BottomNavigationBarItem(
                   icon: Icon(Icons.people), label: 'Friends'),
               BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
