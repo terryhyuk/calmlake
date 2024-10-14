@@ -61,6 +61,9 @@ dependencies:
   volume_controller: ^2.0.8
   # File_ficker(2024-10-11<add>)
   file_picker: ^8.1.2
+  # 글자 접기
+  expandable_text: ^2.3.0 
+
   
 dev_dependencies:
   flutter_test:
