@@ -303,6 +303,7 @@ _showDialog(int index) {
   logOut(String id) async {
     await activityInsert();
     var result = await loginHandler.logoutJSONData(id);
+    await vmHandler.reset();
     if (result == 'OK') {
       Get.back();
     } else {

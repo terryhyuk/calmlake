@@ -11,7 +11,10 @@ class VmHandler extends Musicinsert {
   var user = [].obs;
   var userposts = [].obs;
   var favorite = [].obs;
+  var search = ''.obs;
+  var searchPost = [].obs;
 
+// post page
   getJSONData(String userId) async {
     var url = Uri.parse('http://127.0.0.1:8000/query/select?user_id=$userId');
     var response = await http.get(url);
@@ -19,7 +22,29 @@ class VmHandler extends Musicinsert {
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List result = dataCovertedJSON['results'];
     posts.addAll(result);
-    //print(posts);
+    print(posts);
+  }
+
+  getTopJSONData(String userId) async {
+    var url =
+        Uri.parse('http://127.0.0.1:8000/query/select_top?user_id=$userId');
+    var response = await http.get(url);
+    posts.clear();
+    var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    List result = dataCovertedJSON['results'];
+    posts.addAll(result);
+    print(posts);
+  }
+
+  getSearchJSONData(String userId, String search) async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/query/select_search?user_id=$userId&search=$search');
+    var response = await http.get(url);
+    searchPost.clear();
+    var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    List result = dataCovertedJSON['results'];
+    searchPost.addAll(result);
+    print(searchPost);
   }
 
   getPostJSONData(String userId) async {
@@ -49,12 +74,12 @@ class VmHandler extends Musicinsert {
     });
   }
 
+// 사용자의 개인 정보
   getUserJSONData(String userId) async {
     var url = Uri.parse('http://127.0.0.1:8000/query/user?id=$userId');
     var response = await http.get(url);
     user.clear();
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
-
     List result = dataCovertedJSON['results'];
     var userData = result[0];
     user.add({
@@ -67,6 +92,7 @@ class VmHandler extends Musicinsert {
     });
   }
 
+// 각 사용자의 post
   getUserPostJSONData(String userId) async {
     var url = Uri.parse('http://127.0.0.1:8000/query/userpost?user_id=$userId');
     var response = await http.get(url);
@@ -76,6 +102,7 @@ class VmHandler extends Musicinsert {
     userposts.addAll(result);
   }
 
+// post insert 함수
   insertJSONData(String image, String contents, int public, String userId,
       String nickname) async {
     var url = Uri.parse(
@@ -91,6 +118,7 @@ class VmHandler extends Musicinsert {
     }
   }
 
+// 사용자가 좋아요를 누른적이 있는지 확인
   checkFavorite(String userId, int post_id) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/checkfavorite?user_id=$userId&post_seq=$post_id');
@@ -100,6 +128,7 @@ class VmHandler extends Musicinsert {
     return result;
   }
 
+// 사용자가 좋아요를 처음 누를때
   Future<void> insertFavorite(int favorite, int seq, String userId) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/insert_favorite?favorite=$favorite&user_id=$userId&post_seq=$seq');
@@ -113,6 +142,7 @@ class VmHandler extends Musicinsert {
     }
   }
 
+// 사용자가 좋아요를 다시 놀렀을때
   Future<void> updateFavorite(int favorite, int postSeq, String userId) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/update_favorite?favorite=$favorite&post_seq=$postSeq&user_id=$userId');
@@ -121,6 +151,7 @@ class VmHandler extends Musicinsert {
     var result = dataConvertedJSON['results'];
   }
 
+// 사용자가 기존에 싫어요 누른 적이 있는지 확인
   checkHate(String userId, int post_id) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/checkhate?user_id=$userId&post_seq=$post_id');
@@ -130,6 +161,7 @@ class VmHandler extends Musicinsert {
     return result;
   }
 
+// 사용자가 싫어요 버튼을 다시 눌렀을때
   Future<void> updateHate(int hate, int postSeq, String userId) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/update_hate?hate=$hate&post_seq=$postSeq&user_id=$userId');
@@ -138,6 +170,7 @@ class VmHandler extends Musicinsert {
     var result = dataConvertedJSON['results'];
   }
 
+// 사용자가 싫어요 버튼 눌렀을때
   Future<void> insertHate(int hate, int seq, String userId) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/insert_hate?hate=$hate&user_id=$userId&post_seq=$seq');
@@ -151,6 +184,7 @@ class VmHandler extends Musicinsert {
     }
   }
 
+// post 업데이트(사진 포함)
   updateJSONDataAll(String image, String contents, int public, int seq) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/updateAll?image=$image&contents=$contents&public=$public&seq=$seq');
@@ -164,6 +198,7 @@ class VmHandler extends Musicinsert {
     }
   }
 
+// post 업데이트(사진 업데이트 되지 않음)
   updateJSONData(String contents, int public, int seq) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/update?contents=$contents&public=$public&seq=$seq');
@@ -177,14 +212,36 @@ class VmHandler extends Musicinsert {
     }
   }
 
+// post 삭제
   deletePost(seq, filename) async {
     await deletePostImage(filename);
     var url = Uri.parse('http://127.0.0.1:8000/query/deletepost?seq=$seq');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
-    if (result == 'OK') {
-      print('success');
+    return result;
+  }
+
+  var selectedValue = '최신순'.obs; // 드랍다운 버튼 관리
+
+  final List<String> dropdownItems = ['최신순', '인기순'];
+
+  updateSelectedValue(String value, String userId) async {
+    selectedValue.value = value;
+    if (selectedValue.value == '최신순') {
+      await getJSONData(userId);
+    } else {
+      await getTopJSONData(userId);
     }
+  }
+
+  reset() {
+    selectedValue.value = '최신순'; // 초기값으로 재설정
+    search.value = '';
+    update();
+  }
+
+  updateSearchBar(String value) {
+    search.value = value; // 검색어 업데이트
   }
 }

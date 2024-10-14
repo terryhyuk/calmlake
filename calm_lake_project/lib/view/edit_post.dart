@@ -184,7 +184,6 @@ class EditPost extends StatelessWidget {
                                           contentController.text.trim(),
                                           controller.selectedButton.value,
                                           post_seq);
-                                      controller.firstDisp = 0;
                                       print('update');
                                       Get.back();
                                     } else if (controller.firstDisp != 0 &&
