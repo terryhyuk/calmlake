@@ -24,7 +24,7 @@ class commentcontroller extends ButtonController {
   // comment 와 reply 가져오는 함수
   getCommentReply(int postSeq) async {
     var url =
-        Uri.parse('http://10.0.2.2:8000/query/commentreply?post_seq=$postSeq');
+        Uri.parse('http://127.0.0.1:8000/query/commentreply?post_seq=$postSeq');
     var response = await http.get(url);
     commentreply.clear();
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
@@ -37,7 +37,7 @@ class commentcontroller extends ButtonController {
   // comment 입력 함수
   insertCommnet(int postSeq, String text, String userId) async {
     var url = Uri.parse(
-        'http://10.0.2.2:8000/query/insert_comment?user_id=$userId&post_seq=$postSeq&text=$text&comment_date=${DateTime.now()}');
+        'http://127.0.0.1:8000/query/insert_comment?user_id=$userId&post_seq=$postSeq&text=$text&comment_date=${DateTime.now()}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -52,7 +52,7 @@ class commentcontroller extends ButtonController {
 // reply 입력
   insertReply(int postSeq, String userId, int commentSeq, String reply) async {
     var url = Uri.parse(
-        'http://10.0.2.2:8000/query/insert_reply?post_seq=$postSeq&user_id=$userId&comment_seq=$commentSeq&reply=$reply&reply_date=${DateTime.now()}');
+        'http://127.0.0.1:8000/query/insert_reply?post_seq=$postSeq&user_id=$userId&comment_seq=$commentSeq&reply=$reply&reply_date=${DateTime.now()}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -66,7 +66,7 @@ class commentcontroller extends ButtonController {
 
   deleteComment(String userId, int seq) async {
     var url = Uri.parse(
-        'http://10.0.2.2:8000/query/deletecomment?user_id=$userId&seq=$seq');
+        'http://127.0.0.1:8000/query/deletecomment?user_id=$userId&seq=$seq');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
@@ -76,7 +76,7 @@ class commentcontroller extends ButtonController {
 
   deleteReply(String userId, int seq) async {
     var url = Uri.parse(
-        'http://10.0.2.2:8000/query/deletereply?user_id=$userId&seq=$seq');
+        'http://127.0.0.1:8000/query/deletereply?user_id=$userId&seq=$seq');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];

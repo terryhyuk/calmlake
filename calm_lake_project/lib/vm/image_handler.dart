@@ -21,7 +21,7 @@ class ImageHandler extends GetxController {
       return null;
     }
     var request = http.MultipartRequest(
-        'POST', Uri.parse('http://10.0.2.2:8000/login/upload'));
+        'POST', Uri.parse('http://127.0.0.1:8000/login/upload'));
     var multipartFile = await http.MultipartFile.fromPath('file', imageFile!.path);
     request.files.add(multipartFile);
     // 파일 이름 추출
@@ -39,7 +39,7 @@ class ImageHandler extends GetxController {
 
   deleteImage(String filename) async {
     final response = await http
-        .delete(Uri.parse('http://10.0.2.2:8000/login/deleteFile/$filename'));
+        .delete(Uri.parse('http://127.0.0.1:8000/login/deleteFile/$filename'));
     if (response.statusCode == 200) {
       // print("Image deleted successfully");
     } else {

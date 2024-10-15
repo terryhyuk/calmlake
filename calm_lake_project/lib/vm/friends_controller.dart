@@ -12,7 +12,7 @@ class FriendsController extends SearchFriendsController {
 
 // 전체 친구보기
 selectfriendsJSONData(String userId) async {
-  var url = Uri.parse('http://10.0.2.2:8000/friends/selectfriends?user_id=$userId');
+  var url = Uri.parse('http://127.0.0.1:8000/friends/selectfriends?user_id=$userId');
   try {
     var response = await http.get(url);
     if (response.statusCode == 200) {
@@ -34,7 +34,7 @@ selectfriendsJSONData(String userId) async {
 }
 // 신청온 친구 보기
   requstfriendsJSONData(String userId)async{
-      var url = Uri.parse('http://10.0.2.2:8000/friends/selectrequestfriends?add_id=$userId');
+      var url = Uri.parse('http://127.0.0.1:8000/friends/selectrequestfriends?add_id=$userId');
     var response = await http.get(url);
     addfriend.clear();
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
@@ -44,7 +44,7 @@ selectfriendsJSONData(String userId) async {
 
 // 친구신청 요청
 addfriendsJSONData(Addfriends addfriends)async{
-var url = Uri.parse('http://10.0.2.2:8000/friends/insertfriends')
+var url = Uri.parse('http://127.0.0.1:8000/friends/insertfriends')
                   .replace(queryParameters: {
     'user_id': addfriends.user_id,
     'accept': addfriends.accept,
@@ -78,7 +78,7 @@ var url = Uri.parse('http://10.0.2.2:8000/friends/insertfriends')
   //친구요청 수락
 acceptFriendRequest(String add_id) async {
   String user_id = loginHandler.box.read('userId') ?? ''; // 현재 로그인한 사용자의 ID
-  var url = Uri.parse('http://10.0.2.2:8000/friends/addrequestfriends?user_id=$user_id&add_id=$add_id');
+  var url = Uri.parse('http://127.0.0.1:8000/friends/addrequestfriends?user_id=$user_id&add_id=$add_id');
   
   try {
     var response = await http.get(url);

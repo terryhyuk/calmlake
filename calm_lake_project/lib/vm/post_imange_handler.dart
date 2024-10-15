@@ -38,7 +38,7 @@ class PostImageHandler extends NavigationController {
       return;
     }
     var request = http.MultipartRequest(
-        'POST', Uri.parse('http://10.0.2.2:8000/insert/upload'));
+        'POST', Uri.parse('http://127.0.0.1:8000/insert/upload'));
     var multipartFile =
         await http.MultipartFile.fromPath('file', imageFile!.path);
     request.files.add(multipartFile);
@@ -57,7 +57,7 @@ class PostImageHandler extends NavigationController {
 
   deletePostImage(String filename) async {
     final response = await http
-        .delete(Uri.parse('http://10.0.2.2:8000/query/deleteimage/$filename'));
+        .delete(Uri.parse('http://127.0.0.1:8000/query/deleteimage/$filename'));
     if (response.statusCode == 200) {
       print("Image deleted successfully");
     } else {

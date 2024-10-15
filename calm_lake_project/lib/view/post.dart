@@ -349,9 +349,20 @@ class Post extends StatelessWidget {
                                                                               leading: CircleAvatar(
                                                                                 backgroundImage: NetworkImage('http://127.0.0.1:8000/login/view/${comment[5]}'),
                                                                               ),
-                                                                              title: Text(
-                                                                                comment[1],
-                                                                                style: TextStyle(fontSize: 14),
+                                                                              title: Row(
+                                                                                children: [
+                                                                                  Text(
+                                                                                    comment[1],
+                                                                                    style: TextStyle(fontSize: 14),
+                                                                                  ),
+                                                                                  SizedBox(
+                                                                                    width: 10,
+                                                                                  ),
+                                                                                  Text(
+                                                                                    comment[4],
+                                                                                    style: TextStyle(fontSize: 13),
+                                                                                  ),
+                                                                                ],
                                                                               ), // nickname
                                                                               subtitle: Text(
                                                                                 comment[3],
@@ -396,11 +407,24 @@ class Post extends StatelessWidget {
                                                                                           backgroundImage: NetworkImage('http://127.0.0.1:8000/login/view/${reply[6]}'),
                                                                                           radius: 18,
                                                                                         ),
-                                                                                        title: Text(
-                                                                                          reply[2],
-                                                                                          style: TextStyle(
-                                                                                            fontSize: 14,
-                                                                                          ), // reply nickname
+                                                                                        title: Row(
+                                                                                          children: [
+                                                                                            Text(
+                                                                                              reply[2],
+                                                                                              style: TextStyle(
+                                                                                                fontSize: 14,
+                                                                                              ), // reply nickname
+                                                                                            ),
+                                                                                            SizedBox(
+                                                                                              width: 10,
+                                                                                            ),
+                                                                                            Text(
+                                                                                              reply[5],
+                                                                                              style: TextStyle(
+                                                                                                fontSize: 12,
+                                                                                              ), // reply nickname
+                                                                                            ),
+                                                                                          ],
                                                                                         ),
                                                                                         subtitle: Text(
                                                                                           reply[4], // reply text
@@ -467,7 +491,6 @@ class Post extends StatelessWidget {
                                                                           .text
                                                                           .trim(),
                                                                       userId);
-                                                                  //await controller.getComment(post[0]);
                                                                   controller
                                                                       .textController
                                                                       .text = '';
