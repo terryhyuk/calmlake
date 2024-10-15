@@ -167,7 +167,12 @@ class Home extends StatelessWidget {
                           backgroundImage:
                               NetworkImage(musicHandler.selectImage),
                           radius: 130,
-                        )
+                        ),
+                                                Image.asset(
+                          musicHandler.changeImageCat(),
+                          width: 100,
+                          height: 100,
+                          )
                       ],
                     ),
                     // 음악 이름 출력

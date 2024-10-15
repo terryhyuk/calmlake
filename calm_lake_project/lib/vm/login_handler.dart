@@ -219,7 +219,7 @@ class LoginHandler extends ValidateCheck {
   //유저 정보 수정
   changeUserJSONData(Profile profile) async {
     var url = Uri.parse(
-        'http://10.0.2.2:8000/login/changeuser?nickname=${profile.nickName}&email=${profile.email}&password=${profile.pw}&user_image=${profile.image}&id=${profile.id}');
+        'http://127.0.0.1:8000/login/changeuser?nickname=${profile.nickName}&email=${profile.email}&password=${profile.pw}&user_image=${profile.image}&id=${profile.id}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
@@ -228,7 +228,7 @@ class LoginHandler extends ValidateCheck {
 
   //회원 탈퇴
   deleteUserJSONData(String userId) async {
-    var url = Uri.parse('http://10.0.2.2:8000/login/deleteuser?id=$userId');
+    var url = Uri.parse('http://127.0.0.1:8000/login/deleteuser?id=$userId');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
