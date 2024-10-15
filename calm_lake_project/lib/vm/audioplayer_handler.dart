@@ -12,6 +12,8 @@ class AudioplayerHandler extends GetxController {
   Duration? position;
   int musicState = 1;
   double imageLocation = 0;
+  int gifImageState = 0;
+  String selectCat = 'images/stopmovecat.png';
 
   StreamSubscription? durationSubscription;
   StreamSubscription? positionSubscription;
@@ -73,15 +75,23 @@ class AudioplayerHandler extends GetxController {
     });
   }
 
+  changeImageCat(){
+    gifImageState == 0 ? selectCat = 'images/stopmovecat.png': selectCat = 'images/movecat.gif';
+    update();
+    return selectCat;
+  }
+
   Future<void> play() async {
     await player.resume();
     playerState = PlayerState.playing;
+    gifImageState = 1;
     update();
   }
 
   Future<void> pause() async {
     await player.pause();
     playerState = PlayerState.paused;
+    gifImageState = 0;
     update();
   }
 
@@ -89,17 +99,8 @@ class AudioplayerHandler extends GetxController {
     await player.stop();
     playerState = PlayerState.stopped;
     position = Duration.zero;
-    update();
-  }
-
-  imageSlider(double location) {
-    imageLocation = ((position != null &&
-                duration != null &&
-                position!.inMilliseconds > 0 &&
-                position!.inMilliseconds < duration!.inMilliseconds)
-            ? position!.inMilliseconds / duration!.inMilliseconds
-            : 0.0) *
-        100;
+    gifImageState = 0;
+    changeImageCat();
     update();
   }
 }
