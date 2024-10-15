@@ -64,10 +64,12 @@ class ProfileEdit extends StatelessWidget {
                               ),
                               child: ClipOval(
                                 child: controller.imageFile != null
-                                    ? Image.file(File(controller.imageFile!.path))
+                                    ? Image.file(File(controller.imageFile!.path),
+                                    fit: BoxFit.fitWidth,)
                                     : result.image != null && result.image != 'null'
                                         ? Image.network(
-                                            'http://127.0.0.1:8000/login/view/${result.image}')
+                                            'http://127.0.0.1:8000/login/view/${result.image}',
+                                            fit: BoxFit.fitWidth,)
                                         : const Icon(Icons.person, size: 200),
                               )),
                           Row(
@@ -215,7 +217,7 @@ class ProfileEdit extends StatelessWidget {
         }
         Get.snackbar('Update', '수정이 완료되었습니다.',
             snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 2),
+            duration: const Duration(seconds: 1),
             backgroundColor: const Color.fromARGB(255, 159, 184, 172),
             colorText: Colors.white);
       } else {
