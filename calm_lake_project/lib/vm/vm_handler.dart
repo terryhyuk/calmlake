@@ -11,9 +11,12 @@ class VmHandler extends Musicinsert {
   var user = [].obs;
   var userposts = [].obs;
   var favorite = [].obs;
+  var search = ''.obs;
+  var searchPost = [].obs;
 
+// post page
   getJSONData(String userId) async {
-    var url = Uri.parse('http://127.0.0.1:8000/query/select?user_id=$userId');
+    var url = Uri.parse('http://10.0.2.2:8000/query/select?user_id=$userId');
     var response = await http.get(url);
     posts.clear();
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
@@ -21,40 +24,62 @@ class VmHandler extends Musicinsert {
     posts.addAll(result);
     print(posts);
   }
-/*
-  getPostJSONData() async {
-    var url = Uri.parse('http://127.0.0.1:8000/query/select?user_id=$userId');
+
+  getTopJSONData(String userId) async {
+    var url =
+        Uri.parse('http://10.0.2.2:8000/query/select_top?user_id=$userId');
+    var response = await http.get(url);
+    posts.clear();
+    var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    List result = dataCovertedJSON['results'];
+    posts.addAll(result);
+    print(posts);
+  }
+
+  getSearchJSONData(String userId, String search) async {
+    var url = Uri.parse(
+        'http://10.0.2.2:8000/query/select_search?user_id=$userId&search=$search');
+    var response = await http.get(url);
+    searchPost.clear();
+    var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    List result = dataCovertedJSON['results'];
+    searchPost.addAll(result);
+    print(searchPost);
+  }
+
+  getPostJSONData(String userId) async {
+    var url = Uri.parse('http://10.0.2.2:8000/query/select?user_id=$userId');
     var response = await http.get(url);
     posts.clear();
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List<dynamic> result = dataCovertedJSON['results'];
-    for (var item in result) {
-      posts.add(Post(
-        seq: item[0],
-        user_id: item[1],
-        date: DateTime.parse(item[2]),
-        image: item[3],
-        contents: item[4],
-        public: item[5],
-        favorite_seq: item[6] ?? -1,
-        favorite_user_id: item[7] ?? "",
-        favorite_post_seq: item[8] ?? -1,
-        favorite: item[9] ?? "",
-        hate_seq: item[10] ?? -1,
-        hate_user_id: item[11] ?? "",
-        hate_post_seq: item[12] ?? -1,
-        hate: item[1] ?? "",
-        comment_count: item[14] ?? 0,
-      ));
-    }
-  }*/
+    var post = result[0];
+    posts.add({
+      'seq': post[0],
+      'user_id': post[1],
+      'date': post[2],
+      'image': post[3],
+      'contents': post[4],
+      'public': post[5],
+      'post_nickname': post[6],
+      'favorite_seq': post[7],
+      'favorite_user_id': post[8],
+      'favorite_post_seq': post[9],
+      'favorite': post[10],
+      'hate_seq': post[11],
+      'hate_user_id': post[12],
+      'hate_post_seq': post[13],
+      'hate': post[14],
+      'comment_count': post[14],
+    });
+  }
 
+// 사용자의 개인 정보
   getUserJSONData(String userId) async {
-    var url = Uri.parse('http://127.0.0.1:8000/query/user?id=$userId');
+    var url = Uri.parse('http://10.0.2.2:8000/query/user?id=$userId');
     var response = await http.get(url);
     user.clear();
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
-
     List result = dataCovertedJSON['results'];
     var userData = result[0];
     user.add({
@@ -67,8 +92,9 @@ class VmHandler extends Musicinsert {
     });
   }
 
+// 각 사용자의 post
   getUserPostJSONData(String userId) async {
-    var url = Uri.parse('http://127.0.0.1:8000/query/userpost?user_id=$userId');
+    var url = Uri.parse('http://10.0.2.2:8000/query/userpost?user_id=$userId');
     var response = await http.get(url);
     userposts.clear();
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
@@ -76,10 +102,11 @@ class VmHandler extends Musicinsert {
     userposts.addAll(result);
   }
 
+// post insert 함수
   insertJSONData(String image, String contents, int public, String userId,
       String nickname) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/insert/insert?post_user_id=$userId&date=${DateTime.now()}&image=$image&contents=$contents&public=$public&post_nickname=$nickname');
+        'http://10.0.2.2:8000/insert/insert?post_user_id=$userId&date=${DateTime.now()}&image=$image&contents=$contents&public=$public&post_nickname=$nickname');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -91,18 +118,20 @@ class VmHandler extends Musicinsert {
     }
   }
 
+// 사용자가 좋아요를 누른적이 있는지 확인
   checkFavorite(String userId, int post_id) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/query/checkfavorite?user_id=$userId&post_seq=$post_id');
+        'http://10.0.2.2:8000/query/checkfavorite?user_id=$userId&post_seq=$post_id');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
     return result;
   }
 
+// 사용자가 좋아요를 처음 누를때
   Future<void> insertFavorite(int favorite, int seq, String userId) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/query/insert_favorite?favorite=$favorite&user_id=$userId&post_seq=$seq');
+        'http://10.0.2.2:8000/query/insert_favorite?favorite=$favorite&user_id=$userId&post_seq=$seq');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
@@ -113,34 +142,38 @@ class VmHandler extends Musicinsert {
     }
   }
 
+// 사용자가 좋아요를 다시 놀렀을때
   Future<void> updateFavorite(int favorite, int postSeq, String userId) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/query/update_favorite?favorite=$favorite&post_seq=$postSeq&user_id=$userId');
+        'http://10.0.2.2:8000/query/update_favorite?favorite=$favorite&post_seq=$postSeq&user_id=$userId');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
   }
 
+// 사용자가 기존에 싫어요 누른 적이 있는지 확인
   checkHate(String userId, int post_id) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/query/checkhate?user_id=$userId&post_seq=$post_id');
+        'http://10.0.2.2:8000/query/checkhate?user_id=$userId&post_seq=$post_id');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
     return result;
   }
 
+// 사용자가 싫어요 버튼을 다시 눌렀을때
   Future<void> updateHate(int hate, int postSeq, String userId) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/query/update_hate?hate=$hate&post_seq=$postSeq&user_id=$userId');
+        'http://10.0.2.2:8000/query/update_hate?hate=$hate&post_seq=$postSeq&user_id=$userId');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
   }
 
+// 사용자가 싫어요 버튼 눌렀을때
   Future<void> insertHate(int hate, int seq, String userId) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/query/insert_hate?hate=$hate&user_id=$userId&post_seq=$seq');
+        'http://10.0.2.2:8000/query/insert_hate?hate=$hate&user_id=$userId&post_seq=$seq');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
@@ -151,38 +184,64 @@ class VmHandler extends Musicinsert {
     }
   }
 
-  deleteCommentJSONData(String userId) async {
-    var url =
-        Uri.parse('http://127.0.0.1:8000/query/deletecomment?user_id=$userId');
+// post 업데이트(사진 포함)
+  updateJSONDataAll(String image, String contents, int public, int seq) async {
+    var url = Uri.parse(
+        'http://10.0.2.2:8000/query/updateAll?image=$image&contents=$contents&public=$public&seq=$seq');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    if (result == 'OK') {
+      print('Success');
+    } else {
+      print('Error');
+    }
+  }
+
+// post 업데이트(사진 업데이트 되지 않음)
+  updateJSONData(String contents, int public, int seq) async {
+    var url = Uri.parse(
+        'http://10.0.2.2:8000/query/update?contents=$contents&public=$public&seq=$seq');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    if (result == 'OK') {
+      print('Success');
+    } else {
+      print('Error');
+    }
+  }
+
+// post 삭제
+  deletePost(seq, filename) async {
+    await deletePostImage(filename);
+    var url = Uri.parse('http://10.0.2.2:8000/query/deletepost?seq=$seq');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
     return result;
   }
 
-  updateJSONDataAll(String image, String contents, int public, int seq) async {
-    var url = Uri.parse(
-        'http://127.0.0.1:8000/query/updateAll?image=$image&contents=$contents&public=$public&seq=$seq');
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    var result = dataConvertedJSON['result'];
-    if (result == 'OK') {
-      print('Success');
+  var selectedValue = '최신순'.obs; // 드랍다운 버튼 관리
+
+  final List<String> dropdownItems = ['최신순', '인기순'];
+
+  updateSelectedValue(String value, String userId) async {
+    selectedValue.value = value;
+    if (selectedValue.value == '최신순') {
+      await getJSONData(userId);
     } else {
-      print('Error');
+      await getTopJSONData(userId);
     }
   }
 
-  updateJSONData(String contents, int public, int seq) async {
-    var url = Uri.parse(
-        'http://127.0.0.1:8000/query/update?contents=$contents&public=$public&seq=$seq');
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    var result = dataConvertedJSON['result'];
-    if (result == 'OK') {
-      print('Success');
-    } else {
-      print('Error');
-    }
+  reset() {
+    selectedValue.value = '최신순'; // 초기값으로 재설정
+    search.value = '';
+    update();
+  }
+
+  updateSearchBar(String value) {
+    search.value = value; // 검색어 업데이트
   }
 }

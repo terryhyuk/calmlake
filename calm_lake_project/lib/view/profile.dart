@@ -1,5 +1,9 @@
+import 'package:calm_lake_project/model/activity.dart';
+import 'package:calm_lake_project/view/insert.dart';
+import 'package:calm_lake_project/view/login/login.dart';
 import 'package:calm_lake_project/view/login/profile_edit.dart';
 import 'package:calm_lake_project/view/my_post.dart';
+import 'package:calm_lake_project/vm/login_handler.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,7 +11,7 @@ import 'package:get_storage/get_storage.dart';
 
 class Profile extends StatelessWidget {
   final GetStorage box = GetStorage();
-
+  final loginHandler = Get.put(LoginHandler());
   Profile({super.key});
 
   @override
@@ -27,6 +31,22 @@ class Profile extends StatelessWidget {
         ),
         automaticallyImplyLeading: false, // 뒤로 가기 버튼을 없앰
         centerTitle: false,
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        backgroundColor: const Color.fromARGB(255, 0, 169, 253),
+        onPressed: () => Get.to(() => Insert())!
+            .then((value) => vmHandler.getUserPostJSONData(userId)),
+        label: Text(
+          'Post',
+          style: TextStyle(
+              color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+        ),
+        icon: Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 28,
+        ),
       ),
       body: Obx(() {
         var user = vmHandler.user.isNotEmpty ? vmHandler.user[0] : null;
@@ -59,6 +79,11 @@ class Profile extends StatelessWidget {
                           padding: const EdgeInsets.all(15.0),
                           child: CircleAvatar(
                             radius: 40,
+                            backgroundImage: user != null &&
+                                    user['user_image'] != null
+                                ? NetworkImage(
+                                    'http://127.0.0.1:8000/login/view/${user['user_image']}')
+                                : null,
                           ),
                         ),
                         Text(
@@ -98,7 +123,8 @@ class Profile extends StatelessWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            Get.to(ProfileEdit());
+                            Get.to(ProfileEdit())!.then(
+                                (value) => vmHandler.getUserJSONData(userId));
                           },
                           child: Text('Edit Profile'),
                           style: ElevatedButton.styleFrom(
@@ -107,7 +133,10 @@ class Profile extends StatelessWidget {
                               fixedSize: Size(130, 50)),
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            logOut(loginHandler.box.read('userId'), vmHandler);
+                            Get.offAll(Login());
+                          },
                           child: Text('Logout'),
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
@@ -164,5 +193,35 @@ class Profile extends StatelessWidget {
         );
       }),
     );
+  }
+
+  logOut(String id, vmHandler) async {
+    await activityInsert();
+    var result = await loginHandler.logoutJSONData(id);
+    await vmHandler.resetDropdown();
+
+    if (result == 'OK') {
+      Get.back();
+    } else {
+      errorSnackBar();
+      print('Error');
+    }
+  }
+
+  errorSnackBar() {
+    Get.snackbar('Error', '다시 확인해주세요.',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 2),
+        backgroundColor: const Color.fromARGB(255, 206, 53, 42),
+        colorText: Colors.white);
+  }
+
+  activityInsert() async {
+    var activity = Activity(
+        userId: loginHandler.box.read('userId'),
+        activity: 'logout',
+        datetime: DateTime.now().toString());
+    await loginHandler.useractivityJSONData(activity);
+    await loginHandler.disposeSave();
   }
 }

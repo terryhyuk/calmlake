@@ -115,34 +115,27 @@ class Home extends StatelessWidget {
                                         child: Column(
                                           children: [
                                             Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
+                                              padding: const EdgeInsets.all(8.0),
                                               child: Row(
                                                 children: [
                                                   Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text(
-                                                        friendsController
-                                                                .addfriend[
-                                                            index][0]),
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Text(friendsController.addfriend[index][0]),
                                                   ),
                                                   IconButton(
                                                     onPressed: () {
                                                       //
-                                                    },
+                                                    }, 
                                                     icon: const Icon(
                                                       Icons.cancel,
+                                                      ),
                                                     ),
-                                                  ),
                                                   IconButton(
                                                     onPressed: () {
-                                                      //
-                                                    },
-                                                    icon: const Icon(
-                                                        Icons.check_circle),
-                                                  ),
+                                                      _showDialog(index);
+                                                    }, 
+                                                    icon: const Icon(Icons.check_circle),
+                                                    ),
                                                 ],
                                               ),
                                             ),
@@ -208,8 +201,27 @@ class Home extends StatelessWidget {
                     ),
                     // 음악 변경 버튼
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        // 사운드바
+                        Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  vmHandler.soundMute();
+                                }, icon: vmHandler.changeIcon()),
+                            Slider(
+                              min: 0,
+                              max: 1,
+                              onChanged: (double value) {
+                                vmHandler.setVolumeValue = value;
+                                vmHandler
+                                    .soundControll(vmHandler.setVolumeValue);
+                              },
+                              value: vmHandler.setVolumeValue,
+                            ),
+                          ],
+                        ),
                         IconButton(
                             onPressed: () {
                               Get.to(() => Musiclist())!.then(
@@ -280,34 +292,38 @@ class Home extends StatelessWidget {
   }
 
 // --- Functions ---
-
-  _showDialog(int index) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text('친구 추가'),
-        content:
-            Text('${friendsController.addfriend[index][0]}님을 친구로 추가하시겠습니까?'),
-        actions: [
-          TextButton(
-            child: const Text('취소'),
-            onPressed: () => Get.back(),
-          ),
-          TextButton(
-            child: const Text('추가'),
-            onPressed: () {
-              // friendsController.addfriend(index);
-              Get.back();
-            },
-          ),
-        ],
-      ),
-    );
-  }
+_showDialog(int index) {
+  Get.dialog(
+    AlertDialog(
+      title: const Text('친구 추가'),
+      content: Text('${friendsController.addfriend[index][0]}님을 친구로 추가하시겠습니까?'),
+      actions: [
+        TextButton(
+          child: const Text('취소'),
+          onPressed: () => Get.back(),
+        ),
+        TextButton(
+          child: const Text('추가'),
+          onPressed: () async {
+            bool success = await friendsController.acceptFriendRequest(friendsController.addfriend[index][0]);
+            Get.back();
+            if (success) {
+              Get.snackbar('성공', '친구 추가가 완료되었습니다.', snackPosition: SnackPosition.BOTTOM);
+            } else {
+              Get.snackbar('실패', '친구 추가에 실패했습니다. 다시 시도해주세요.', snackPosition: SnackPosition.BOTTOM);
+            }
+          },
+        ),
+      ],
+    ),
+  );
+}
 
   logOut(String id) async {
+    await activityInsert();
     var result = await loginHandler.logoutJSONData(id);
+    await vmHandler.reset();
     if (result == 'OK') {
-      await activityInsert();
       Get.back();
     } else {
       errorSnackBar();

@@ -13,6 +13,7 @@ import shutil
 
 router = APIRouter()
 
+# post 사진 업로드할 폴더
 UPLOAD_FOLDER = 'uploads' 
 if not os.path.exists(UPLOAD_FOLDER): # 업로드 폴더가 없으면 폴더를 만들어라
     os.makedirs(UPLOAD_FOLDER)
@@ -27,6 +28,7 @@ def connection():
     )
     return conn
 
+# post 페이지 가져오는 쿼리
 @router.get('/select')
 async def select(user_id: str=None):
     conn = connection()
@@ -49,7 +51,8 @@ async def select(user_id: str=None):
         h.user_id AS hate_user_id, 
         h.post_seq AS hate_post_seq, 
         h.hate,
-        count(c.seq) as comment_count
+        count(distinct c.seq) + count(distinct r.seq) as comment_count,
+        u.user_image
     FROM 
         post AS p 
     LEFT JOIN 
@@ -57,19 +60,24 @@ async def select(user_id: str=None):
     LEFT JOIN 
         hate AS h ON p.seq = h.post_seq AND h.user_id = %s 
     LEFT JOIN 
-        comment AS c ON p.seq = c.post_seq
+        comment AS c ON p.seq = c.post_seq 
+    LEFT join
+        reply as r ON r.post_seq = c.post_seq and r.comment_seq = c.seq
+    LEFT join
+        user as u ON p.post_user_id = u.id
     WHERE 
         (p.public = 0 AND p.post_user_id != %s) 
         OR (p.public = 2 AND p.post_user_id IN (
-            SELECT add_id FROM friends WHERE user_id = %s
+            SELECT add_id FROM addfriends WHERE user_id = %s
         )) 
         OR (p.public = 2 AND p.post_user_id IN (
-            SELECT user_id FROM friends WHERE add_id = %s
+            SELECT user_id FROM addfriends WHERE add_id = %s
         ))
     GROUP BY 
     p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,p.post_nickname, 
     f.seq, f.user_id, f.post_seq, f.favorite, 
     h.seq, h.user_id, h.post_seq, h.hate
+    HAVING count(f.favorite)/NULLIF(COUNT(h.hate), 0) > 0.3 OR COUNT(h.hate) = 0 or count(f.favorite) = 0
     order by
     p.date desc
 """
@@ -82,19 +90,173 @@ async def select(user_id: str=None):
         conn.close()
         print('Error:', e)
         return {'results' : "Error"}
-
+    
+@router.get('/select_top')
+async def selecttop(user_id: str=None):
+    conn = connection()
+    curs= conn.cursor()
+    try:
+        sql = """
+    SELECT 
+        p.seq, 
+        p.post_user_id, 
+        p.date, 
+        p.image, 
+        p.contents, 
+        p.public,
+        p.post_nickname,
+        f.seq AS favorite_seq, 
+        f.user_id AS favorite_user_id, 
+        f.post_seq AS favorite_post_seq, 
+        f.favorite,
+        h.seq AS hate_seq, 
+        h.user_id AS hate_user_id, 
+        h.post_seq AS hate_post_seq, 
+        h.hate,
+        count(distinct c.seq) + count(distinct r.seq) as comment_count,
+        u.user_image
+    FROM 
+        post AS p 
+    LEFT JOIN 
+        favorite AS f ON p.seq = f.post_seq AND f.user_id = %s 
+    LEFT JOIN 
+        hate AS h ON p.seq = h.post_seq AND h.user_id = %s 
+    LEFT JOIN 
+        comment AS c ON p.seq = c.post_seq 
+    LEFT join
+        reply as r ON r.post_seq = c.post_seq and r.comment_seq = c.seq
+    LEFT join
+        user as u ON p.post_user_id = u.id
+    WHERE 
+        (p.public = 0 AND p.post_user_id != %s) 
+        OR (p.public = 2 AND p.post_user_id IN (
+            SELECT add_id FROM addfriends WHERE user_id = %s
+        )) 
+        OR (p.public = 2 AND p.post_user_id IN (
+            SELECT user_id FROM addfriends WHERE add_id = %s
+        ))
+    GROUP BY 
+    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,p.post_nickname, 
+    f.seq, f.user_id, f.post_seq, f.favorite, 
+    h.seq, h.user_id, h.post_seq, h.hate
+    HAVING count(f.favorite)/NULLIF(COUNT(h.hate), 0) > 0.3 OR COUNT(h.hate) = 0 or count(f.favorite) = 0
+    order by
+    count(f.favorite) desc
+"""    
+        curs.execute(sql, (user_id,user_id,user_id,user_id,user_id))
+        rows = curs.fetchall()
+        conn.close()
+        print(rows)
+        return {'results' : rows}
+    except Exception as e:
+        conn.close()
+        print('Error:', e)
+        return {'results' : "Error"}
+    
+@router.get('/select_search')
+async def selectsearch(user_id: str=None, search: str=None):
+    conn = connection()
+    curs= conn.cursor()
+    try:
+        sql = """
+    SELECT 
+        p.seq, 
+        p.post_user_id, 
+        p.date, 
+        p.image, 
+        p.contents, 
+        p.public,
+        p.post_nickname,
+        f.seq AS favorite_seq, 
+        f.user_id AS favorite_user_id, 
+        f.post_seq AS favorite_post_seq, 
+        f.favorite,
+        h.seq AS hate_seq, 
+        h.user_id AS hate_user_id, 
+        h.post_seq AS hate_post_seq, 
+        h.hate,
+        count(distinct c.seq) + count(distinct r.seq) as comment_count,
+        u.user_image
+    FROM 
+        post AS p 
+    LEFT JOIN 
+        favorite AS f ON p.seq = f.post_seq AND f.user_id = %s 
+    LEFT JOIN 
+        hate AS h ON p.seq = h.post_seq AND h.user_id = %s 
+    LEFT JOIN 
+        comment AS c ON p.seq = c.post_seq 
+    LEFT join
+        reply as r ON r.post_seq = c.post_seq and r.comment_seq = c.seq
+    LEFT join
+        user as u ON p.post_user_id = u.id
+    WHERE 
+        p.contents like %s and p.post_user_id != %s
+    GROUP BY 
+    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,p.post_nickname, 
+    f.seq, f.user_id, f.post_seq, f.favorite, 
+    h.seq, h.user_id, h.post_seq, h.hate
+    HAVING count(f.favorite)/NULLIF(COUNT(h.hate), 0) > 0.3 OR COUNT(h.hate) = 0 or count(f.favorite) = 0
+    order by
+    p.date desc
+"""
+        search_term = (f"%{search}%")
+        curs.execute(sql, (user_id,user_id,search_term, user_id))
+        rows = curs.fetchall()
+        conn.close()
+        print(rows)
+        return {'results' : rows}
+    except Exception as e:
+        conn.close()
+        print('Error:', e)
+        return {'results' : "Error"}
+    
+# 각 user post 가져오는 쿼리
 @router.get('/userpost')
 async def userpost(user_id: str=None):
     conn = connection()
     curs= conn.cursor()
     try:
         sql = """
-            select * 
-            From post 
-            where post_user_id = %s
-            order by date desc;
+    SELECT 
+        p.seq, 
+        p.post_user_id, 
+        p.date, 
+        p.image, 
+        p.contents, 
+        p.public,
+        p.post_nickname,
+        f.seq AS favorite_seq, 
+        f.user_id AS favorite_user_id, 
+        f.post_seq AS favorite_post_seq, 
+        f.favorite,
+        h.seq AS hate_seq, 
+        h.user_id AS hate_user_id, 
+        h.post_seq AS hate_post_seq, 
+        h.hate,
+        count(distinct c.seq) + count(distinct r.seq) as comment_count,
+        u.user_image
+    FROM 
+        post AS p 
+    LEFT JOIN 
+        favorite AS f ON p.seq = f.post_seq AND f.user_id = %s 
+    LEFT JOIN 
+        hate AS h ON p.seq = h.post_seq AND h.user_id = %s 
+    LEFT JOIN 
+        comment AS c ON p.seq = c.post_seq 
+    LEFT join
+        reply as r ON r.post_seq = c.post_seq and r.comment_seq = c.seq
+    LEFT join
+        user as u ON p.post_user_id = u.id
+    WHERE 
+        post_user_id =%s
+    GROUP BY 
+    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,p.post_nickname, 
+    f.seq, f.user_id, f.post_seq, f.favorite, 
+    h.seq, h.user_id, h.post_seq, h.hate
+    order by
+    p.date desc
             """
-        curs.execute(sql, (user_id))
+        curs.execute(sql, (user_id, user_id, user_id))
         rows = curs.fetchall()
         conn.close()
         print(rows)
@@ -103,7 +265,7 @@ async def userpost(user_id: str=None):
         conn.close()
         print('Error:', e)
 
-
+# 유저 정보 가져오는 쿼리
 @router.get('/user')
 async def user(id: str=None):
     conn = connection()
@@ -115,26 +277,6 @@ async def user(id: str=None):
             where id = %s
             """
         curs.execute(sql, (id,))
-        rows = curs.fetchall()
-        conn.close()
-        print(rows)
-        return {'results' : rows}
-    except Exception as e:
-        conn.close()
-        print('Error:', e)
-        return {'results' : "Error"}
-
-@router.get('/favorite')
-async def favorite(user_id: str=None):
-    conn = connection()
-    curs= conn.cursor()
-    try:
-        sql = """
-            select * 
-            From favorite
-            where user_id = %s
-            """
-        curs.execute(sql, (user_id,))
         rows = curs.fetchall()
         conn.close()
         print(rows)
@@ -163,15 +305,127 @@ async def comment(post_seq: str=None):
         conn.close()
         print('Error:', e)
         return {'results' : "Error"}
-
-
-@router.get('/insert_comment')
-async def insertcomment(user_id: str=None, post_seq: int=None, text: str=None):
+    
+@router.get('/reply')
+async def reply(comment_seq: str=None, post_seq: str=None):
     conn = connection()
     curs= conn.cursor()
     try:
-        sql = "insert into comment(user_id, post_seq, text) values (%s,%s,%s)"
-        curs.execute(sql, (user_id, post_seq, text))
+        sql = """
+            select * 
+            From reply
+            where comment_seq= %s and post_seq =%s
+            """
+        curs.execute(sql, (comment_seq, post_seq))
+        rows = curs.fetchall()
+        conn.close()
+        print(rows)
+        return {'results' : rows}
+    except Exception as e:
+        conn.close()
+        print('Error:', e)
+        return {'results' : "Error"}
+
+# 댓글과 답글 가져오는 쿼리
+@router.get('/commentreply')
+def commentsreplies(post_seq: str=None):
+    conn = connection()
+    curs= conn.cursor()
+    try:
+        sql = """
+        SELECT 
+        c.seq AS comment_seq,
+        cu.nickname as comment_user_nickname,
+        c.post_seq AS comment_post_seq,
+        c.text AS comment_text,
+        c.comment_date,
+        cu.user_image as comment_user_image,
+        c.user_id as comment_user_id,
+        r.seq AS reply_seq,
+        r.post_seq AS reply_post_seq,
+        ru.nickname as reply_user_nickname,
+        r.comment_seq as reply_comment_seq,
+        r.reply AS reply_text,
+        r.reply_date,
+        ru.user_image as reply_user_imange,
+        r.user_id as reply_user_id
+        FROM 
+        comment c
+        left join
+        user cu on c.user_id = cu.id
+        LEFT JOIN 
+        reply r ON r.comment_seq = c.seq and r.post_seq = c.post_seq
+        Left join 
+        user ru on r.user_id = ru.id
+        where c.post_seq = %s;
+            """
+        curs.execute(sql, (post_seq,))
+        rows = curs.fetchall()
+        conn.close()
+        print(rows)
+        formatted_comments = []
+        comment_map = {}
+        
+        for row in rows:
+            comment_seq = row[0]  # comment_seq
+            # 댓글 데이터 가공
+            if comment_seq not in comment_map:
+                comment_data = [
+                    comment_seq,
+                    row[1],  # user_nickname
+                    row[2],  # post_seq
+                    row[3],  # text
+                    row[4],  # comment_date 
+                    row[5],  # comment_user_image
+                    row[6],  # comment_user_id
+                    []  # 답글 리스트
+                ]
+                comment_map[comment_seq] = comment_data
+                formatted_comments.append(comment_data)
+            # 답글 데이터 추가
+            if row[7] is not None:  # 답글이 있을 경우
+                reply_data = [
+                    row[7],  # reply_seq
+                    row[8],  # reply_post_seq
+                    row[9],  # reply_user_nickname
+                    row[10],  # reply_comment_seq
+                    row[11],   # reply_text
+                    row[12],   # reply_date
+                    row[13],   # reply_user_image
+                    row[14],   # reply_user_id
+                ]
+                comment_map[comment_seq][7].append(reply_data)
+
+        return {'results': formatted_comments}
+    except Exception as e:
+        conn.close()
+        print('Error:', e)
+        return {'results': "Error"}
+        
+# 답글 insert
+@router.get('/insert_reply')
+async def insertreply(post_seq: int=None, user_id: str=None, comment_seq: str=None, reply: str=None, reply_date: str=None):
+    conn = connection()
+    curs= conn.cursor()
+    try:
+        sql = "insert into reply(post_seq, user_id, comment_seq, reply, reply_date) values (%s,%s,%s,%s, %s)"
+        curs.execute(sql, (post_seq, user_id, comment_seq, reply, reply_date))
+        conn.commit()
+        conn.close()
+        return {'result' : 'OK'}
+    except Exception as e:
+        conn.close()
+        print('Error:', e)
+        return {'result' : "Error"}
+
+# 댓글 insert
+@router.get('/insert_comment')
+async def insertcomment(user_id: str=None, post_seq: int=None, text: str=None, comment_date: str=None):
+    conn = connection()
+    curs= conn.cursor()
+    try:
+        sql = "insert into comment(user_id, post_seq, text,comment_date) values (%s,%s,%s,%s)"
+        curs.execute(sql, (user_id, post_seq, text, comment_date))
         conn.commit()
         conn.close()
         return {'result' : 'OK'}
@@ -187,7 +441,7 @@ async def get_file(file_name: str):
         return FileResponse(path=file_path, filename=file_name)
     return {'results' : 'Error'}
     
-
+# post사진 업로드
 @router.post('/upload') # post 방식
 async def upload_file(file: UploadFile=File(...)):
     try:
@@ -199,6 +453,7 @@ async def upload_file(file: UploadFile=File(...)):
         print("Error:", e)
         return ({'results' : 'Error'})
 
+# user가 해당 post에 좋아요 누른적 있는지 확인
 @router.get('/checkfavorite')
 async def checkfavorite(user_id: str=None, post_seq: str=None):
     conn = connection()
@@ -224,6 +479,7 @@ async def checkfavorite(user_id: str=None, post_seq: str=None):
         print('Error:', e)
         return {'results' : "Error"}
 
+# user가 해당 post에 싫어요 누른적 있는지 확인
 @router.get('/checkhate')
 async def checkhate(user_id: str=None, post_seq: str=None):
     conn = connection()
@@ -249,6 +505,7 @@ async def checkhate(user_id: str=None, post_seq: str=None):
         print('Error:', e)
         return {'results' : "Error"}
     
+# 이미지 삭제
 @router.delete('/deleteimage/{file_name}')
 async def delete_file(file_name: str):
     print("delete file :", file_name)
@@ -262,6 +519,7 @@ async def delete_file(file_name: str):
         print('result:' 'Error')
         return ({'result' : 'Error'})
 
+# post 삭제
 @router.get('/deletepost')
 async def deletepost(seq: int=None):
     conn = connection()
@@ -277,13 +535,14 @@ async def deletepost(seq: int=None):
         print("Error :" , e)
         return {'results': 'Error'}
 
-@router.get('/deletecomment')
-async def delete(user_id: str=None):
+
+@router.get('/deletecommentreply')
+async def deletecomment(user_id: str=None, seq: str=None):
     conn = connection()
     curs = conn.cursor()
     try:
-        sql ="delete from comment where user_id = %s"
-        curs.execute(sql, (user_id,))
+        delete_comment_sql = "delete from comment where user_id = %s and seq =%s"
+        curs.execute(delete_comment_sql, (user_id, seq))
         conn.commit()
         conn.close()
         return {'results' : 'OK'}
@@ -292,7 +551,37 @@ async def delete(user_id: str=None):
         print("Error :", e)
         return {'results': 'Error'}
 
-    # Update favorite 추가
+@router.get('/deletecomment')
+async def deletecomment(user_id: str=None, seq: int=None):
+    conn = connection()
+    curs = conn.cursor()
+    try:
+        sql = "delete from comment where user_id = %s and seq = %s"
+        curs.execute(sql, (user_id, seq))
+        conn.commit()
+        conn.close()
+        return {'results' : 'OK'}
+    except Exception as e:
+        conn.close()
+        print("Error :", e)
+        return {'results': 'Error'}
+    
+@router.get('/deletereply')
+async def deletereply(user_id: str=None, seq: int=None):
+    conn = connection()
+    curs = conn.cursor()
+    try:
+        delete_reply_sql = "delete from reply where user_id = %s and seq = %s"
+        curs.execute(delete_reply_sql, (user_id, seq))
+        conn.commit()
+        conn.close()
+        return {'results' : 'OK'}
+    except Exception as e:
+        conn.close()
+        print("Error :", e)
+        return {'results': 'Error'}
+
+# user가 좋아요 누를때마다 업데이트 
 @router.get('/update_favorite')
 async def update(favorite: int = None, post_seq: int = None, user_id: str = None):  
     conn = connection()
@@ -308,6 +597,7 @@ async def update(favorite: int = None, post_seq: int = None, user_id: str = None
         print('Error:', e)
         return {'results': "Error"}
 
+# insert 좋아요 
 @router.get('/insert_favorite')
 async def insert(favorite: int=None, post_seq: int=None, user_id: str=None):
     conn = connection()
@@ -323,7 +613,8 @@ async def insert(favorite: int=None, post_seq: int=None, user_id: str=None):
         conn.close()
         print('Error:', e)
         return {'result' : "Error"}
-    
+
+# user가 싫어요 누를때마다 update
 @router.get('/update_hate')
 async def update(hate: int = None, post_seq: int = None, user_id: str = None):  
     conn = connection()
@@ -339,6 +630,7 @@ async def update(hate: int = None, post_seq: int = None, user_id: str = None):
         print('Error:', e)
         return {'results': "Error"}
 
+# 싫어요 insert
 @router.get('/insert_hate')
 async def insert(hate: int=None, post_seq: int=None, user_id: str=None):
     conn = connection()
@@ -355,7 +647,7 @@ async def insert(hate: int=None, post_seq: int=None, user_id: str=None):
         print('Error:', e)
         return {'result' : "Error"}
     
-    # 이미지를 바꿨을때 수정하는 부분
+# 이미지를 바꿨을때 수정하는 부분
 @router.get('/updateAll')
 async def insert(image: str=None, contents: str=None, public: int=None, seq: int=None):
     conn = connection()
@@ -379,7 +671,7 @@ async def insert(contents: str=None, public: int=None, seq: int=None):
     curs= conn.cursor()
 
     try:
-        sql = "update addmusteat set name = %s, phone = %s, favorite = %s, comment = %s, evaluate = %s where seq = %s and user_id = %s"
+        sql = "update post set contents = %s, public = %s where seq = %s"
         curs.execute(sql, (contents, public, seq))
         conn.commit()
         conn.close()

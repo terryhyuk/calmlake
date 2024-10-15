@@ -12,6 +12,8 @@ class Musicinsert extends VolumeHandler {
 
   XFile? imageFile;
   final ImagePicker picker = ImagePicker();
+  String mp3UploadOk = '선택안함';
+  String imageUploadOk = '선택안함';
 
   File? imgFile;
   String downloadMp3URL = '';
@@ -34,14 +36,28 @@ class Musicinsert extends VolumeHandler {
     downloadMp3URL = await uploadTask.ref.getDownloadURL();
   }
 
-  showImage() {
-    return imageFile == null
-        ? const Text('Image is not selected')
-        : Image.file(File(imageFile!.path));
-  }
+  // showImage() {
+  //   return imageFile == null
+  //       ? const Text('Image is not selected')
+  //       : Image.file(File(imageFile!.path));
+  // }
 
   galleryImage() {
     getImageFromGallery2(ImageSource.gallery);
+    update();
+  }
+  changemp3State(){
+    mp3UploadOk = 'OK';
+    update();
+  }
+
+  changeimageState(){
+    imageUploadOk = 'OK';
+    update();
+  }
+  changelastState(){
+    mp3UploadOk = '선택안함';
+    imageUploadOk = '선택안함';
     update();
   }
 

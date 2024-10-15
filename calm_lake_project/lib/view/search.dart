@@ -1,15 +1,18 @@
 import 'package:calm_lake_project/view/edit_post.dart';
 import 'package:calm_lake_project/view/insert.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 
-class MyPost extends StatelessWidget {
+class Search extends StatelessWidget {
   final GetStorage box = GetStorage();
-  MyPost({super.key});
+  final TextEditingController searchController = TextEditingController();
+
+  Search({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +21,30 @@ class MyPost extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Posts'),
-        centerTitle: false,
+        title: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: 50,
+          child: SearchBar(
+            controller: searchController,
+            hintText: 'Search',
+            onChanged: (value) {
+              vmHandler.updateSearchBar(value);
+              searchPost(vmHandler, userId);
+            },
+            onSubmitted: (value) {
+              vmHandler.updateSearchBar(value);
+              searchPost(vmHandler, userId);
+              vmHandler.search.value = "";
+            },
+            trailing: [Icon(Icons.search)],
+          ),
+        ),
       ),
       body: GetBuilder<VmHandler>(
         builder: (controller) {
           return FutureBuilder(
-            future: controller.getUserPostJSONData(userId),
+            future:
+                controller.getSearchJSONData(userId, vmHandler.search.value),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -38,9 +58,9 @@ class MyPost extends StatelessWidget {
                 return Obx(
                   () {
                     return ListView.builder(
-                      itemCount: vmHandler.userposts.length,
+                      itemCount: vmHandler.searchPost.length,
                       itemBuilder: (context, index) {
-                        final userpost = vmHandler.userposts[index];
+                        final searchpost = vmHandler.searchPost[index];
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -49,76 +69,19 @@ class MyPost extends StatelessWidget {
                               child: Row(
                                 children: [
                                   CircleAvatar(
-                                    backgroundImage: userpost != null &&
-                                            userpost[16] != null
+                                    backgroundImage: searchpost != null &&
+                                            searchpost[16] != null
                                         ? NetworkImage(
-                                            'http://127.0.0.1:8000/login/view/${userpost[16]}')
+                                            'http://127.0.0.1:8000/login/view/${searchpost[16]}')
                                         : null,
                                   ),
                                   SizedBox(
                                     width: 10,
                                   ),
                                   Text(
-                                    userpost[6],
+                                    searchpost[6],
                                     style: TextStyle(fontSize: 15),
                                   ),
-                                  Spacer(),
-                                  PopupMenuButton(
-                                    onSelected: (value) {
-                                      if (value == 'Edit') {
-                                        Get.to(EditPost(), arguments: userpost);
-                                      } else {
-                                        Get.defaultDialog(
-                                            title: 'Delete',
-                                            titleStyle: TextStyle(fontSize: 20),
-                                            content: Text(
-                                                'Do you want to delete the post?'),
-                                            onCancel: () {},
-                                            onConfirm: () async {
-                                              var result =
-                                                  await vmHandler.deletePost(
-                                                      userpost[0], userpost[3]);
-                                              if (result == 'OK') {
-                                                await vmHandler
-                                                    .getUserPostJSONData(
-                                                        userId);
-                                                Get.back();
-                                              } else {
-                                                Get.snackbar('Error', 'error');
-                                              }
-                                            },
-                                            buttonColor: const Color.fromARGB(
-                                                255, 213, 150, 145),
-                                            contentPadding: EdgeInsets.all(10));
-                                      }
-                                    },
-                                    itemBuilder: (BuildContext bc) {
-                                      return const [
-                                        PopupMenuItem(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text("Edit"),
-                                              Icon(Icons.edit)
-                                            ],
-                                          ),
-                                          value: 'Edit',
-                                        ),
-                                        PopupMenuItem(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text("Delete"),
-                                              Icon(Icons.delete)
-                                            ],
-                                          ),
-                                          value: 'Delete',
-                                        ),
-                                      ];
-                                    },
-                                  )
                                 ],
                               ),
                             ),
@@ -127,7 +90,7 @@ class MyPost extends StatelessWidget {
                               height: 300,
                               child: Container(
                                 child: Image.network(
-                                  'http://127.0.0.1:8000/query/view/${userpost[3]}',
+                                  'http://127.0.0.1:8000/query/view/${searchpost[3]}',
                                   fit: BoxFit.cover,
                                   width: double.infinity,
                                   height: 300,
@@ -140,14 +103,14 @@ class MyPost extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     bool check = await vmHandler.checkFavorite(
-                                            userpost[8] ?? 'null',
-                                            userpost[9] ?? 0) ==
-                                        userpost[7];
+                                            searchpost[8] ?? 'null',
+                                            searchpost[9] ?? 0) ==
+                                        searchpost[7];
                                     print(await vmHandler.checkFavorite(
-                                        userpost[8] ?? 'null',
-                                        userpost[9] ?? 0));
+                                        searchpost[8] ?? 'null',
+                                        searchpost[9] ?? 0));
                                     int newFavoriteValue =
-                                        userpost[10] == '1' ? 0 : 1;
+                                        searchpost[10] == '1' ? 0 : 1;
                                     // favorite 테이블이 있고 hate 테이블이 있는경우
                                     // favorite 1이고 hate가 0이면 updateFavorite
                                     // favorite 1이고 hate가 1이면 updatehate, updatefavorite
@@ -156,39 +119,40 @@ class MyPost extends StatelessWidget {
                                     // favorite 테이블이 있고 hate 테이블이 없는경우 updateFavorite
                                     if (check) {
                                       if (newFavoriteValue == 1 &&
-                                          userpost[14] == '1') {
+                                          searchpost[14] == '1') {
                                         await vmHandler.updateHate(
-                                            0, userpost[13], userId);
+                                            0, searchpost[13], userId);
                                         await vmHandler.updateFavorite(
                                             newFavoriteValue,
-                                            userpost[9],
+                                            searchpost[9],
                                             userId);
                                       }
                                       await vmHandler.updateFavorite(
                                           newFavoriteValue,
-                                          userpost[9],
+                                          searchpost[9],
                                           userId);
                                       // favorite 테이블이 없고 hate 테이블이 없는경우 inserFavorite 1
                                       // favorite 테이블이 없고 hate 테이블이 있는경우
                                       // hate가 1이면 insertfavorite 1, updatehate
                                       // hate가 0이면 insertfavofite 1
                                     } else {
-                                      if (userpost[14] == '1') {
+                                      if (searchpost[14] == '1') {
                                         await vmHandler.updateHate(
-                                            0, userpost[13], userId);
+                                            0, searchpost[13], userId);
                                         await vmHandler.insertFavorite(
-                                            1, userpost[0], userId);
+                                            1, searchpost[0], userId);
                                       } else {
                                         await vmHandler.insertFavorite(
-                                            1, userpost[0], userId);
+                                            1, searchpost[0], userId);
                                       }
                                     }
-                                    await vmHandler.getUserPostJSONData(userId);
+                                    await vmHandler.getSearchJSONData(
+                                        userId, controller.search.value);
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 15, top: 10),
-                                    child: userpost[10] == '1'
+                                    child: searchpost[10] == '1'
                                         ? Icon(Icons.favorite)
                                         : Icon(Icons.favorite_border),
                                   ),
@@ -197,38 +161,39 @@ class MyPost extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     bool check = await vmHandler.checkHate(
-                                            userpost[12] ?? 'null',
-                                            userpost[13] ?? 0) ==
-                                        userpost[11];
+                                            searchpost[12] ?? 'null',
+                                            searchpost[13] ?? 0) ==
+                                        searchpost[11];
                                     int newHateValue =
-                                        userpost[14] == '1' ? 0 : 1;
+                                        searchpost[14] == '1' ? 0 : 1;
                                     if (check) {
                                       if (newHateValue == 1 &&
-                                          userpost[10] == '1') {
+                                          searchpost[10] == '1') {
                                         await vmHandler.updateFavorite(
-                                            0, userpost[9], userId);
-                                        await vmHandler.updateHate(
-                                            newHateValue, userpost[13], userId);
+                                            0, searchpost[9], userId);
+                                        await vmHandler.updateHate(newHateValue,
+                                            searchpost[13], userId);
                                       }
                                       await vmHandler.updateHate(
-                                          newHateValue, userpost[13], userId);
+                                          newHateValue, searchpost[13], userId);
                                     } else {
-                                      if (userpost[10] == '1') {
+                                      if (searchpost[10] == '1') {
                                         await vmHandler.updateFavorite(
-                                            0, userpost[9], userId);
+                                            0, searchpost[9], userId);
                                         await vmHandler.insertHate(
-                                            1, userpost[0], userId);
+                                            1, searchpost[0], userId);
                                       } else {
                                         await vmHandler.insertHate(
-                                            1, userpost[0], userId);
+                                            1, searchpost[0], userId);
                                       }
                                     }
-                                    await vmHandler.getUserPostJSONData(userId);
+                                    await vmHandler.getSearchJSONData(
+                                        userId, controller.search.value);
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 10, top: 10),
-                                    child: userpost[14] == '1'
+                                    child: searchpost[14] == '1'
                                         ? Icon(Icons.thumb_down)
                                         : Icon(Icons.thumb_down_alt_outlined),
                                   ),
@@ -237,7 +202,7 @@ class MyPost extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     await controller
-                                        .getCommentReply(userpost[0]);
+                                        .getCommentReply(searchpost[0]);
                                     await showModalBottomSheet(
                                       context: context,
                                       isScrollControlled:
@@ -323,15 +288,28 @@ class MyPost extends StatelessWidget {
                                                                     GestureDetector(
                                                                       onLongPress:
                                                                           () {
-                                                                        _showDefaultDialog(
-                                                                            context,
-                                                                            index,
-                                                                            vmHandler,
-                                                                            userId,
-                                                                            userpost,
-                                                                            comment,
-                                                                            isComment:
-                                                                                T);
+                                                                        if (comment[6] ==
+                                                                            userId) {
+                                                                          _showDefaultDialog(
+                                                                              context,
+                                                                              index,
+                                                                              vmHandler,
+                                                                              userId,
+                                                                              searchpost,
+                                                                              comment,
+                                                                              isComment: T);
+                                                                        } else {
+                                                                          Get.snackbar(
+                                                                            '권한 없음',
+                                                                            '댓글 작성자만 삭제할 수 있습니다.',
+                                                                            snackPosition:
+                                                                                SnackPosition.BOTTOM,
+                                                                            backgroundColor:
+                                                                                Colors.red,
+                                                                            colorText:
+                                                                                Colors.white,
+                                                                          );
+                                                                        }
                                                                       },
                                                                       child:
                                                                           ListTile(
@@ -357,7 +335,7 @@ class MyPost extends StatelessWidget {
                                                                             onPressed: () {
                                                                               controller.commentIndex = index;
                                                                               controller.replyTextController.text = '';
-                                                                              showBottomeSheet(context, index, vmHandler, userpost, comment, userId);
+                                                                              showBottomeSheet(context, index, vmHandler, searchpost, comment, userId);
                                                                             },
                                                                             child: Text('reply')),
                                                                       ),
@@ -379,7 +357,17 @@ class MyPost extends StatelessWidget {
                                                                               Expanded(
                                                                                   child: GestureDetector(
                                                                                 onLongPress: () {
-                                                                                  _showDefaultDialog(context, index, vmHandler, userId, userpost, reply, isComment: F);
+                                                                                  if (reply[7] == userId) {
+                                                                                    _showDefaultDialog(context, index, vmHandler, userId, searchpost, reply, isComment: F);
+                                                                                  } else {
+                                                                                    Get.snackbar(
+                                                                                      '권한 없음',
+                                                                                      '댓글 작성자만 삭제할 수 있습니다.',
+                                                                                      snackPosition: SnackPosition.BOTTOM,
+                                                                                      backgroundColor: Colors.red,
+                                                                                      colorText: Colors.white,
+                                                                                    );
+                                                                                  }
                                                                                 },
                                                                                 child: ListTile(
                                                                                   leading: CircleAvatar(
@@ -447,7 +435,8 @@ class MyPost extends StatelessWidget {
                                                               .isNotEmpty) {
                                                             await controller
                                                                 .insertCommnet(
-                                                                    userpost[0],
+                                                                    searchpost[
+                                                                        0],
                                                                     controller
                                                                         .textController
                                                                         .text
@@ -459,11 +448,15 @@ class MyPost extends StatelessWidget {
                                                                 .text = '';
                                                           }
                                                           await vmHandler
-                                                              .getUserPostJSONData(
-                                                                  userId);
+                                                              .getSearchJSONData(
+                                                                  userId,
+                                                                  controller
+                                                                      .search
+                                                                      .value);
                                                           await vmHandler
                                                               .getCommentReply(
-                                                                  userpost[0]);
+                                                                  searchpost[
+                                                                      0]);
                                                         },
                                                         child: Icon(
                                                           Icons.arrow_upward,
@@ -501,9 +494,9 @@ class MyPost extends StatelessWidget {
                                 Padding(
                                   padding:
                                       const EdgeInsets.only(left: 10, top: 10),
-                                  child: Text(userpost[15] == 0
+                                  child: Text(searchpost[15] == 0
                                       ? ""
-                                      : "${userpost[15]}"),
+                                      : "${searchpost[15]}"),
                                 )
                               ],
                             ),
@@ -513,9 +506,24 @@ class MyPost extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('${userpost[6]}\t${userpost[4]}'),
+                                  ExpandableText(
+                                    '${searchpost[4]}',
+                                    prefixText: '${searchpost[6]}',
+                                    onPrefixTap: () {
+                                      print('prefix 클릭 시 발생할 이벤트');
+                                    },
+                                    prefixStyle: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    expandText: '더보기',
+                                    collapseText: '접기',
+                                    maxLines: 3,
+                                    expandOnTextTap: true,
+                                    collapseOnTextTap: true,
+                                    linkColor: Colors.grey,
+                                  ),
                                   Text(
-                                      '${DateFormat("MMMM d").format(DateTime.parse(userpost[2]))}',
+                                      '${DateFormat("MMMM d").format(DateTime.parse(searchpost[2]))}',
                                       style: TextStyle(color: Colors.black54)),
                                 ],
                               ),
@@ -652,7 +660,8 @@ class MyPost extends StatelessWidget {
                             comment[6], comment[0]);
                         if (result == 'OK') {
                           await controller.getCommentReply(userpost[0]);
-                          await controller.getUserPostJSONData(userId);
+                          await controller.getSerchJSONData(
+                              userId, controller.search.value);
                           Get.back();
                         } else {
                           Get.snackbar('Error', 'error');
@@ -664,7 +673,8 @@ class MyPost extends StatelessWidget {
                             comment[7], comment[0]);
                         if (result == 'OK') {
                           await controller.getCommentReply(userpost[0]);
-                          await controller.getUserPostJSONData(userId);
+                          await controller.getSearchJSONData(
+                              userId, controller.search.value);
                           Get.back();
                         } else {
                           Get.snackbar('Error', 'error');
@@ -682,5 +692,13 @@ class MyPost extends StatelessWidget {
             ],
           );
         });
+  }
+
+  searchPost(vmHandler, userId) {
+    if (searchController.text.trim().isEmpty) {
+      vmHandler.searchPost.clear(); // 검색어가 비어있으면 리스트를 비웁니다.
+    } else {
+      vmHandler.getSearchJSONData(userId, vmHandler.search.value);
+    }
   }
 }
