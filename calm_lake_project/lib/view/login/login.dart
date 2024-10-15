@@ -110,14 +110,6 @@ class Login extends StatelessWidget {
                           String id = idController.text.trim();
                           String pw = pwController.text.trim();
                           await allowLogin(id, pw);
-                          if (vmHandler.user.isNotEmpty) {
-                            // print(vmHandler.user);
-                            await vmHandler.getUserJSONData(id);                          
-                            await loginHandler.box.write(
-                                'nickname', vmHandler.user[0]['nickname']);
-                          } else {
-                            print('User data not found');
-                          }
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFD7EFC9)),
@@ -187,6 +179,9 @@ class Login extends StatelessWidget {
       bool isAuthenticated = await checkUserJSONData(id, pw);
       if (isAuthenticated) {
         await loginHandler.activeUserJSONData(id);
+        await vmHandler.getUserJSONData(id);
+        await loginHandler.box.write('nickname', vmHandler.user[0]['nickname']);
+        print(loginHandler.box.read('nickname'));
         await activityInsert();
         Get.to(HomeScreen());
         idController.text = '';
