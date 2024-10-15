@@ -201,8 +201,27 @@ class Home extends StatelessWidget {
                     ),
                     // 음악 변경 버튼
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        // 사운드바
+                        Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  vmHandler.soundMute();
+                                }, icon: vmHandler.changeIcon()),
+                            Slider(
+                              min: 0,
+                              max: 1,
+                              onChanged: (double value) {
+                                vmHandler.setVolumeValue = value;
+                                vmHandler
+                                    .soundControll(vmHandler.setVolumeValue);
+                              },
+                              value: vmHandler.setVolumeValue,
+                            ),
+                          ],
+                        ),
                         IconButton(
                             onPressed: () {
                               Get.to(() => Musiclist())!.then(
