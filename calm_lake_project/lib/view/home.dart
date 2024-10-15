@@ -1,5 +1,6 @@
 import 'package:calm_lake_project/view/musiclist.dart';
 import 'package:calm_lake_project/vm/friends_controller.dart';
+import 'package:calm_lake_project/vm/music_handler.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,7 @@ import '../vm/vm_handler.dart';
 class Home extends StatelessWidget {
   Home({super.key});
   final vmHandler = Get.put(VmHandler());
+  final musicHandler = Get.put(MusicHandler());
   final friendsController = Get.put(FriendsController());
   final loginHandler = Get.put(LoginHandler());
   final value = Get.arguments ?? '__';
@@ -22,9 +24,9 @@ class Home extends StatelessWidget {
     print(loginHandler.box.read('userId'));
     print(loginHandler.box.read('nickname'));
     final color = Theme.of(context).primaryColor;
-    vmHandler.checkaudioPlayer(vmHandler.firebaseMusic);
-    vmHandler.stateCheck();
-    vmHandler.addlistMusic();
+    musicHandler.checkaudioPlayer(musicHandler.firebaseMusic);
+    musicHandler.stateCheck();
+    musicHandler.addlistMusic();
     friendsController.requstfriendsJSONData(loginHandler.box.read('userId'));
 
     return Scaffold(
@@ -49,7 +51,7 @@ class Home extends StatelessWidget {
                   IconButton(
                       onPressed: () {
                         print(friendsController.addfriend);
-                        print(vmHandler.musicList[0][0]);
+                        print(musicHandler.musicList[0][0]);
                       },
                       icon: const Icon(Icons.person_add_alt))
                 ],
@@ -69,7 +71,7 @@ class Home extends StatelessWidget {
                 color: Colors.grey,
               ),
             ),
-            GetBuilder<VmHandler>(
+            GetBuilder<MusicHandler>(
               builder: (controller) {
                 return Center(
                   child: Column(children: <Widget>[
@@ -80,7 +82,7 @@ class Home extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                               child: Text(
-                                '${vmHandler.firendList} Request',
+                                '${musicHandler.firendList} Request',
                                 style: const TextStyle(
                                   fontSize: 20,
                                 ),
@@ -115,27 +117,34 @@ class Home extends StatelessWidget {
                                         child: Column(
                                           children: [
                                             Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: Row(
                                                 children: [
                                                   Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Text(friendsController.addfriend[index][0]),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Text(
+                                                        friendsController
+                                                                .addfriend[
+                                                            index][0]),
                                                   ),
                                                   IconButton(
                                                     onPressed: () {
                                                       //
-                                                    }, 
+                                                    },
                                                     icon: const Icon(
                                                       Icons.cancel,
-                                                      ),
                                                     ),
+                                                  ),
                                                   IconButton(
                                                     onPressed: () {
                                                       _showDialog(index);
-                                                    }, 
-                                                    icon: const Icon(Icons.check_circle),
-                                                    ),
+                                                    },
+                                                    icon: const Icon(
+                                                        Icons.check_circle),
+                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -155,7 +164,8 @@ class Home extends StatelessWidget {
                         ),
                         // 음악 이미지
                         CircleAvatar(
-                          backgroundImage: NetworkImage(vmHandler.selectImage),
+                          backgroundImage:
+                              NetworkImage(musicHandler.selectImage),
                           radius: 130,
                         )
                       ],
@@ -164,7 +174,7 @@ class Home extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                       child: Text(
-                        vmHandler.selectMusic,
+                        musicHandler.selectMusic,
                         style: const TextStyle(
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
@@ -174,28 +184,28 @@ class Home extends StatelessWidget {
                       thumbColor: Colors.lightBlue,
                       activeColor: Colors.lightBlue,
                       onChanged: (value) {
-                        final duration = vmHandler.duration;
+                        final duration = musicHandler.duration;
                         if (duration == null) {
                           return;
                         }
                         final position = value * duration.inMilliseconds;
-                        vmHandler.player
+                        musicHandler.player
                             .seek(Duration(milliseconds: position.round()));
                       },
-                      value: (vmHandler.position != null &&
-                              vmHandler.duration != null &&
-                              vmHandler.position!.inMilliseconds > 0 &&
-                              vmHandler.position!.inMilliseconds <
-                                  vmHandler.duration!.inMilliseconds)
-                          ? vmHandler.position!.inMilliseconds /
-                              vmHandler.duration!.inMilliseconds
+                      value: (musicHandler.position != null &&
+                              musicHandler.duration != null &&
+                              musicHandler.position!.inMilliseconds > 0 &&
+                              musicHandler.position!.inMilliseconds <
+                                  musicHandler.duration!.inMilliseconds)
+                          ? musicHandler.position!.inMilliseconds /
+                              musicHandler.duration!.inMilliseconds
                           : 0.0,
                     ),
                     Text(
-                      vmHandler.position != null
-                          ? '${vmHandler.positionText} / ${vmHandler.durationText}'
-                          : vmHandler.duration != null
-                              ? vmHandler.durationText
+                      musicHandler.position != null
+                          ? '${musicHandler.positionText} / ${musicHandler.durationText}'
+                          : musicHandler.duration != null
+                              ? musicHandler.durationText
                               : '',
                       style: const TextStyle(fontSize: 16.0),
                     ),
@@ -203,29 +213,30 @@ class Home extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // 사운드바
+                        //사운드바
                         Row(
                           children: [
                             IconButton(
                                 onPressed: () {
-                                  vmHandler.soundMute();
-                                }, icon: vmHandler.changeIcon()),
+                                  musicHandler.soundMute();
+                                },
+                                icon: musicHandler.changeIcon()),
                             Slider(
                               min: 0,
                               max: 1,
                               onChanged: (double value) {
-                                vmHandler.setVolumeValue = value;
-                                vmHandler
-                                    .soundControll(vmHandler.setVolumeValue);
+                                musicHandler.setVolumeValue = value;
+                                musicHandler
+                                    .soundControll(musicHandler.setVolumeValue);
                               },
-                              value: vmHandler.setVolumeValue,
+                              value: musicHandler.setVolumeValue,
                             ),
                           ],
                         ),
                         IconButton(
                             onPressed: () {
                               Get.to(() => Musiclist())!.then(
-                                (value) => reloadData(vmHandler),
+                                (value) => reloadData(musicHandler),
                               );
                             },
                             icon: const Icon(
@@ -241,7 +252,7 @@ class Home extends StatelessWidget {
                         IconButton(
                           key: const Key('skip_previous'),
                           onPressed:
-                              vmHandler.isPlaying ? null : vmHandler.play,
+                              musicHandler.isPlaying ? null : musicHandler.play,
                           iconSize: 50.0,
                           icon: const Icon(
                             Icons.skip_previous_outlined,
@@ -252,7 +263,7 @@ class Home extends StatelessWidget {
                         IconButton(
                           key: const Key('play_button'),
                           onPressed:
-                              vmHandler.isPlaying ? null : vmHandler.play,
+                              musicHandler.isPlaying ? null : musicHandler.play,
                           iconSize: 70,
                           icon: const Icon(
                             Icons.play_circle,
@@ -262,8 +273,9 @@ class Home extends StatelessWidget {
                         ),
                         IconButton(
                           key: const Key('pause_button'),
-                          onPressed:
-                              vmHandler.isPlaying ? vmHandler.pause : null,
+                          onPressed: musicHandler.isPlaying
+                              ? musicHandler.pause
+                              : null,
                           iconSize: 70.0,
                           icon: const Icon(Icons.pause),
                           color: Colors.black,
@@ -271,7 +283,7 @@ class Home extends StatelessWidget {
                         IconButton(
                           key: const Key('skip_next'),
                           onPressed:
-                              vmHandler.isPlaying ? null : vmHandler.play,
+                              musicHandler.isPlaying ? null : musicHandler.play,
                           iconSize: 50.0,
                           icon: const Icon(
                             Icons.skip_next_outlined,
@@ -292,32 +304,36 @@ class Home extends StatelessWidget {
   }
 
 // --- Functions ---
-_showDialog(int index) {
-  Get.dialog(
-    AlertDialog(
-      title: const Text('친구 추가'),
-      content: Text('${friendsController.addfriend[index][0]}님을 친구로 추가하시겠습니까?'),
-      actions: [
-        TextButton(
-          child: const Text('취소'),
-          onPressed: () => Get.back(),
-        ),
-        TextButton(
-          child: const Text('추가'),
-          onPressed: () async {
-            bool success = await friendsController.acceptFriendRequest(friendsController.addfriend[index][0]);
-            Get.back();
-            if (success) {
-              Get.snackbar('성공', '친구 추가가 완료되었습니다.', snackPosition: SnackPosition.BOTTOM);
-            } else {
-              Get.snackbar('실패', '친구 추가에 실패했습니다. 다시 시도해주세요.', snackPosition: SnackPosition.BOTTOM);
-            }
-          },
-        ),
-      ],
-    ),
-  );
-}
+  _showDialog(int index) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('친구 추가'),
+        content:
+            Text('${friendsController.addfriend[index][0]}님을 친구로 추가하시겠습니까?'),
+        actions: [
+          TextButton(
+            child: const Text('취소'),
+            onPressed: () => Get.back(),
+          ),
+          TextButton(
+            child: const Text('추가'),
+            onPressed: () async {
+              bool success = await friendsController
+                  .acceptFriendRequest(friendsController.addfriend[index][0]);
+              Get.back();
+              if (success) {
+                Get.snackbar('성공', '친구 추가가 완료되었습니다.',
+                    snackPosition: SnackPosition.BOTTOM);
+              } else {
+                Get.snackbar('실패', '친구 추가에 실패했습니다. 다시 시도해주세요.',
+                    snackPosition: SnackPosition.BOTTOM);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   logOut(String id) async {
     await activityInsert();
@@ -339,9 +355,9 @@ _showDialog(int index) {
         colorText: Colors.white);
   }
 
-  reloadData(VmHandler vmHandler) {
-    vmHandler.checkaudioPlayer(vmHandler.firebaseMusic);
-    vmHandler.stateCheck();
+  reloadData(MusicHandler musicHandler) {
+    musicHandler.checkaudioPlayer(musicHandler.firebaseMusic);
+    musicHandler.stateCheck();
   }
 
   activityInsert() async {

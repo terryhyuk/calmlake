@@ -10,6 +10,7 @@ from fastapi.responses import FileResponse
 import pymysql
 import os
 import shutil
+from datetime import datetime, timedelta
 
 router = APIRouter()
 
@@ -90,7 +91,8 @@ async def select(user_id: str=None):
         conn.close()
         print('Error:', e)
         return {'results' : "Error"}
-    
+
+# post 인기순으로 정렬
 @router.get('/select_top')
 async def selecttop(user_id: str=None):
     conn = connection()
@@ -141,7 +143,7 @@ async def selecttop(user_id: str=None):
     h.seq, h.user_id, h.post_seq, h.hate
     HAVING count(f.favorite)/NULLIF(COUNT(h.hate), 0) > 0.3 OR COUNT(h.hate) = 0 or count(f.favorite) = 0
     order by
-    count(f.favorite) desc
+    count(f.favorite) desc, p.date desc
 """    
         curs.execute(sql, (user_id,user_id,user_id,user_id,user_id))
         rows = curs.fetchall()
@@ -152,7 +154,8 @@ async def selecttop(user_id: str=None):
         conn.close()
         print('Error:', e)
         return {'results' : "Error"}
-    
+
+# post search 페이지
 @router.get('/select_search')
 async def selectsearch(user_id: str=None, search: str=None):
     conn = connection()
@@ -209,7 +212,7 @@ async def selectsearch(user_id: str=None, search: str=None):
         conn.close()
         print('Error:', e)
         return {'results' : "Error"}
-    
+
 # 각 user post 가져오는 쿼리
 @router.get('/userpost')
 async def userpost(user_id: str=None):
@@ -265,6 +268,61 @@ async def userpost(user_id: str=None):
         conn.close()
         print('Error:', e)
 
+# 각 user 좋아요 한 post
+@router.get('/favorite_post')
+async def favorite_post(user_id: str=None):
+    conn = connection()
+    curs= conn.cursor()
+    try:
+        sql = """
+    SELECT 
+        p.seq, 
+        p.post_user_id, 
+        p.date, 
+        p.image, 
+        p.contents, 
+        p.public,
+        p.post_nickname,
+        f.seq AS favorite_seq, 
+        f.user_id AS favorite_user_id, 
+        f.post_seq AS favorite_post_seq, 
+        f.favorite,
+        h.seq AS hate_seq, 
+        h.user_id AS hate_user_id, 
+        h.post_seq AS hate_post_seq, 
+        h.hate,
+        count(distinct c.seq) + count(distinct r.seq) as comment_count,
+        u.user_image
+    FROM 
+        post AS p 
+    LEFT JOIN 
+        favorite AS f ON p.seq = f.post_seq AND f.user_id = %s 
+    LEFT JOIN 
+        hate AS h ON p.seq = h.post_seq AND h.user_id = %s 
+    LEFT JOIN 
+        comment AS c ON p.seq = c.post_seq 
+    LEFT join
+        reply as r ON r.post_seq = c.post_seq and r.comment_seq = c.seq
+    LEFT join
+        user as u ON p.post_user_id = u.id
+    WHERE 
+        f.user_id = %s and f.favorite = '1' and p.post_user_id != %s
+    GROUP BY 
+    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,p.post_nickname, 
+    f.seq, f.user_id, f.post_seq, f.favorite, 
+    h.seq, h.user_id, h.post_seq, h.hate
+    order by
+    p.date desc
+            """
+        curs.execute(sql, (user_id, user_id, user_id, user_id))
+        rows = curs.fetchall()
+        conn.close()
+        print(rows)
+        return {'results' : rows}
+    except Exception as e:
+        conn.close()
+        print('Error:', e)
+
 # 유저 정보 가져오는 쿼리
 @router.get('/user')
 async def user(id: str=None):
@@ -297,26 +355,6 @@ async def comment(post_seq: str=None):
             where post_seq = %s
             """
         curs.execute(sql, (post_seq,))
-        rows = curs.fetchall()
-        conn.close()
-        print(rows)
-        return {'results' : rows}
-    except Exception as e:
-        conn.close()
-        print('Error:', e)
-        return {'results' : "Error"}
-    
-@router.get('/reply')
-async def reply(comment_seq: str=None, post_seq: str=None):
-    conn = connection()
-    curs= conn.cursor()
-    try:
-        sql = """
-            select * 
-            From reply
-            where comment_seq= %s and post_seq =%s
-            """
-        curs.execute(sql, (comment_seq, post_seq))
         rows = curs.fetchall()
         conn.close()
         print(rows)
@@ -365,17 +403,34 @@ def commentsreplies(post_seq: str=None):
         print(rows)
         formatted_comments = []
         comment_map = {}
-        
+
+        def format_time_ago(time):
+            comment_time = time
+            now = datetime.now()
+            diff = now - comment_time
+
+            if diff.total_seconds() < 60:
+                return "Just now"
+            elif diff.total_seconds() < 3600:
+                return f"{int(diff.total_seconds() / 60)}m"
+            elif diff.total_seconds() < 86400:
+                return f"{int(diff.total_seconds() / 3600)}h"
+            elif diff.total_seconds() < 604800:
+                return f"{int(diff.total_seconds() / 86400)}d"
+            else:
+                return comment_time.strftime('%Y-%m-%d')
+            
         for row in rows:
+            comment_time = format_time_ago(row[4])
+            reply_time = format_time_ago(row[12]) if row[2] and row[12]else None
             comment_seq = row[0]  # comment_seq
-            # 댓글 데이터 가공
             if comment_seq not in comment_map:
                 comment_data = [
                     comment_seq,
                     row[1],  # user_nickname
                     row[2],  # post_seq
                     row[3],  # text
-                    row[4],  # comment_date 
+                    comment_time,  # comment_date 
                     row[5],  # comment_user_image
                     row[6],  # comment_user_id
                     []  # 답글 리스트
@@ -390,7 +445,7 @@ def commentsreplies(post_seq: str=None):
                     row[9],  # reply_user_nickname
                     row[10],  # reply_comment_seq
                     row[11],   # reply_text
-                    row[12],   # reply_date
+                    reply_time,   # reply_date
                     row[13],   # reply_user_image
                     row[14],   # reply_user_id
                 ]

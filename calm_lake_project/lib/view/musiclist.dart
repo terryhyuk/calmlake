@@ -1,3 +1,4 @@
+import 'package:calm_lake_project/vm/music_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,7 +9,7 @@ import 'musicinsert.dart';
 
 class Musiclist extends StatelessWidget {
   Musiclist({super.key});
-  final vmHandler = Get.put((VmHandler()));
+  final musicHandler = Get.put((MusicHandler()));
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +18,10 @@ class Musiclist extends StatelessWidget {
           title: const Text('Music'),
           actions: [
             IconButton(
-              onPressed: () {
-                Get.to(() => MusicInsert());
-              }, 
-              icon: const Icon(Icons.add_outlined)
-              )
+                onPressed: () {
+                  Get.to(() => MusicInsert());
+                },
+                icon: const Icon(Icons.add_outlined))
           ],
         ),
         body: StreamBuilder<QuerySnapshot>(
@@ -49,7 +49,7 @@ class Musiclist extends StatelessWidget {
         singer: doc['singer']);
     return GestureDetector(
       onTap: () {
-        vmHandler.firebaseMusicFunction(music.mp3, music.image, music.name);
+        musicHandler.firebaseMusicFunction(music.mp3, music.image, music.name);
         // print(doc);
         Get.back();
       },
@@ -71,7 +71,8 @@ class Musiclist extends StatelessWidget {
                     children: [
                       Text(
                         music.singer,
-                        style: const TextStyle(fontSize: 10, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 10, color: Colors.grey),
                       ),
                     ],
                   )

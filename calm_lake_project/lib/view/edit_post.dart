@@ -101,13 +101,18 @@ class EditPost extends StatelessWidget {
                                                   }
                                                 : null,
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: controller
-                                                      .selectedButton.value ==
-                                                  0
-                                              ? Colors.green // 선택된 버튼은 녹색
-                                              : Colors.blue, // 선택되지 않은 버튼은 파란색
+                                          backgroundColor:
+                                              controller.selectedButton.value ==
+                                                      0
+                                                  ? const Color.fromARGB(
+                                                      255, 70, 99, 150)
+                                                  : const Color.fromARGB(
+                                                      255, 116, 169, 171),
                                         ),
-                                        child: Text('All'))),
+                                        child: Text(
+                                          'All',
+                                          style: TextStyle(color: Colors.white),
+                                        ))),
                                     SizedBox(
                                       width: 10,
                                     ),
@@ -125,10 +130,14 @@ class EditPost extends StatelessWidget {
                                           backgroundColor:
                                               controller.selectedButton.value ==
                                                       1
-                                                  ? Colors.green
-                                                  : Colors.blue,
+                                                  ? const Color.fromARGB(
+                                                      255, 70, 99, 150)
+                                                  : const Color.fromARGB(
+                                                      255, 116, 169, 171),
                                         ),
-                                        child: Text('Me'))),
+                                        child: Text('Me',
+                                            style: TextStyle(
+                                                color: Colors.white)))),
                                     SizedBox(
                                       width: 10,
                                     ),
@@ -143,10 +152,14 @@ class EditPost extends StatelessWidget {
                                           backgroundColor:
                                               controller.selectedButton.value ==
                                                       2
-                                                  ? Colors.green
-                                                  : Colors.blue,
+                                                  ? const Color.fromARGB(
+                                                      255, 70, 99, 150)
+                                                  : const Color.fromARGB(
+                                                      255, 116, 169, 171),
                                         ),
-                                        child: Text('Friends'))),
+                                        child: Text('Friends',
+                                            style: TextStyle(
+                                                color: Colors.white)))),
                                   ],
                                 ),
                               ),

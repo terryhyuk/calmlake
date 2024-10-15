@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:calm_lake_project/vm/music_handler.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 
 class MusicInsert extends StatelessWidget {
   MusicInsert({super.key});
-  final vmHandler = Get.put(VmHandler());
+  final musicHandler = Get.put(MusicHandler());
   final TextEditingController titleController = TextEditingController();
   final TextEditingController subtitleController = TextEditingController();
 
@@ -47,15 +48,15 @@ class MusicInsert extends StatelessWidget {
                     children: [
                       ElevatedButton(
                           onPressed: () {
-                            vmHandler.uploadFile();
-                            vmHandler.changemp3State();
+                            musicHandler.uploadFile();
+                            musicHandler.changemp3State();
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xffD8EFCA),
                               shape: BeveledRectangleBorder(
                                   borderRadius: BorderRadius.circular(2))),
                           child: const Text('Mp3 insert')),
-                      Text(vmHandler.mp3UploadOk)
+                      Text(musicHandler.mp3UploadOk)
                     ],
                   ),
                 ),
@@ -65,16 +66,16 @@ class MusicInsert extends StatelessWidget {
                     children: [
                       ElevatedButton(
                           onPressed: () {
-                            vmHandler.galleryImage();
-                            vmHandler.changeimageState();
-                            vmHandler.reload();
+                            musicHandler.galleryImage();
+                            musicHandler.changeimageState();
+                            musicHandler.reload();
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xffF9D3CC),
                               shape: BeveledRectangleBorder(
                                   borderRadius: BorderRadius.circular(2))),
                           child: const Text('Image insert')),
-                      Text(vmHandler.imageUploadOk)
+                      Text(musicHandler.imageUploadOk)
                     ],
                   ),
                 ),
@@ -85,13 +86,13 @@ class MusicInsert extends StatelessWidget {
             //   height: 200,
             //   color: Colors.grey,
             //   child: Center(
-            //     child: vmHandler.showImage()
+            //     child: musicHandler.showImage()
             //   ),
             // ),
             ElevatedButton(
                 onPressed: () {
                   flieAllInsert();
-                  vmHandler.changelastState();
+                  musicHandler.changelastState();
                   Get.back();
                 },
                 style: ElevatedButton.styleFrom(
@@ -106,11 +107,11 @@ class MusicInsert extends StatelessWidget {
   }
 
   flieAllInsert() async {
-    String image = await vmHandler.preparingImage();
+    String image = await musicHandler.preparingImage();
 
     FirebaseFirestore.instance.collection('music').add({
       'name': titleController.text.trim(),
-      'mp3': vmHandler.downloadMp3URL,
+      'mp3': musicHandler.downloadMp3URL,
       'singer': subtitleController.text.trim(),
       'image': image
     });
