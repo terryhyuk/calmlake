@@ -1,6 +1,7 @@
 import 'package:calm_lake_project/view/edit_post.dart';
 import 'package:calm_lake_project/view/insert.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
@@ -340,11 +341,22 @@ class MyPost extends StatelessWidget {
                                                                           backgroundImage:
                                                                               NetworkImage('http://127.0.0.1:8000/login/view/${comment[5]}'),
                                                                         ),
-                                                                        title: Text(
-                                                                            comment[
-                                                                                1],
-                                                                            style:
-                                                                                TextStyle(fontSize: 14)),
+                                                                        title:
+                                                                            Row(
+                                                                          children: [
+                                                                            Text(
+                                                                              comment[1],
+                                                                              style: TextStyle(fontSize: 14),
+                                                                            ),
+                                                                            SizedBox(
+                                                                              width: 10,
+                                                                            ),
+                                                                            Text(
+                                                                              comment[4],
+                                                                              style: TextStyle(fontSize: 13),
+                                                                            ),
+                                                                          ],
+                                                                        ),
                                                                         subtitle:
                                                                             Text(
                                                                           comment[
@@ -386,11 +398,24 @@ class MyPost extends StatelessWidget {
                                                                                     backgroundImage: NetworkImage('http://127.0.0.1:8000/login/view/${reply[6]}'),
                                                                                     radius: 18,
                                                                                   ),
-                                                                                  title: Text(
-                                                                                    reply[2],
-                                                                                    style: TextStyle(
-                                                                                      fontSize: 14,
-                                                                                    ),
+                                                                                  title: Row(
+                                                                                    children: [
+                                                                                      Text(
+                                                                                        reply[2],
+                                                                                        style: TextStyle(
+                                                                                          fontSize: 14,
+                                                                                        ), // reply nickname
+                                                                                      ),
+                                                                                      SizedBox(
+                                                                                        width: 10,
+                                                                                      ),
+                                                                                      Text(
+                                                                                        reply[5],
+                                                                                        style: TextStyle(
+                                                                                          fontSize: 12,
+                                                                                        ), // reply nickname
+                                                                                      ),
+                                                                                    ],
                                                                                   ),
                                                                                   subtitle: Text(
                                                                                     reply[4], // reply text
@@ -513,7 +538,22 @@ class MyPost extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('${userpost[6]}\t${userpost[4]}'),
+                                  ExpandableText(
+                                    '${userpost[4]}',
+                                    prefixText: '${userpost[6]}',
+                                    onPrefixTap: () {
+                                      print('prefix 클릭 시 발생할 이벤트');
+                                    },
+                                    prefixStyle: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    expandText: '더보기',
+                                    collapseText: '접기',
+                                    maxLines: 3,
+                                    expandOnTextTap: true,
+                                    collapseOnTextTap: true,
+                                    linkColor: Colors.grey,
+                                  ),
                                   Text(
                                       '${DateFormat("MMMM d").format(DateTime.parse(userpost[2]))}',
                                       style: TextStyle(color: Colors.black54)),

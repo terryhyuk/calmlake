@@ -1,18 +1,20 @@
 import 'dart:convert';
 import 'package:calm_lake_project/vm/button_controller.dart';
+import 'package:calm_lake_project/vm/comment_controller.dart';
 import 'package:calm_lake_project/vm/musicinsert.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 import 'list_handler.dart';
 
-class VmHandler extends Musicinsert {
+class VmHandler extends commentcontroller {
   var posts = [].obs;
   var user = [].obs;
   var userposts = [].obs;
   var favorite = [].obs;
   var search = ''.obs;
   var searchPost = [].obs;
+  var favoritePost = [].obs;
 
 // post page
   getJSONData(String userId) async {
@@ -25,6 +27,7 @@ class VmHandler extends Musicinsert {
     print(posts);
   }
 
+// 인기순 정렬시 가져오는 데이터
   getTopJSONData(String userId) async {
     var url =
         Uri.parse('http://127.0.0.1:8000/query/select_top?user_id=$userId');
@@ -36,6 +39,7 @@ class VmHandler extends Musicinsert {
     print(posts);
   }
 
+// 검색시 나오는 데이터
   getSearchJSONData(String userId, String search) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/select_search?user_id=$userId&search=$search');
@@ -45,6 +49,18 @@ class VmHandler extends Musicinsert {
     List result = dataCovertedJSON['results'];
     searchPost.addAll(result);
     print(searchPost);
+  }
+
+// 각 유저가 좋아요 누른 post
+  getFavoriteJSONData(String userId) async {
+    var url =
+        Uri.parse('http://127.0.0.1:8000/query/favorite_post?user_id=$userId');
+    var response = await http.get(url);
+    favoritePost.clear();
+    var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    List result = dataCovertedJSON['results'];
+    favoritePost.addAll(result);
+    print(favoritePost);
   }
 
   getPostJSONData(String userId) async {
@@ -70,7 +86,7 @@ class VmHandler extends Musicinsert {
       'hate_user_id': post[12],
       'hate_post_seq': post[13],
       'hate': post[14],
-      'comment_count': post[14],
+      'comment_count': post[15],
     });
   }
 

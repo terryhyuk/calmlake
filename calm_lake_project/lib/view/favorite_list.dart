@@ -8,11 +8,9 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 
-class Search extends StatelessWidget {
+class FavoriteList extends StatelessWidget {
   final GetStorage box = GetStorage();
-  final TextEditingController searchController = TextEditingController();
-
-  Search({super.key});
+  FavoriteList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,30 +19,15 @@ class Search extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: 50,
-          child: SearchBar(
-            controller: searchController,
-            hintText: 'Search',
-            onChanged: (value) {
-              vmHandler.updateSearchBar(value);
-              searchPost(vmHandler, userId);
-            },
-            onSubmitted: (value) {
-              vmHandler.updateSearchBar(value);
-              searchPost(vmHandler, userId);
-              vmHandler.search.value = "";
-            },
-            trailing: [Icon(Icons.search)],
-          ),
-        ),
+        title: const Text('Favorite',
+            style: TextStyle(
+                fontSize: 25, fontWeight: FontWeight.w500, letterSpacing: 1)),
+        centerTitle: false,
       ),
       body: GetBuilder<VmHandler>(
         builder: (controller) {
           return FutureBuilder(
-            future:
-                controller.getSearchJSONData(userId, vmHandler.search.value),
+            future: controller.getFavoriteJSONData(userId),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -54,13 +37,13 @@ class Search extends StatelessWidget {
                 return Center(
                   child: Text('Error : ${snapshot.error}'),
                 );
-              } else {
+              } else if (controller.favoritePost.isNotEmpty) {
                 return Obx(
                   () {
                     return ListView.builder(
-                      itemCount: vmHandler.searchPost.length,
+                      itemCount: vmHandler.favoritePost.length,
                       itemBuilder: (context, index) {
-                        final searchpost = vmHandler.searchPost[index];
+                        final userpost = vmHandler.favoritePost[index];
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -69,17 +52,17 @@ class Search extends StatelessWidget {
                               child: Row(
                                 children: [
                                   CircleAvatar(
-                                    backgroundImage: searchpost != null &&
-                                            searchpost[16] != null
+                                    backgroundImage: userpost != null &&
+                                            userpost[16] != null
                                         ? NetworkImage(
-                                            'http://127.0.0.1:8000/login/view/${searchpost[16]}')
+                                            'http://127.0.0.1:8000/login/view/${userpost[16]}')
                                         : null,
                                   ),
                                   SizedBox(
                                     width: 10,
                                   ),
                                   Text(
-                                    searchpost[6],
+                                    userpost[6],
                                     style: TextStyle(fontSize: 15),
                                   ),
                                 ],
@@ -90,7 +73,7 @@ class Search extends StatelessWidget {
                               height: 300,
                               child: Container(
                                 child: Image.network(
-                                  'http://127.0.0.1:8000/query/view/${searchpost[3]}',
+                                  'http://127.0.0.1:8000/query/view/${userpost[3]}',
                                   fit: BoxFit.cover,
                                   width: double.infinity,
                                   height: 300,
@@ -103,14 +86,14 @@ class Search extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     bool check = await vmHandler.checkFavorite(
-                                            searchpost[8] ?? 'null',
-                                            searchpost[9] ?? 0) ==
-                                        searchpost[7];
+                                            userpost[8] ?? 'null',
+                                            userpost[9] ?? 0) ==
+                                        userpost[7];
                                     print(await vmHandler.checkFavorite(
-                                        searchpost[8] ?? 'null',
-                                        searchpost[9] ?? 0));
+                                        userpost[8] ?? 'null',
+                                        userpost[9] ?? 0));
                                     int newFavoriteValue =
-                                        searchpost[10] == '1' ? 0 : 1;
+                                        userpost[10] == '1' ? 0 : 1;
                                     // favorite 테이블이 있고 hate 테이블이 있는경우
                                     // favorite 1이고 hate가 0이면 updateFavorite
                                     // favorite 1이고 hate가 1이면 updatehate, updatefavorite
@@ -119,40 +102,39 @@ class Search extends StatelessWidget {
                                     // favorite 테이블이 있고 hate 테이블이 없는경우 updateFavorite
                                     if (check) {
                                       if (newFavoriteValue == 1 &&
-                                          searchpost[14] == '1') {
+                                          userpost[14] == '1') {
                                         await vmHandler.updateHate(
-                                            0, searchpost[13], userId);
+                                            0, userpost[13], userId);
                                         await vmHandler.updateFavorite(
                                             newFavoriteValue,
-                                            searchpost[9],
+                                            userpost[9],
                                             userId);
                                       }
                                       await vmHandler.updateFavorite(
                                           newFavoriteValue,
-                                          searchpost[9],
+                                          userpost[9],
                                           userId);
                                       // favorite 테이블이 없고 hate 테이블이 없는경우 inserFavorite 1
                                       // favorite 테이블이 없고 hate 테이블이 있는경우
                                       // hate가 1이면 insertfavorite 1, updatehate
                                       // hate가 0이면 insertfavofite 1
                                     } else {
-                                      if (searchpost[14] == '1') {
+                                      if (userpost[14] == '1') {
                                         await vmHandler.updateHate(
-                                            0, searchpost[13], userId);
+                                            0, userpost[13], userId);
                                         await vmHandler.insertFavorite(
-                                            1, searchpost[0], userId);
+                                            1, userpost[0], userId);
                                       } else {
                                         await vmHandler.insertFavorite(
-                                            1, searchpost[0], userId);
+                                            1, userpost[0], userId);
                                       }
                                     }
-                                    await vmHandler.getSearchJSONData(
-                                        userId, controller.search.value);
+                                    await vmHandler.getFavoriteJSONData(userId);
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 15, top: 10),
-                                    child: searchpost[10] == '1'
+                                    child: userpost[10] == '1'
                                         ? Icon(Icons.favorite)
                                         : Icon(Icons.favorite_border),
                                   ),
@@ -161,39 +143,38 @@ class Search extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     bool check = await vmHandler.checkHate(
-                                            searchpost[12] ?? 'null',
-                                            searchpost[13] ?? 0) ==
-                                        searchpost[11];
+                                            userpost[12] ?? 'null',
+                                            userpost[13] ?? 0) ==
+                                        userpost[11];
                                     int newHateValue =
-                                        searchpost[14] == '1' ? 0 : 1;
+                                        userpost[14] == '1' ? 0 : 1;
                                     if (check) {
                                       if (newHateValue == 1 &&
-                                          searchpost[10] == '1') {
+                                          userpost[10] == '1') {
                                         await vmHandler.updateFavorite(
-                                            0, searchpost[9], userId);
-                                        await vmHandler.updateHate(newHateValue,
-                                            searchpost[13], userId);
+                                            0, userpost[9], userId);
+                                        await vmHandler.updateHate(
+                                            newHateValue, userpost[13], userId);
                                       }
                                       await vmHandler.updateHate(
-                                          newHateValue, searchpost[13], userId);
+                                          newHateValue, userpost[13], userId);
                                     } else {
-                                      if (searchpost[10] == '1') {
+                                      if (userpost[10] == '1') {
                                         await vmHandler.updateFavorite(
-                                            0, searchpost[9], userId);
+                                            0, userpost[9], userId);
                                         await vmHandler.insertHate(
-                                            1, searchpost[0], userId);
+                                            1, userpost[0], userId);
                                       } else {
                                         await vmHandler.insertHate(
-                                            1, searchpost[0], userId);
+                                            1, userpost[0], userId);
                                       }
                                     }
-                                    await vmHandler.getSearchJSONData(
-                                        userId, controller.search.value);
+                                    await vmHandler.getFavoriteJSONData(userId);
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 10, top: 10),
-                                    child: searchpost[14] == '1'
+                                    child: userpost[14] == '1'
                                         ? Icon(Icons.thumb_down)
                                         : Icon(Icons.thumb_down_alt_outlined),
                                   ),
@@ -202,7 +183,7 @@ class Search extends StatelessWidget {
                                 GestureDetector(
                                   onTap: () async {
                                     await controller
-                                        .getCommentReply(searchpost[0]);
+                                        .getCommentReply(userpost[0]);
                                     await showModalBottomSheet(
                                       context: context,
                                       isScrollControlled:
@@ -295,7 +276,7 @@ class Search extends StatelessWidget {
                                                                               index,
                                                                               vmHandler,
                                                                               userId,
-                                                                              searchpost,
+                                                                              userpost,
                                                                               comment,
                                                                               isComment: T);
                                                                         } else {
@@ -346,7 +327,7 @@ class Search extends StatelessWidget {
                                                                             onPressed: () {
                                                                               controller.commentIndex = index;
                                                                               controller.replyTextController.text = '';
-                                                                              showBottomeSheet(context, index, vmHandler, searchpost, comment, userId);
+                                                                              showBottomeSheet(context, index, vmHandler, userpost, comment, userId);
                                                                             },
                                                                             child: Text('reply')),
                                                                       ),
@@ -369,7 +350,7 @@ class Search extends StatelessWidget {
                                                                                   child: GestureDetector(
                                                                                 onLongPress: () {
                                                                                   if (reply[7] == userId) {
-                                                                                    _showDefaultDialog(context, index, vmHandler, userId, searchpost, reply, isComment: F);
+                                                                                    _showDefaultDialog(context, index, vmHandler, userId, userpost, reply, isComment: F);
                                                                                   } else {
                                                                                     Get.snackbar(
                                                                                       '권한 없음',
@@ -459,8 +440,7 @@ class Search extends StatelessWidget {
                                                               .isNotEmpty) {
                                                             await controller
                                                                 .insertCommnet(
-                                                                    searchpost[
-                                                                        0],
+                                                                    userpost[0],
                                                                     controller
                                                                         .textController
                                                                         .text
@@ -472,15 +452,11 @@ class Search extends StatelessWidget {
                                                                 .text = '';
                                                           }
                                                           await vmHandler
-                                                              .getSearchJSONData(
-                                                                  userId,
-                                                                  controller
-                                                                      .search
-                                                                      .value);
+                                                              .getFavoriteJSONData(
+                                                                  userId);
                                                           await vmHandler
                                                               .getCommentReply(
-                                                                  searchpost[
-                                                                      0]);
+                                                                  userpost[0]);
                                                         },
                                                         child: Icon(
                                                           Icons.arrow_upward,
@@ -518,9 +494,9 @@ class Search extends StatelessWidget {
                                 Padding(
                                   padding:
                                       const EdgeInsets.only(left: 10, top: 10),
-                                  child: Text(searchpost[15] == 0
+                                  child: Text(userpost[15] == 0
                                       ? ""
-                                      : "${searchpost[15]}"),
+                                      : "${userpost[15]}"),
                                 )
                               ],
                             ),
@@ -531,8 +507,8 @@ class Search extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   ExpandableText(
-                                    '${searchpost[4]}',
-                                    prefixText: '${searchpost[6]}',
+                                    '${userpost[4]}',
+                                    prefixText: '${userpost[6]}',
                                     onPrefixTap: () {
                                       print('prefix 클릭 시 발생할 이벤트');
                                     },
@@ -547,7 +523,7 @@ class Search extends StatelessWidget {
                                     linkColor: Colors.grey,
                                   ),
                                   Text(
-                                      '${DateFormat("MMMM d").format(DateTime.parse(searchpost[2]))}',
+                                      '${DateFormat("MMMM d").format(DateTime.parse(userpost[2]))}',
                                       style: TextStyle(color: Colors.black54)),
                                 ],
                               ),
@@ -561,6 +537,8 @@ class Search extends StatelessWidget {
                     );
                   },
                 );
+              } else {
+                return Center(child: Text('No favorite posts yet.'));
               }
             },
           );
@@ -684,8 +662,7 @@ class Search extends StatelessWidget {
                             comment[6], comment[0]);
                         if (result == 'OK') {
                           await controller.getCommentReply(userpost[0]);
-                          await controller.getSerchJSONData(
-                              userId, controller.search.value);
+                          await controller.getFavoriteJSONData(userId);
                           Get.back();
                         } else {
                           Get.snackbar('Error', 'error');
@@ -697,8 +674,7 @@ class Search extends StatelessWidget {
                             comment[7], comment[0]);
                         if (result == 'OK') {
                           await controller.getCommentReply(userpost[0]);
-                          await controller.getSearchJSONData(
-                              userId, controller.search.value);
+                          await controller.getFavoriteJSONData(userId);
                           Get.back();
                         } else {
                           Get.snackbar('Error', 'error');
@@ -716,13 +692,5 @@ class Search extends StatelessWidget {
             ],
           );
         });
-  }
-
-  searchPost(vmHandler, userId) {
-    if (searchController.text.trim().isEmpty) {
-      vmHandler.searchPost.clear(); // 검색어가 비어있으면 리스트를 비웁니다.
-    } else {
-      vmHandler.getSearchJSONData(userId, vmHandler.search.value);
-    }
   }
 }

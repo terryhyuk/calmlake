@@ -6,7 +6,7 @@ import 'package:calm_lake_project/vm/comment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class AudioplayerHandler extends commentcontroller {
+class AudioplayerHandler extends GetxController {
   PlayerState? playerState;
   Duration? duration;
   Duration? position;

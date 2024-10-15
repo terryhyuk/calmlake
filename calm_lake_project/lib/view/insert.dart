@@ -99,10 +99,15 @@ class Insert extends StatelessWidget {
                                           backgroundColor:
                                               controller.selectedButton.value ==
                                                       0
-                                                  ? Colors.green
-                                                  : Colors.blue,
+                                                  ? const Color.fromARGB(
+                                                      255, 70, 99, 150)
+                                                  : const Color.fromARGB(
+                                                      255, 116, 169, 171),
                                         ),
-                                        child: Text('all'))),
+                                        child: Text(
+                                          'All',
+                                          style: TextStyle(color: Colors.white),
+                                        ))),
                                     SizedBox(
                                       width: 10,
                                     ),
@@ -115,10 +120,14 @@ class Insert extends StatelessWidget {
                                           backgroundColor:
                                               controller.selectedButton.value ==
                                                       1
-                                                  ? Colors.green
-                                                  : Colors.blue,
+                                                  ? const Color.fromARGB(
+                                                      255, 70, 99, 150)
+                                                  : const Color.fromARGB(
+                                                      255, 116, 169, 171),
                                         ),
-                                        child: Text('Me'))),
+                                        child: Text('Me',
+                                            style: TextStyle(
+                                                color: Colors.white)))),
                                     SizedBox(
                                       width: 10,
                                     ),
@@ -131,10 +140,14 @@ class Insert extends StatelessWidget {
                                           backgroundColor:
                                               controller.selectedButton.value ==
                                                       2
-                                                  ? Colors.green
-                                                  : Colors.blue,
+                                                  ? const Color.fromARGB(
+                                                      255, 70, 99, 150)
+                                                  : const Color.fromARGB(
+                                                      255, 116, 169, 171),
                                         ),
-                                        child: Text('Friends'))),
+                                        child: Text('Friends',
+                                            style: TextStyle(
+                                                color: Colors.white)))),
                                   ],
                                 ),
                               ),
@@ -162,7 +175,9 @@ class Insert extends StatelessWidget {
                                     controller.getImageFromGallery(
                                         ImageSource.gallery);
                                   },
-                                  child: Icon(Icons.image)),
+                                  child: Icon(
+                                    Icons.image,
+                                  )),
                               ElevatedButton(
                                   onPressed: () async {
                                     if (controller.imageFile != null &&
@@ -186,13 +201,17 @@ class Insert extends StatelessWidget {
                                           duration: Duration(seconds: 2));
                                     }
                                   },
-                                  child: Text('Post')),
+                                  child: Text(
+                                    'Post',
+                                  )),
                               ElevatedButton(
                                   onPressed: () {
                                     controller.getImageFromGallery(
                                         ImageSource.camera);
                                   },
-                                  child: Icon(Icons.add_a_photo_outlined)),
+                                  child: Icon(
+                                    Icons.add_a_photo_outlined,
+                                  )),
                             ],
                           ),
                         ),

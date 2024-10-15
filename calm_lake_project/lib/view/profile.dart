@@ -1,4 +1,5 @@
 import 'package:calm_lake_project/model/activity.dart';
+import 'package:calm_lake_project/view/favorite_list.dart';
 import 'package:calm_lake_project/view/insert.dart';
 import 'package:calm_lake_project/view/login/login.dart';
 import 'package:calm_lake_project/view/login/profile_edit.dart';
@@ -34,7 +35,7 @@ class Profile extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        backgroundColor: const Color.fromARGB(255, 0, 169, 253),
+        backgroundColor: const Color.fromARGB(255, 104, 136, 190),
         onPressed: () => Get.to(() => Insert())!
             .then((value) => vmHandler.getUserPostJSONData(userId)),
         label: Text(
@@ -56,18 +57,10 @@ class Profile extends StatelessWidget {
           child: Column(
             children: [
               Container(
-                height: 200,
+                height: 210,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      spreadRadius: 3,
-                      offset: Offset(0, 4),
-                    )
-                  ],
-                  border: Border.all(
-                      color: const Color.fromARGB(255, 204, 204, 204)),
+                  color: const Color.fromARGB(255, 204, 219, 238),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -76,7 +69,8 @@ class Profile extends StatelessWidget {
                     Row(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(15.0),
+                          padding: const EdgeInsets.only(
+                              left: 15, right: 15, top: 10, bottom: 10),
                           child: CircleAvatar(
                             radius: 40,
                             backgroundImage: user != null &&
@@ -106,7 +100,10 @@ class Profile extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Divider(color: Colors.white),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Divider(color: Colors.white),
+                    ),
                     SizedBox(
                       height: 10,
                     ),
@@ -114,8 +111,13 @@ class Profile extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton(
-                          onPressed: () {},
-                          child: Text('Favorite'),
+                          onPressed: () => Get.to(FavoriteList()),
+                          child: Text(
+                            'Favorite',
+                            style: TextStyle(
+                                color: const Color.fromARGB(255, 49, 88, 154),
+                                fontWeight: FontWeight.w600),
+                          ),
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
@@ -126,7 +128,12 @@ class Profile extends StatelessWidget {
                             Get.to(ProfileEdit())!.then(
                                 (value) => vmHandler.getUserJSONData(userId));
                           },
-                          child: Text('Edit Profile'),
+                          child: Text(
+                            'Edit Profile',
+                            style: TextStyle(
+                                color: const Color.fromARGB(255, 49, 88, 154),
+                                fontWeight: FontWeight.w600),
+                          ),
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
@@ -137,7 +144,12 @@ class Profile extends StatelessWidget {
                             logOut(loginHandler.box.read('userId'), vmHandler);
                             Get.offAll(Login());
                           },
-                          child: Text('Logout'),
+                          child: Text(
+                            'Logout',
+                            style: TextStyle(
+                                color: const Color.fromARGB(255, 49, 88, 154),
+                                fontWeight: FontWeight.w600),
+                          ),
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
