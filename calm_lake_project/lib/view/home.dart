@@ -24,6 +24,7 @@ class Home extends StatelessWidget {
     print(loginHandler.box.read('userId'));
     print(loginHandler.box.read('nickname'));
     final color = Theme.of(context).primaryColor;
+        musicHandler.fetchDocumentFields(musicHandler.musicSelete.toString());
     musicHandler.checkaudioPlayer(musicHandler.firebaseMusic);
     musicHandler.stateCheck();
     musicHandler.addlistMusic();
@@ -34,6 +35,7 @@ class Home extends StatelessWidget {
         leading: IconButton(
             onPressed: () {
               logOut(loginHandler.box.read('userId'));
+              musicHandler.isPlaying || musicHandler.isPaused ? musicHandler.stop : null;
               Get.back();
             },
             icon: const Icon(Icons.logout_outlined)),
@@ -51,7 +53,6 @@ class Home extends StatelessWidget {
                   IconButton(
                       onPressed: () {
                         print(friendsController.addfriend);
-                        print(musicHandler.musicList[0][0]);
                       },
                       icon: const Icon(Icons.person_add_alt))
                 ],
@@ -256,8 +257,7 @@ class Home extends StatelessWidget {
                       children: [
                         IconButton(
                           key: const Key('skip_previous'),
-                          onPressed:
-                              musicHandler.isPlaying ? null : musicHandler.play,
+                          onPressed: musicHandler.backMusicSelect,
                           iconSize: 50.0,
                           icon: const Icon(
                             Icons.skip_previous_outlined,
@@ -287,8 +287,7 @@ class Home extends StatelessWidget {
                         ),
                         IconButton(
                           key: const Key('skip_next'),
-                          onPressed:
-                              musicHandler.isPlaying ? null : musicHandler.play,
+                          onPressed: musicHandler.nextMusicSelect,
                           iconSize: 50.0,
                           icon: const Icon(
                             Icons.skip_next_outlined,

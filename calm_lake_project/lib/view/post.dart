@@ -13,14 +13,12 @@ import 'package:intl/intl.dart';
 
 class Post extends StatelessWidget {
   final GetStorage box = GetStorage();
-
   Post({super.key});
 
   @override
   Widget build(BuildContext context) {
     final vmHandler = Get.put(VmHandler());
     String userId = box.read('userId');
-    //vmHandler.getReply();
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +34,7 @@ class Post extends StatelessWidget {
                   onPressed: () {
                     Get.to(Search());
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.search,
                     size: 25,
                   )))
@@ -50,6 +48,7 @@ class Post extends StatelessWidget {
               child: Align(
                 alignment: Alignment.topRight,
                 child: DropdownButton<String>(
+                  // 최신순, 인기순 drop down button
                   value: vmHandler.selectedValue.value,
                   items: vmHandler.dropdownItems.map((String item) {
                     return DropdownMenuItem<String>(
@@ -68,7 +67,7 @@ class Post extends StatelessWidget {
             child: GetBuilder<VmHandler>(
               builder: (controller) {
                 return FutureBuilder(
-                  future: vmHandler.selectedValue == '최신순'
+                  future: vmHandler.selectedValue.value == '최신순'
                       ? controller.getJSONData(userId)
                       : controller.getTopJSONData(userId),
                   builder: (context, snapshot) {
@@ -77,7 +76,7 @@ class Post extends StatelessWidget {
                         child: CircularProgressIndicator(),
                       );
                     } else if (snapshot.hasError) {
-                      print(snapshot.error);
+                      //print(snapshot.error);
                       return Center(
                         child: Text('Error : ${snapshot.error}'),
                       );
@@ -118,6 +117,7 @@ class Post extends StatelessWidget {
                                     height: 300,
                                     child: Container(
                                       child: Image.network(
+                                        // 포스팅 사진
                                         'http://127.0.0.1:8000/query/view/${post[3]}',
                                         fit: BoxFit.cover,
                                         width: double.infinity,
@@ -130,54 +130,9 @@ class Post extends StatelessWidget {
                                       // 좋아요 아이콘
                                       GestureDetector(
                                         onTap: () async {
-                                          bool check =
-                                              await vmHandler.checkFavorite(
-                                                      post[8] ?? 'null',
-                                                      post[9] ?? 0) ==
-                                                  post[7];
-                                          print(await vmHandler.checkFavorite(
-                                              post[8] ?? 'null', post[9] ?? 0));
-                                          int newFavoriteValue =
-                                              post[10] == '1' ? 0 : 1;
-                                          // favorite 테이블이 있고 hate 테이블이 있는경우
-                                          // favorite 1이고 hate가 0이면 updateFavorite
-                                          // favorite 1이고 hate가 1이면 updatehate, updatefavorite
-                                          // favorite 0이고 hate가 0이면 updateFavorite
-                                          // favorite 0이고 hate가 1이면 updateFavorite
-                                          // favorite 테이블이 있고 hate 테이블이 없는경우 updateFavorite
-                                          if (check) {
-                                            if (newFavoriteValue == 1 &&
-                                                post[14] == '1') {
-                                              await vmHandler.updateHate(
-                                                  0, post[13], userId);
-                                              await vmHandler.updateFavorite(
-                                                  newFavoriteValue,
-                                                  post[9],
-                                                  userId);
-                                            }
-                                            await vmHandler.updateFavorite(
-                                                newFavoriteValue,
-                                                post[9],
-                                                userId);
-                                            // favorite 테이블이 없고 hate 테이블이 없는경우 inserFavorite 1
-                                            // favorite 테이블이 없고 hate 테이블이 있는경우
-                                            // hate가 1이면 insertfavorite 1, updatehate
-                                            // hate가 0이면 insertfavofite 1
-                                          } else {
-                                            if (post[14] == '1') {
-                                              await vmHandler.updateHate(
-                                                  0, post[13], userId);
-                                              await vmHandler.insertFavorite(
-                                                  1, post[0], userId);
-                                            } else {
-                                              await vmHandler.insertFavorite(
-                                                  1, post[0], userId);
-                                            }
-                                          }
-                                          vmHandler.selectedValue == '최신순'
-                                              ? controller.getJSONData(userId)
-                                              : controller
-                                                  .getTopJSONData(userId);
+                                          // 좋아요 아이콘 눌렀을때 실행
+                                          favoriteAction(vmHandler, post,
+                                              userId, controller);
                                         },
                                         child: Padding(
                                           padding: const EdgeInsets.only(
@@ -190,40 +145,8 @@ class Post extends StatelessWidget {
                                       // 싫어요 아이콘
                                       GestureDetector(
                                         onTap: () async {
-                                          bool check =
-                                              await vmHandler.checkHate(
-                                                      post[12] ?? 'null',
-                                                      post[13] ?? 0) ==
-                                                  post[11];
-                                          int newHateValue =
-                                              post[14] == '1' ? 0 : 1;
-                                          if (check) {
-                                            if (newHateValue == 1 &&
-                                                post[10] == '1') {
-                                              await vmHandler.updateFavorite(
-                                                  0, post[9], userId);
-                                              await vmHandler.updateHate(
-                                                  newHateValue,
-                                                  post[13],
-                                                  userId);
-                                            }
-                                            await vmHandler.updateHate(
-                                                newHateValue, post[13], userId);
-                                          } else {
-                                            if (post[10] == '1') {
-                                              await vmHandler.updateFavorite(
-                                                  0, post[9], userId);
-                                              await vmHandler.insertHate(
-                                                  1, post[0], userId);
-                                            } else {
-                                              await vmHandler.insertHate(
-                                                  1, post[0], userId);
-                                            }
-                                          }
-                                          vmHandler.selectedValue == '최신순'
-                                              ? controller.getJSONData(userId)
-                                              : controller
-                                                  .getTopJSONData(userId);
+                                          hateAction(vmHandler, post, userId,
+                                              controller);
                                         },
                                         child: Padding(
                                           padding: const EdgeInsets.only(
@@ -237,13 +160,10 @@ class Post extends StatelessWidget {
                                       // 코멘트 아이콘
                                       GestureDetector(
                                         onTap: () async {
+                                          // 데이터 베이스에서 코멘트값 가져옴
                                           await controller
                                               .getCommentReply(post[0]);
-                                          /*if (controller.comments.isNotEmpty) {
-                                            var comment_seq = vmHandler.comments[0];
-                                            await controller.getReply(
-                                                comment_seq[0], post[0]);
-                                          }*/
+                                          // modalBottomSheet에서 댓글을 보여줌
                                           showModalBottomSheet(
                                             context: context,
                                             isScrollControlled:
@@ -266,10 +186,9 @@ class Post extends StatelessWidget {
                                                           1,
                                                   child: Column(
                                                     children: [
-                                                      Padding(
+                                                      const Padding(
                                                         padding:
-                                                            const EdgeInsets
-                                                                .only(
+                                                            EdgeInsets.only(
                                                                 top: 15,
                                                                 bottom: 10),
                                                         child: Text(
@@ -599,6 +518,64 @@ class Post extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  hateAction(vmHandler, post, userId, controller) async {
+    bool check = await vmHandler.checkHate(post[12] ?? 'null', post[13] ?? 0) ==
+        post[11];
+    int newHateValue = post[14] == '1' ? 0 : 1;
+    if (check) {
+      if (newHateValue == 1 && post[10] == '1') {
+        await vmHandler.updateFavorite(0, post[9], userId);
+        await vmHandler.updateHate(newHateValue, post[13], userId);
+      }
+      await vmHandler.updateHate(newHateValue, post[13], userId);
+    } else {
+      if (post[10] == '1') {
+        await vmHandler.updateFavorite(0, post[9], userId);
+        await vmHandler.insertHate(1, post[0], userId);
+      } else {
+        await vmHandler.insertHate(1, post[0], userId);
+      }
+    }
+    vmHandler.selectedValue == '최신순'
+        ? controller.getJSONData(userId)
+        : controller.getTopJSONData(userId);
+  }
+
+  favoriteAction(vmHandler, post, userId, controller) async {
+    bool check =
+        await vmHandler.checkFavorite(post[8] ?? 'null', post[9] ?? 0) ==
+            post[7];
+    print(await vmHandler.checkFavorite(post[8] ?? 'null', post[9] ?? 0));
+    int newFavoriteValue = post[10] == '1' ? 0 : 1;
+    // favorite 테이블이 있고 hate 테이블이 있는경우
+    // favorite 1이고 hate가 0이면 updateFavorite
+    // favorite 1이고 hate가 1이면 updatehate, updatefavorite
+    // favorite 0이고 hate가 0이면 updateFavorite
+    // favorite 0이고 hate가 1이면 updateFavorite
+    // favorite 테이블이 있고 hate 테이블이 없는경우 updateFavorite
+    if (check) {
+      if (newFavoriteValue == 1 && post[14] == '1') {
+        await vmHandler.updateHate(0, post[13], userId);
+        await vmHandler.updateFavorite(newFavoriteValue, post[9], userId);
+      }
+      await vmHandler.updateFavorite(newFavoriteValue, post[9], userId);
+      // favorite 테이블이 없고 hate 테이블이 없는경우 inserFavorite 1
+      // favorite 테이블이 없고 hate 테이블이 있는경우
+      // hate가 1이면 insertfavorite 1, updatehate
+      // hate가 0이면 insertfavofite 1
+    } else {
+      if (post[14] == '1') {
+        await vmHandler.updateHate(0, post[13], userId);
+        await vmHandler.insertFavorite(1, post[0], userId);
+      } else {
+        await vmHandler.insertFavorite(1, post[0], userId);
+      }
+    }
+    vmHandler.selectedValue == '최신순'
+        ? controller.getJSONData(userId)
+        : controller.getTopJSONData(userId);
   }
 
   showBottomeSheet(context, index, vmHandler, post, comment, userId) {
