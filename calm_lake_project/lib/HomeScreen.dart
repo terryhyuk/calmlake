@@ -23,6 +23,7 @@ class HomeScreen extends StatelessWidget {
         children: [Home(), Friends(), Chat(), Post(), Profile()],
       ),
       bottomNavigationBar: Obx(() => BottomNavigationBar(
+        backgroundColor: Colors.white,
             type: BottomNavigationBarType.fixed,
 
             //showSelectedLabels: F,
