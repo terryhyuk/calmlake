@@ -75,19 +75,19 @@ class Chat extends StatelessWidget {
                               backgroundImage: chatController
                                   .getRoomImageProvider(room['roomName']),
                             ),
-                            SizedBox(width: 16),
+                            const SizedBox(width: 16),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     room['roomName'] ?? 'Unnamed Room',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -95,7 +95,7 @@ class Chat extends StatelessWidget {
                                       Expanded(
                                         child: Text(
                                           room['lastMessage'] ?? '',
-                                          style: TextStyle(fontSize: 14),
+                                          style: const TextStyle(fontSize: 14),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),

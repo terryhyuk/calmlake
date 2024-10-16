@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../model/music.dart';
-import '../vm/vm_handler.dart';
 import 'musicinsert.dart';
 
 class Musiclist extends StatelessWidget {
@@ -33,7 +32,7 @@ class Musiclist extends StatelessWidget {
               );
             }
             final documents = snapshot.data!.docs;
-            print(documents.toList());
+            // print(documents.toList());
             return ListView(
               children: documents.map((e) => buildItemWidgets(e)).toList(),
             );
@@ -65,7 +64,7 @@ class Musiclist extends StatelessWidget {
                 children: [
                   Text(
                     '    ${music.name}',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   Row(
                     children: [

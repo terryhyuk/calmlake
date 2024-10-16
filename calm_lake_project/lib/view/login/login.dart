@@ -3,7 +3,6 @@ import 'package:calm_lake_project/view/login/find_pw.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import '../../model/activity.dart';
 import '../../vm/login_handler.dart';
 import 'find_id.dart';

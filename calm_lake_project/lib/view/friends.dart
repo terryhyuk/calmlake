@@ -1,4 +1,5 @@
 import 'package:calm_lake_project/model/addfriends.dart';
+import 'package:calm_lake_project/view/chat/chatroom.dart';
 import 'package:calm_lake_project/vm/chating_controller.dart';
 import 'package:calm_lake_project/vm/login_handler.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ class Friends extends StatelessWidget {
                           },
                           child: Container(
                             width: 100,
-                            margin: EdgeInsets.symmetric(horizontal: 8),
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -83,73 +84,82 @@ class Friends extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final friend = friendsController.allfriendsdata[index];
                         return Card(
-  child: PopupMenuButton<String>(
-  onSelected: (String choice) async {
-    if (choice == '1:1 대화하기') {
-      String friendId = friend[0]; // 친구 ID
-      String friendName = friend[1]; // 친구 닉네임
-      String userNickname = loginHandler.box.read('nickname') ?? 'Anonymous'; // 사용자의 닉네임
-      
-      // 채팅방 생성 또는 기존 채팅방 가져오기
-      String roomId = await friendsController.createOrGetChatRoom(
-        friendId,
-        friendName,
-        false, // isDefaultRoom
-        userNickname
-      );
-      // 채팅방 화면으로 이동
-      Get.to(() => Chatroom(
-        roomId: roomId,
-        roomName: friendName,
-        isDefaultRoom: false,
-      ));
-    } else if (choice == '친구 삭제') {
-      // 친구 삭제 확인 다이얼로그 표시
-      bool confirmDelete = await Get.dialog<bool>(
-        AlertDialog(
-          title: Text('친구 삭제'),
-          content: Text('정말로 ${friend[1]}님을 친구 목록에서 삭제하시겠습니까?'),
-          actions: [
-            TextButton(
-              child: Text('취소'),
-              onPressed: () => Get.back(result: false),
-            ),
-            TextButton(
-              child: Text('삭제'),
-              onPressed: () => Get.back(result: true),
-            ),
-          ],
-        ),
-      ) ?? false;
-
-      if (confirmDelete) {
-        // 친구 삭제 API 호출
-        await friendsController.deletefriendsJSONData(friend[0],friend[1]);
-        // 친구 목록 새로고침
-        await friendsController.selectfriendsJSONData(loginHandler.box.read('userId'));
-        Get.snackbar('알림', '${friend[1]}님이 친구 목록에서 삭제되었습니다.');
-      }
-    }
-  },
-  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-    const PopupMenuItem<String>(
-      value: '1:1 대화하기',
-      child: Text('1:1 대화하기'),
-    ),
-    const PopupMenuItem<String>(
-      value: '친구 삭제',
-      child: Text('친구 삭제'),
-    ),
-  ],
-  child: Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Text(friend[1].toString()), // 친구 닉네임
-      Text(friend[0].toString()), // 친구 ID
-    ],
-  ),
-),
-);
+                          child: PopupMenuButton<String>(
+                            onSelected: (String choice) async {
+                              if (choice == '1:1 대화하기') {
+                                String friendId = friend[1]; // 친구 ID
+                                String friendName = friend[2]; // 친구 닉네임
+                                String userNickname =
+                                    loginHandler.box.read('nickname') ??
+                                        'Anonymous'; // 사용자의 닉네임
+                                // 채팅방 생성 또는 기존 채팅방 가져오기
+                                String roomId =
+                                    await friendsController.createOrGetChatRoom(
+                                        friendId,
+                                        friendName,
+                                        false, // isDefaultRoom
+                                        userNickname);
+                                // 채팅방 화면으로 이동
+                                Get.to(() => Chatroom(
+                                      roomId: roomId,
+                                      roomName: friendName,
+                                      isDefaultRoom: false,
+                                    ));
+                              } else if (choice == '친구 삭제') {
+                                // 친구 삭제 확인 다이얼로그 표시
+                                bool confirmDelete = await Get.dialog<bool>(
+                                      AlertDialog(
+                                        title: const Text('친구 삭제'),
+                                        content: Text(
+                                            '정말로 ${friend[1]}님을 친구 목록에서 삭제하시겠습니까?'),
+                                        actions: [
+                                          TextButton(
+                                            child: const Text('취소'),
+                                            onPressed: () =>
+                                                Get.back(result: false),
+                                          ),
+                                          TextButton(
+                                            child: const Text('삭제'),
+                                            onPressed: () =>
+                                                Get.back(result: true),
+                                          ),
+                                        ],
+                                      ),
+                                    ) ??
+                                    false;
+                                if (confirmDelete) {
+                                  // 친구 삭제 API 호출
+                                  await friendsController.deletefriendsJSONData(
+                                      loginHandler.box.read('userId'),
+                                      friend[1]);
+                                  // 친구 목록 새로고침
+                                  await friendsController.selectfriendsJSONData(
+                                      loginHandler.box.read('userId'));
+                                  Get.snackbar(
+                                      '알림', '${friend[1]}님이 친구 목록에서 삭제되었습니다.');
+                                }
+                              }
+                            },
+                            itemBuilder: (BuildContext context) =>
+                                <PopupMenuEntry<String>>[
+                              const PopupMenuItem<String>(
+                                value: '1:1 대화하기',
+                                child: Text('1:1 대화하기'),
+                              ),
+                              const PopupMenuItem<String>(
+                                value: '친구 삭제',
+                                child: Text('친구 삭제'),
+                              ),
+                            ],
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(friend[1].toString()), // 친구 닉네임
+                                Text(friend[2].toString()), // 친구 ID
+                              ],
+                            ),
+                          ),
+                        );
                       },
                     ),
             ),
@@ -191,7 +201,6 @@ class Friends extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   addfriend(index);
-                  print(friendsController.addfriend);
                   Get.back();
                 },
                 child: const Text('add'),
@@ -211,10 +220,6 @@ class Friends extends StatelessWidget {
       add_id: friendsController.friends[index][0],
     );
     var result = await friendsController.addfriendsJSONData(addfriends);
-    if (result == 'OK') {
-      print('친구요청성공');
-    } else {
-      print('Error');
-    }
+    return result;
   }
 }// END

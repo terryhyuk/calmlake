@@ -1,5 +1,5 @@
 import 'package:calm_lake_project/firebase_options.dart';
-import 'package:calm_lake_project/view/login/login.dart';
+import 'package:calm_lake_project/view/splashScrrenPage.dart';
 import 'package:calm_lake_project/vm/app_lifecycle_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true, 
       ),
       debugShowCheckedModeBanner: false,
-      home: Login(),
+      home: const SplashScreen(),
       navigatorObservers: [
         AutoLogoutObserver(resetTimer: lifecycleHandler.resetTimer)
       ],

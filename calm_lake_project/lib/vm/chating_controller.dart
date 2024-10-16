@@ -10,6 +10,7 @@ class ChatingController extends FriendsController {
   final messages = <Message>[].obs;
   final loginhandler = Get.put(LoginHandler());
   final chatRooms = <Map<String, dynamic>>[].obs; // 채팅방 목록을 Map으로 변경
+  // ignore: constant_identifier_names
   static const List<String> defalult_rooms = ['직장인 채팅방', '맛집 공유','취미 공유','힐링 여행지 추천'];
   
   String getRoomDescription(String roomName) {
@@ -134,7 +135,7 @@ initializeDefaultRooms() async {
         .doc(roomId)
         .set({
       'roomId': roomId,
-      'roomName': '${roomId}',
+      'roomName': roomId,
       'joinedAt': Timestamp.now(),
       'lastMessage': '',
       'lastMessageTime': Timestamp.now(),
@@ -190,15 +191,15 @@ addFriendsToChatRoom(String roomId, List<String> friendIds) async {
     String addedFriends = friendIds.join(', ');
     await addMessage(roomId, 'system', 'System', '$addedFriends 님이 채팅방에 추가되었습니다.', true);
     
-    print('Friends added successfully');
+    // print('Friends added successfully');
   } catch (e) {
-    print('Error adding friends to chat room: $e');
+    // print('Error adding friends to chat room: $e');
   }
 }
 
 loadUserChatRooms() {
   String userId = loginhandler.box.read('userId');
-  print('Loading chat rooms for user: $userId');
+  // print('Loading chat rooms for user: $userId');
   FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -211,10 +212,10 @@ loadUserChatRooms() {
       data['roomId'] = doc.id;
       return data;
     }).toList();
-    print('Loaded chat rooms: ${chatRooms.length}');
+    // print('Loaded chat rooms: ${chatRooms.length}');
     chatRooms.refresh();
   }, onError: (error) {
-    print('Error loading chat rooms: $error');
+    // print('Error loading chat rooms: $error');
   });
 }
 
@@ -313,7 +314,7 @@ createOrGetChatRoom(String friendId, String friendName, bool isDefaultRoom, Stri
 
     return roomId;
   } catch (e) {
-    print('Error in createOrGetChatRoom: $e');
+    // print('Error in createOrGetChatRoom: $e');
     return '';
   }
 }
@@ -345,19 +346,8 @@ updateLocalChatRoomsList(String roomId, String roomName, String lastMessage, Tim
     final timeB = b['lastMessageTime'] as Timestamp;
     return timeB.compareTo(timeA);
   });
-
   // UI 갱신 트리거
   chatRooms.refresh();
-
-  // 디버깅을 위한 로그 추가
-  print('Updated chat rooms: ${chatRooms.length}');
-  
-  if (chatRooms.isNotEmpty) {
-    print('Latest chat room: ${chatRooms.first['roomName']}');
-    print('Latest message: ${chatRooms.first['lastMessage']} at ${chatRooms.first['lastMessageTime']}');
-  } else {
-    print('No chat rooms available.');
-  }
 }
 
 
@@ -528,9 +518,9 @@ deleteChatRoom(String roomId, bool isDefaultRoom) async {
     chatRooms.removeWhere((room) => room['roomId'] == roomId);
     chatRooms.refresh();
 
-    print('Chat room deleted successfully');
+    // print('Chat room deleted successfully');
   } catch (e) {
-    print('Error deleting chat room: $e');
+    // print('Error deleting chat room: $e');
   }
 }
 
