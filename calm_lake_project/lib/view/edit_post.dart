@@ -23,9 +23,9 @@ class EditPost extends StatelessWidget {
     String userId = box.read('userId');
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit Post"),
+        title: const Text("Edit Post"),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () {
             Get.delete<VmHandler>(); // 컨트롤러 삭제
             Get.back(); // 페이지 뒤로가기
@@ -45,27 +45,18 @@ class EditPost extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              /*
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  spreadRadius: 2,
-                                  blurRadius: 10,
-                                  offset: Offset(0, 5),
-                                ),
-                              ],*/
                               border: Border.all(
                                   color: const Color.fromARGB(
                                       255, 204, 203, 203))),
                           child: Column(
                             children: [
-                              Container(
+                              SizedBox(
                                 width: MediaQuery.of(context).size.width,
                                 height: 300,
                                 child: Center(
                                   child: controller.firstDisp == 0
                                       ? ClipRRect(
-                                          borderRadius: BorderRadius.only(
+                                          borderRadius: const BorderRadius.only(
                                               topLeft: Radius.circular(20),
                                               topRight: Radius.circular(20)),
                                           child: Image.network(
@@ -76,7 +67,7 @@ class EditPost extends StatelessWidget {
                                           ),
                                         )
                                       : ClipRRect(
-                                          borderRadius: BorderRadius.only(
+                                          borderRadius: const BorderRadius.only(
                                               topLeft: Radius.circular(20),
                                               topRight: Radius.circular(20)),
                                           child: Image.file(
@@ -93,6 +84,7 @@ class EditPost extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
+                                    // 전체 공유 버튼
                                     Obx(() => ElevatedButton(
                                         onPressed:
                                             controller.isButtonEnabled.value
@@ -109,16 +101,14 @@ class EditPost extends StatelessWidget {
                                                   : const Color.fromARGB(
                                                       255, 116, 169, 171),
                                         ),
-                                        child: Text(
+                                        child: const Text(
                                           'All',
                                           style: TextStyle(color: Colors.white),
                                         ))),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 10,
                                     ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
+                                    // 나만 보기 버튼
                                     Obx(() => ElevatedButton(
                                         onPressed:
                                             controller.isButtonEnabled.value
@@ -135,12 +125,13 @@ class EditPost extends StatelessWidget {
                                                   : const Color.fromARGB(
                                                       255, 116, 169, 171),
                                         ),
-                                        child: Text('Me',
+                                        child: const Text('Me',
                                             style: TextStyle(
                                                 color: Colors.white)))),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 10,
                                     ),
+                                    // 친구만 보기 버튼
                                     Obx(() => ElevatedButton(
                                         onPressed:
                                             controller.isButtonEnabled.value
@@ -157,22 +148,20 @@ class EditPost extends StatelessWidget {
                                                   : const Color.fromARGB(
                                                       255, 116, 169, 171),
                                         ),
-                                        child: Text('Friends',
+                                        child: const Text('Friends',
                                             style: TextStyle(
                                                 color: Colors.white)))),
                                   ],
                                 ),
                               ),
-                              Container(
-                                child: TextField(
-                                  controller: contentController,
-                                  maxLines: null,
-                                  decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.all(20),
-                                      hintText: '오늘 힐링되었던 내용을 입력해주세요',
-                                      enabledBorder: InputBorder.none,
-                                      focusedBorder: InputBorder.none),
-                                ),
+                              TextField(
+                                controller: contentController,
+                                maxLines: null,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(20),
+                                    hintText: '오늘 힐링되었던 내용을 입력해주세요',
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none),
                               ),
                             ],
                           ),
@@ -187,38 +176,12 @@ class EditPost extends StatelessWidget {
                                     await controller.changeImageFromGallery(
                                         ImageSource.gallery);
                                   },
-                                  child: Icon(Icons.image)),
+                                  child: const Icon(Icons.image)),
                               ElevatedButton(
                                   onPressed: () async {
-                                    print("firstDisp ${controller.firstDisp}");
-                                    if (controller.firstDisp == 0 &&
-                                        contentController.text.trim() != '') {
-                                      await controller.updateJSONData(
-                                          contentController.text.trim(),
-                                          controller.selectedButton.value,
-                                          post_seq);
-                                      print('update');
-                                      Get.back();
-                                    } else if (controller.firstDisp != 0 &&
-                                        contentController.text.trim() != '') {
-                                      await controller
-                                          .deletePostImage(value[3]);
-                                      await controller.uploadImage();
-                                      await controller.updateJSONDataAll(
-                                          controller.image,
-                                          contentController.text.trim(),
-                                          controller.selectedButton.value,
-                                          post_seq);
-                                      controller.firstDisp = 0;
-                                      print('updateall');
-                                      Get.back();
-                                    } else {
-                                      Get.snackbar(
-                                          'Error', 'please complete the form',
-                                          duration: Duration(seconds: 1));
-                                    }
-                                    print(value);
-                                    await vmHandler.getUserPostJSONData(userId);
+                                    // 수정 할때 버튼 액션
+                                    editAction(controller, post_seq, value,
+                                        vmHandler, userId);
                                   },
                                   child: Text('Edit')),
                               ElevatedButton(
@@ -240,5 +203,28 @@ class EditPost extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  editAction(controller, post_seq, value, vmHandler, userId) async {
+    if (controller.firstDisp == 0 && contentController.text.trim() != '') {
+      await controller.updateJSONData(contentController.text.trim(),
+          controller.selectedButton.value, post_seq);
+      Get.back();
+    } else if (controller.firstDisp != 0 &&
+        contentController.text.trim() != '') {
+      await controller.deletePostImage(value[3]);
+      await controller.uploadImage();
+      await controller.updateJSONDataAll(
+          controller.image,
+          contentController.text.trim(),
+          controller.selectedButton.value,
+          post_seq);
+      controller.firstDisp = 0;
+      Get.back();
+    } else {
+      Get.snackbar('Error', 'please complete the form',
+          duration: const Duration(seconds: 1));
+    }
+    await vmHandler.getUserPostJSONData(userId);
   }
 }

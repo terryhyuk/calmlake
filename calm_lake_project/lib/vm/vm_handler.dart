@@ -243,12 +243,11 @@ class VmHandler extends commentcontroller {
 
   updateSelectedValue(String value, String userId) async {
     selectedValue.value = value;
-    /*
     if (selectedValue.value == '최신순') {
       await getJSONData(userId);
     } else {
       await getTopJSONData(userId);
-    }*/
+    }
   }
 
   reset() {

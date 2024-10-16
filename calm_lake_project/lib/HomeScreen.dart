@@ -5,7 +5,6 @@ import 'package:calm_lake_project/view/post.dart';
 import 'package:calm_lake_project/view/profile.dart';
 import 'package:calm_lake_project/vm/NavigationController.dart';
 import 'package:calm_lake_project/vm/login_handler.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
