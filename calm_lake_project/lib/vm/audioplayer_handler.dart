@@ -14,6 +14,7 @@ class AudioplayerHandler extends commentcontroller {
   double imageLocation = 0;
   int gifImageState = 0;
   String selectCat = 'images/stopmovecat.png';
+  
 
   StreamSubscription? durationSubscription;
   StreamSubscription? positionSubscription;
