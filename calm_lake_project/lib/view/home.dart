@@ -17,11 +17,18 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 컬러 설정
     final color = Theme.of(context).primaryColor;
-        musicHandler.fetchDocumentFields(musicHandler.musicSelete.toString());
+    // 음악 다음, 이전 노래 설정
+    musicHandler.fetchDocumentFields(musicHandler.musicSelete.toString());
+    // firebase에 있는 노래의 리스트 갯수 반환
+    musicHandler.getDocumentCount();
+    // firebase에 있는 문서 ID중 마지막 ID만 반환
+    musicHandler.getLastDocumentId();
+    // 현재 재생시킬 노래 설정
     musicHandler.checkaudioPlayer(musicHandler.firebaseMusic);
+    // 노래 체크
     musicHandler.stateCheck();
-    musicHandler.addlistMusic();
     friendsController.requstfriendsJSONData(loginHandler.box.read('userId'));
 
     return Scaffold(
@@ -163,11 +170,11 @@ class Home extends StatelessWidget {
                               NetworkImage(musicHandler.selectImage),
                           radius: 130,
                         ),
-                                                Image.asset(
+                        Image.asset(
                           musicHandler.changeImageCat(),
                           width: 100,
                           height: 100,
-                          )
+                        )
                       ],
                     ),
                     // 음악 이름 출력
@@ -179,7 +186,7 @@ class Home extends StatelessWidget {
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    // Slider
+                    // Slider(음악 플레이바)
                     Slider(
                       thumbColor: Colors.lightBlue,
                       activeColor: Colors.lightBlue,
@@ -352,7 +359,8 @@ class Home extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 206, 53, 42),
         colorText: Colors.white);
   }
-
+  
+  // 음악 변경하고 돌아왔을 때 변경한 음악으로 재설정
   reloadData(MusicHandler musicHandler) {
     musicHandler.checkaudioPlayer(musicHandler.firebaseMusic);
     musicHandler.stateCheck();
