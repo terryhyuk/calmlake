@@ -43,7 +43,7 @@ async def select(user_id: str=None):
         p.image, 
         p.contents, 
         p.public,
-        p.post_nickname,
+        u.nickname,
         f.seq AS favorite_seq, 
         f.user_id AS favorite_user_id, 
         f.post_seq AS favorite_post_seq, 
@@ -75,7 +75,7 @@ async def select(user_id: str=None):
             SELECT user_id FROM addfriends WHERE add_id = %s
         ))
     GROUP BY 
-    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,p.post_nickname, 
+    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,u.nickname, 
     f.seq, f.user_id, f.post_seq, f.favorite, 
     h.seq, h.user_id, h.post_seq, h.hate
     HAVING count(f.favorite)/NULLIF(COUNT(h.hate), 0) > 0.3 OR COUNT(h.hate) = 0 or count(f.favorite) = 0
@@ -106,7 +106,7 @@ async def selecttop(user_id: str=None):
         p.image, 
         p.contents, 
         p.public,
-        p.post_nickname,
+        u.nickname,
         f.seq AS favorite_seq, 
         f.user_id AS favorite_user_id, 
         f.post_seq AS favorite_post_seq, 
@@ -116,7 +116,7 @@ async def selecttop(user_id: str=None):
         h.post_seq AS hate_post_seq, 
         h.hate,
         count(distinct c.seq) + count(distinct r.seq) as comment_count,
-        u.user_image
+        u.user_image,
     FROM 
         post AS p 
     LEFT JOIN 
@@ -129,6 +129,8 @@ async def selecttop(user_id: str=None):
         reply as r ON r.post_seq = c.post_seq and r.comment_seq = c.seq
     LEFT join
         user as u ON p.post_user_id = u.id
+    LEFT JOIN 
+        favorite AS ff ON p.seq = ff.post_seq  -- 모든 사용자에 대한 좋아요
     WHERE 
         (p.public = 0 AND p.post_user_id != %s) 
         OR (p.public = 2 AND p.post_user_id IN (
@@ -138,12 +140,12 @@ async def selecttop(user_id: str=None):
             SELECT user_id FROM addfriends WHERE add_id = %s
         ))
     GROUP BY 
-    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,p.post_nickname, 
+    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public, u.nickname, 
     f.seq, f.user_id, f.post_seq, f.favorite, 
     h.seq, h.user_id, h.post_seq, h.hate
     HAVING count(f.favorite)/NULLIF(COUNT(h.hate), 0) > 0.3 OR COUNT(h.hate) = 0 or count(f.favorite) = 0
     order by
-    count(f.favorite) desc, p.date desc
+    sum(ff.favorite) desc, p.date desc
 """    
         curs.execute(sql, (user_id,user_id,user_id,user_id,user_id))
         rows = curs.fetchall()
@@ -169,7 +171,7 @@ async def selectsearch(user_id: str=None, search: str=None):
         p.image, 
         p.contents, 
         p.public,
-        p.post_nickname,
+        u.nickname,
         f.seq AS favorite_seq, 
         f.user_id AS favorite_user_id, 
         f.post_seq AS favorite_post_seq, 
@@ -195,7 +197,7 @@ async def selectsearch(user_id: str=None, search: str=None):
     WHERE 
         p.contents like %s and p.post_user_id != %s
     GROUP BY 
-    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,p.post_nickname, 
+    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,u.nickname, 
     f.seq, f.user_id, f.post_seq, f.favorite, 
     h.seq, h.user_id, h.post_seq, h.hate
     HAVING count(f.favorite)/NULLIF(COUNT(h.hate), 0) > 0.3 OR COUNT(h.hate) = 0 or count(f.favorite) = 0
@@ -282,7 +284,7 @@ async def favorite_post(user_id: str=None):
         p.image, 
         p.contents, 
         p.public,
-        p.post_nickname,
+        u.nickname,
         f.seq AS favorite_seq, 
         f.user_id AS favorite_user_id, 
         f.post_seq AS favorite_post_seq, 
@@ -308,7 +310,7 @@ async def favorite_post(user_id: str=None):
     WHERE 
         f.user_id = %s and f.favorite = '1' and p.post_user_id != %s
     GROUP BY 
-    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,p.post_nickname, 
+    p.seq, p.post_user_id, p.date, p.image, p.contents, p.public,u.nickname, 
     f.seq, f.user_id, f.post_seq, f.favorite, 
     h.seq, h.user_id, h.post_seq, h.hate
     order by

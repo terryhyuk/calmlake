@@ -239,7 +239,6 @@ class VmHandler extends commentcontroller {
   }
 
   var selectedValue = '최신순'.obs; // 드랍다운 버튼 관리
-
   final List<String> dropdownItems = ['최신순', '인기순'];
 
   updateSelectedValue(String value, String userId) async {

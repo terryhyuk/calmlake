@@ -24,8 +24,8 @@ class Profile extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(left: 10, bottom: 15, top: 10),
+        title: const Padding(
+          padding: EdgeInsets.only(left: 10, bottom: 15, top: 10),
           child: Text('Profile',
               style: TextStyle(
                   fontSize: 25, fontWeight: FontWeight.w500, letterSpacing: 1)),
@@ -38,12 +38,12 @@ class Profile extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 104, 136, 190),
         onPressed: () => Get.to(() => Insert())!
             .then((value) => vmHandler.getUserPostJSONData(userId)),
-        label: Text(
+        label: const Text(
           'Post',
           style: TextStyle(
               color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        icon: Icon(
+        icon: const Icon(
           Icons.add,
           color: Colors.white,
           size: 28,
@@ -51,7 +51,6 @@ class Profile extends StatelessWidget {
       ),
       body: Obx(() {
         var user = vmHandler.user.isNotEmpty ? vmHandler.user[0] : null;
-        print(user);
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
@@ -82,29 +81,30 @@ class Profile extends StatelessWidget {
                         ),
                         Text(
                           user != null ? user['nickname'] : 'Loading...',
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontWeight: FontWeight.w700, fontSize: 18),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Padding(
                           padding: const EdgeInsets.only(right: 20),
                           child: Column(
                             children: [
                               Text(
                                 '${vmHandler.userposts.length}',
-                                style: TextStyle(fontWeight: FontWeight.w700),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w700),
                               ),
-                              Text('Posts'),
+                              const Text('Posts'),
                             ],
                           ),
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Divider(color: Colors.white),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Row(
@@ -112,66 +112,67 @@ class Profile extends StatelessWidget {
                       children: [
                         ElevatedButton(
                           onPressed: () => Get.to(FavoriteList()),
-                          child: Text(
-                            'Favorite',
-                            style: TextStyle(
-                                color: const Color.fromARGB(255, 49, 88, 154),
-                                fontWeight: FontWeight.w600),
-                          ),
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
-                              fixedSize: Size(110, 50)),
+                              fixedSize: const Size(110, 50)),
+                          child: const Text(
+                            'Favorite',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 49, 88, 154),
+                                fontWeight: FontWeight.w600),
+                          ),
                         ),
                         ElevatedButton(
                           onPressed: () {
                             Get.to(ProfileEdit())!.then(
                                 (value) => vmHandler.getUserJSONData(userId));
                           },
-                          child: Text(
-                            'Edit Profile',
-                            style: TextStyle(
-                                color: const Color.fromARGB(255, 49, 88, 154),
-                                fontWeight: FontWeight.w600),
-                          ),
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
-                              fixedSize: Size(130, 50)),
+                              fixedSize: const Size(130, 50)),
+                          child: const Text(
+                            'Edit Profile',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 49, 88, 154),
+                                fontWeight: FontWeight.w600),
+                          ),
                         ),
                         ElevatedButton(
                           onPressed: () {
                             logOut(loginHandler.box.read('userId'), vmHandler);
                             Get.offAll(Login());
                           },
-                          child: Text(
-                            'Logout',
-                            style: TextStyle(
-                                color: const Color.fromARGB(255, 49, 88, 154),
-                                fontWeight: FontWeight.w600),
-                          ),
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
-                              fixedSize: Size(110, 50)),
+                              fixedSize: const Size(110, 50)),
+                          child: const Text(
+                            'Logout',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 49, 88, 154),
+                                fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Expanded(
                 child: Obx(() {
                   if (vmHandler.userposts.isEmpty) {
-                    return Center(child: Text('No posts available.'));
+                    return const Center(child: Text('No posts available.'));
                   }
                   return GridView.builder(
                     shrinkWrap: true,
                     itemCount: vmHandler.userposts.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       childAspectRatio: 1 / 1,
                       mainAxisSpacing: 10,
@@ -191,7 +192,7 @@ class Profile extends StatelessWidget {
                             width: 100,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
-                              return Center(child: Icon(Icons.error));
+                              return const Center(child: Icon(Icons.error));
                             },
                           ),
                         ),
@@ -211,12 +212,10 @@ class Profile extends StatelessWidget {
     await activityInsert();
     var result = await loginHandler.logoutJSONData(id);
     await vmHandler.resetDropdown();
-
     if (result == 'OK') {
       Get.back();
     } else {
       errorSnackBar();
-      print('Error');
     }
   }
 

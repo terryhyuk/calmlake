@@ -2,6 +2,7 @@ import 'package:calm_lake_project/vm/friends_controller.dart';
 import 'package:calm_lake_project/model/message.dart';
 import 'package:calm_lake_project/vm/login_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -9,7 +10,53 @@ class ChatingController extends FriendsController {
   final messages = <Message>[].obs;
   final loginhandler = Get.put(LoginHandler());
   final chatRooms = <Map<String, dynamic>>[].obs; // 채팅방 목록을 Map으로 변경
-  static const List<String> defalult_rooms = ['직장인 채팅방', '맛집 공유','취미 공유','힐링 여행지 추천']; // 기본 채팅방
+  // ignore: constant_identifier_names
+  static const List<String> defalult_rooms = ['직장인 채팅방', '맛집 공유','취미 공유','힐링 여행지 추천'];
+  
+  String getRoomDescription(String roomName) {
+  switch (roomName) {
+    case '직장인 채팅방':
+      return '매일 일찍 퇴근하고 싶어요';
+    case '맛집 공유':
+      return '나만의 또간집! 맛집 추천해주세요!';
+    case '취미 공유':
+      return '건강한 취미는 필수! 취미 공유해요';
+    case '힐링 여행지 추천':
+      return '힐링을 위한 여행 여행 갈까요?';
+    default:
+      return ''; // 기본 채팅방이 아닌 경우 빈 문자열 반환
+  }
+}
+
+ImageProvider getRoomImageProvider(String roomName) {
+  switch (roomName) {
+    case '직장인 채팅방':
+      return const AssetImage('images/work.jpg');
+    case '맛집 공유':
+      return const AssetImage('images/eat.jpeg');
+    case '취미 공유':
+      return const AssetImage('images/1.jpg');
+    case '힐링 여행지 추천':
+      return const AssetImage('images/trip.jpg');
+    default:
+      return const AssetImage('images/default.jpg'); // 기본 이미지 에셋 경로
+  }
+}
+
+TextStyle getRoomDescriptionStyle(String roomName) {
+  switch (roomName) {
+    case '직장인 채팅방':
+      return const TextStyle(fontSize: 13, color: Colors.blue, fontWeight: FontWeight.w500);
+    case '맛집 공유':
+      return const TextStyle(fontSize: 12, color: Colors.green, fontStyle: FontStyle.italic);
+    case '취미 공유':
+      return const TextStyle(fontSize: 13, color: Colors.orange, letterSpacing: 0.5);
+    case '힐링 여행지 추천':
+      return const TextStyle(fontSize: 14, color: Colors.purple, fontWeight: FontWeight.w500);
+    default:
+      return const TextStyle(fontSize: 12, color: Colors.grey);
+  }
+}
 
   String formatTimestamp(Timestamp timestamp) {
   DateTime dateTime = timestamp.toDate();
@@ -72,7 +119,7 @@ initializeDefaultRooms() async {
         'lastMessageTime': Timestamp.now(),
       });
 
-      await addMessage(roomId, 'system', 'System', '', true);
+      await addMessage(roomId, 'system', 'System', roomDoc.get('lastMessageTime'), true);
     } else {
       // 이미 존재하는 경우, 사용자를 참가자 목록에 추가
       await roomRef.update({
@@ -88,7 +135,7 @@ initializeDefaultRooms() async {
         .doc(roomId)
         .set({
       'roomId': roomId,
-      'roomName': '$roomId',
+      'roomName': roomId,
       'joinedAt': Timestamp.now(),
       'lastMessage': '',
       'lastMessageTime': Timestamp.now(),
@@ -144,15 +191,15 @@ addFriendsToChatRoom(String roomId, List<String> friendIds) async {
     String addedFriends = friendIds.join(', ');
     await addMessage(roomId, 'system', 'System', '$addedFriends 님이 채팅방에 추가되었습니다.', true);
     
-    print('Friends added successfully');
+    // print('Friends added successfully');
   } catch (e) {
-    print('Error adding friends to chat room: $e');
+    // print('Error adding friends to chat room: $e');
   }
 }
 
 loadUserChatRooms() {
   String userId = loginhandler.box.read('userId');
-  print('Loading chat rooms for user: $userId');
+  // print('Loading chat rooms for user: $userId');
   FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -165,10 +212,10 @@ loadUserChatRooms() {
       data['roomId'] = doc.id;
       return data;
     }).toList();
-    print('Loaded chat rooms: ${chatRooms.length}');
+    // print('Loaded chat rooms: ${chatRooms.length}');
     chatRooms.refresh();
   }, onError: (error) {
-    print('Error loading chat rooms: $error');
+    // print('Error loading chat rooms: $error');
   });
 }
 
@@ -212,7 +259,7 @@ createOrGetChatRoom(String friendId, String friendName, bool isDefaultRoom, Stri
 
     final roomData = {
       'roomId': roomId,
-      'roomName': isDefaultRoom ? '기본 채팅방 $roomId' : '$friendName와의 대화',
+      'roomName': isDefaultRoom ? '기본 채팅방 $roomId' : '$friendName와의 대화방',
       'createdAt': roomDoc.exists ? roomDoc.get('createdAt') : Timestamp.now(),
       'participants': [userId, friendId],
       'lastMessage': roomDoc.exists ? roomDoc.get('lastMessage') : '채팅방이 생성되었습니다.',
@@ -231,7 +278,7 @@ createOrGetChatRoom(String friendId, String friendName, bool isDefaultRoom, Stri
           .doc(roomId)
           .set({
         'roomId': roomId,
-        'roomName': '$friendName와의 대화',
+        'roomName': '$friendName와의 대화방',
         'lastMessage': roomData['lastMessage'],
         'lastMessageTime': roomData['lastMessageTime'],
       }, SetOptions(merge: true));
@@ -243,7 +290,7 @@ createOrGetChatRoom(String friendId, String friendName, bool isDefaultRoom, Stri
           .doc(roomId)
           .set({
         'roomId': roomId,
-        'roomName': '$userNickname와의 대화',
+        'roomName': '$userNickname와의 대화방',
         'lastMessage': roomData['lastMessage'],
         'lastMessageTime': roomData['lastMessageTime'],
       }, SetOptions(merge: true));
@@ -257,7 +304,7 @@ createOrGetChatRoom(String friendId, String friendName, bool isDefaultRoom, Stri
     // 로컬 채팅방 목록 업데이트
     updateLocalChatRoomsList(
       roomId,
-      isDefaultRoom ? '기본 채팅방 $roomId' : '$friendName와의 대화',
+      isDefaultRoom ? '기본 채팅방 $roomId' : '$friendName와의 대화방',
       roomData['lastMessage'],
       roomData['lastMessageTime'],
     );
@@ -267,14 +314,14 @@ createOrGetChatRoom(String friendId, String friendName, bool isDefaultRoom, Stri
 
     return roomId;
   } catch (e) {
-    print('Error in createOrGetChatRoom: $e');
+    // print('Error in createOrGetChatRoom: $e');
     return '';
   }
 }
 
 
 
-void updateLocalChatRoomsList(String roomId, String roomName, String lastMessage, Timestamp lastMessageTime) {
+updateLocalChatRoomsList(String roomId, String roomName, String lastMessage, Timestamp lastMessageTime) {
   // 기존 방이 있는지 찾기
   final existingRoomIndex = chatRooms.indexWhere((room) => room['roomId'] == roomId);
   
@@ -299,21 +346,9 @@ void updateLocalChatRoomsList(String roomId, String roomName, String lastMessage
     final timeB = b['lastMessageTime'] as Timestamp;
     return timeB.compareTo(timeA);
   });
-
   // UI 갱신 트리거
   chatRooms.refresh();
-
-  // 디버깅을 위한 로그 추가
-  print('Updated chat rooms: ${chatRooms.length}');
-  
-  if (chatRooms.isNotEmpty) {
-    print('Latest chat room: ${chatRooms.first['roomName']}');
-    print('Latest message: ${chatRooms.first['lastMessage']} at ${chatRooms.first['lastMessageTime']}');
-  } else {
-    print('No chat rooms available.');
-  }
 }
-
 
 
   createChatRoom(String roomName, List<String> invitedFriends) async {
@@ -402,7 +437,7 @@ addMessage(String roomId, String userId, String nickname, String contents, bool 
   await getMessagesRef(roomId, isDefaultRoom).add({
     'roomId': roomId,
     'userID': userId,
-    'nickname': nickname,
+    'nickname': nickname, // 닉네임 저장
     'contents': contents,
     'timestamp': Timestamp.now(),
   });
@@ -442,5 +477,52 @@ addMessage(String roomId, String userId, String nickname, String contents, bool 
     }, SetOptions(merge: true));
   }
 }
+
+
+deleteChatRoom(String roomId, bool isDefaultRoom) async {
+  String userId = loginhandler.box.read('userId');
+
+  try {
+    // 사용자의 채팅방 목록에서 삭제
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('chatRooms')
+        .doc(roomId)
+        .delete();
+
+    if (!isDefaultRoom) {
+      // 개인 채팅방인 경우, 채팅방 자체를 삭제
+      await FirebaseFirestore.instance
+          .collection('chat')
+          .doc('users')
+          .collection('chatRooms')
+          .doc(roomId)
+          .update({
+        'participants': FieldValue.arrayRemove([userId])
+      });
+    } else {
+      // 기본 채팅방인 경우, 참가자 목록에서 사용자 제거
+      await FirebaseFirestore.instance
+          .collection('chat')
+          .doc('grup')
+          .collection('rooms')
+          .doc(roomId)
+          // .delete();
+          .update({
+        'participants': FieldValue.arrayRemove([userId])
+      });
+    }
+
+    // 로컬 채팅방 목록 업데이트
+    chatRooms.removeWhere((room) => room['roomId'] == roomId);
+    chatRooms.refresh();
+
+    // print('Chat room deleted successfully');
+  } catch (e) {
+    // print('Error deleting chat room: $e');
+  }
+}
+
 
 }

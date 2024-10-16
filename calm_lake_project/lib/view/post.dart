@@ -13,14 +13,12 @@ import 'package:intl/intl.dart';
 
 class Post extends StatelessWidget {
   final GetStorage box = GetStorage();
-
   Post({super.key});
 
   @override
   Widget build(BuildContext context) {
     final vmHandler = Get.put(VmHandler());
     String userId = box.read('userId');
-    //vmHandler.getReply();
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +34,7 @@ class Post extends StatelessWidget {
                   onPressed: () {
                     Get.to(Search());
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.search,
                     size: 25,
                   )))
@@ -50,6 +48,7 @@ class Post extends StatelessWidget {
               child: Align(
                 alignment: Alignment.topRight,
                 child: DropdownButton<String>(
+                  // 최신순, 인기순 drop down button
                   value: vmHandler.selectedValue.value,
                   items: vmHandler.dropdownItems.map((String item) {
                     return DropdownMenuItem<String>(
@@ -77,7 +76,7 @@ class Post extends StatelessWidget {
                         child: CircularProgressIndicator(),
                       );
                     } else if (snapshot.hasError) {
-                      print(snapshot.error);
+                      //print(snapshot.error);
                       return Center(
                         child: Text('Error : ${snapshot.error}'),
                       );
@@ -103,21 +102,22 @@ class Post extends StatelessWidget {
                                                   'http://127.0.0.1:8000/login/view/${post[16]}')
                                               : null,
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                         Text(
                                           post[6],
-                                          style: TextStyle(fontSize: 15),
+                                          style: const TextStyle(fontSize: 15),
                                         )
                                       ],
                                     ),
                                   ),
-                                  Container(
+                                  SizedBox(
                                     width: MediaQuery.of(context).size.width,
                                     height: 300,
                                     child: Container(
                                       child: Image.network(
+                                        // 포스팅 사진
                                         'http://127.0.0.1:8000/query/view/${post[3]}',
                                         fit: BoxFit.cover,
                                         width: double.infinity,
@@ -130,120 +130,42 @@ class Post extends StatelessWidget {
                                       // 좋아요 아이콘
                                       GestureDetector(
                                         onTap: () async {
-                                          bool check =
-                                              await vmHandler.checkFavorite(
-                                                      post[8] ?? 'null',
-                                                      post[9] ?? 0) ==
-                                                  post[7];
-                                          print(await vmHandler.checkFavorite(
-                                              post[8] ?? 'null', post[9] ?? 0));
-                                          int newFavoriteValue =
-                                              post[10] == '1' ? 0 : 1;
-                                          // favorite 테이블이 있고 hate 테이블이 있는경우
-                                          // favorite 1이고 hate가 0이면 updateFavorite
-                                          // favorite 1이고 hate가 1이면 updatehate, updatefavorite
-                                          // favorite 0이고 hate가 0이면 updateFavorite
-                                          // favorite 0이고 hate가 1이면 updateFavorite
-                                          // favorite 테이블이 있고 hate 테이블이 없는경우 updateFavorite
-                                          if (check) {
-                                            if (newFavoriteValue == 1 &&
-                                                post[14] == '1') {
-                                              await vmHandler.updateHate(
-                                                  0, post[13], userId);
-                                              await vmHandler.updateFavorite(
-                                                  newFavoriteValue,
-                                                  post[9],
-                                                  userId);
-                                            }
-                                            await vmHandler.updateFavorite(
-                                                newFavoriteValue,
-                                                post[9],
-                                                userId);
-                                            // favorite 테이블이 없고 hate 테이블이 없는경우 inserFavorite 1
-                                            // favorite 테이블이 없고 hate 테이블이 있는경우
-                                            // hate가 1이면 insertfavorite 1, updatehate
-                                            // hate가 0이면 insertfavofite 1
-                                          } else {
-                                            if (post[14] == '1') {
-                                              await vmHandler.updateHate(
-                                                  0, post[13], userId);
-                                              await vmHandler.insertFavorite(
-                                                  1, post[0], userId);
-                                            } else {
-                                              await vmHandler.insertFavorite(
-                                                  1, post[0], userId);
-                                            }
-                                          }
-                                          vmHandler.selectedValue == '최신순'
-                                              ? controller.getJSONData(userId)
-                                              : controller
-                                                  .getTopJSONData(userId);
+                                          // 좋아요 아이콘 눌렀을때 실행
+                                          favoriteAction(vmHandler, post,
+                                              userId, controller);
                                         },
                                         child: Padding(
                                           padding: const EdgeInsets.only(
                                               left: 15, top: 10),
                                           child: post[10] == '1'
-                                              ? Icon(Icons.favorite)
-                                              : Icon(Icons.favorite_border),
+                                              ? const Icon(Icons.favorite)
+                                              : const Icon(
+                                                  Icons.favorite_border),
                                         ),
                                       ),
                                       // 싫어요 아이콘
                                       GestureDetector(
                                         onTap: () async {
-                                          bool check =
-                                              await vmHandler.checkHate(
-                                                      post[12] ?? 'null',
-                                                      post[13] ?? 0) ==
-                                                  post[11];
-                                          int newHateValue =
-                                              post[14] == '1' ? 0 : 1;
-                                          if (check) {
-                                            if (newHateValue == 1 &&
-                                                post[10] == '1') {
-                                              await vmHandler.updateFavorite(
-                                                  0, post[9], userId);
-                                              await vmHandler.updateHate(
-                                                  newHateValue,
-                                                  post[13],
-                                                  userId);
-                                            }
-                                            await vmHandler.updateHate(
-                                                newHateValue, post[13], userId);
-                                          } else {
-                                            if (post[10] == '1') {
-                                              await vmHandler.updateFavorite(
-                                                  0, post[9], userId);
-                                              await vmHandler.insertHate(
-                                                  1, post[0], userId);
-                                            } else {
-                                              await vmHandler.insertHate(
-                                                  1, post[0], userId);
-                                            }
-                                          }
-                                          vmHandler.selectedValue == '최신순'
-                                              ? controller.getJSONData(userId)
-                                              : controller
-                                                  .getTopJSONData(userId);
+                                          // 싫어요 아이콘 눌렀을때 실행
+                                          hateAction(vmHandler, post, userId,
+                                              controller);
                                         },
                                         child: Padding(
                                           padding: const EdgeInsets.only(
                                               left: 10, top: 10),
                                           child: post[14] == '1'
-                                              ? Icon(Icons.thumb_down)
-                                              : Icon(Icons
+                                              ? const Icon(Icons.thumb_down)
+                                              : const Icon(Icons
                                                   .thumb_down_alt_outlined),
                                         ),
                                       ),
                                       // 코멘트 아이콘
                                       GestureDetector(
                                         onTap: () async {
+                                          // 데이터 베이스에서 코멘트값 가져옴
                                           await controller
                                               .getCommentReply(post[0]);
-                                          /*if (controller.comments.isNotEmpty) {
-                                            var comment_seq = vmHandler.comments[0];
-                                            await controller.getReply(
-                                                comment_seq[0], post[0]);
-                                          }*/
+                                          // modalBottomSheet에서 댓글을 보여줌
                                           showModalBottomSheet(
                                             context: context,
                                             isScrollControlled:
@@ -255,7 +177,7 @@ class Post extends StatelessWidget {
                                                         MediaQuery.of(context)
                                                             .viewInsets
                                                             .bottom),
-                                                child: Container(
+                                                child: SizedBox(
                                                   height: MediaQuery.of(context)
                                                               .size
                                                               .height *
@@ -266,10 +188,9 @@ class Post extends StatelessWidget {
                                                           1,
                                                   child: Column(
                                                     children: [
-                                                      Padding(
+                                                      const Padding(
                                                         padding:
-                                                            const EdgeInsets
-                                                                .only(
+                                                            EdgeInsets.only(
                                                                 top: 15,
                                                                 bottom: 10),
                                                         child: Text(
@@ -280,7 +201,7 @@ class Post extends StatelessWidget {
                                                                       .w600),
                                                         ),
                                                       ),
-                                                      Divider(),
+                                                      const Divider(),
                                                       Expanded(
                                                         child:
                                                             SingleChildScrollView(
@@ -299,7 +220,7 @@ class Post extends StatelessWidget {
                                                                         height: MediaQuery.of(context).size.height *
                                                                             0.7,
                                                                         child:
-                                                                            Align(
+                                                                            const Align(
                                                                           alignment:
                                                                               Alignment.center,
                                                                           child:
@@ -315,7 +236,7 @@ class Post extends StatelessWidget {
                                                                     shrinkWrap:
                                                                         true,
                                                                     physics:
-                                                                        NeverScrollableScrollPhysics(), // 부모 스크롤만 사용
+                                                                        const NeverScrollableScrollPhysics(), // 부모 스크롤만 사용
                                                                     itemCount: controller
                                                                         .commentreply
                                                                         .length,
@@ -332,6 +253,7 @@ class Post extends StatelessWidget {
                                                                           GestureDetector(
                                                                             onLongPress:
                                                                                 () {
+                                                                              // 댓글 길게 눌렀을때 유저 확인 후 삭제 가능
                                                                               if (comment[6] == userId) {
                                                                                 _showDefaultDialog(context, index, vmHandler, userId, post, comment, isComment: T);
                                                                               } else {
@@ -353,31 +275,32 @@ class Post extends StatelessWidget {
                                                                                 children: [
                                                                                   Text(
                                                                                     comment[1],
-                                                                                    style: TextStyle(fontSize: 14),
+                                                                                    style: const TextStyle(fontSize: 14),
                                                                                   ),
-                                                                                  SizedBox(
+                                                                                  const SizedBox(
                                                                                     width: 10,
                                                                                   ),
                                                                                   Text(
                                                                                     comment[4],
-                                                                                    style: TextStyle(fontSize: 13),
+                                                                                    style: const TextStyle(fontSize: 13),
                                                                                   ),
                                                                                 ],
                                                                               ), // nickname
                                                                               subtitle: Text(
                                                                                 comment[3],
-                                                                                style: TextStyle(fontSize: 16, color: Colors.black),
+                                                                                style: const TextStyle(fontSize: 16, color: Colors.black),
                                                                               ), // text
                                                                               trailing: TextButton(
                                                                                   onPressed: () {
+                                                                                    // reply 버튼 누르면 새로운 bottomSheet가 나옴
                                                                                     controller.commentIndex = index;
                                                                                     controller.replyTextController.text = '';
                                                                                     showBottomeSheet(context, index, vmHandler, post, comment, userId);
                                                                                   },
-                                                                                  child: Text('reply')),
+                                                                                  child: const Text('reply')),
                                                                             ),
                                                                           ),
-                                                                          // Replies List
+                                                                          // Replies List가 있는 확인 후 댓글 리스트 생성
                                                                           if (comment[7]
                                                                               .isNotEmpty) ...[
                                                                             for (var reply
@@ -389,7 +312,6 @@ class Post extends StatelessWidget {
                                                                                     Expanded(
                                                                                         child: GestureDetector(
                                                                                       onLongPress: () {
-                                                                                        print(comment);
                                                                                         if (reply[7] == userId) {
                                                                                           _showDefaultDialog(context, index, vmHandler, userId, post, reply, isComment: F);
                                                                                         } else {
@@ -411,16 +333,16 @@ class Post extends StatelessWidget {
                                                                                           children: [
                                                                                             Text(
                                                                                               reply[2],
-                                                                                              style: TextStyle(
+                                                                                              style: const TextStyle(
                                                                                                 fontSize: 14,
                                                                                               ), // reply nickname
                                                                                             ),
-                                                                                            SizedBox(
+                                                                                            const SizedBox(
                                                                                               width: 10,
                                                                                             ),
                                                                                             Text(
                                                                                               reply[5],
-                                                                                              style: TextStyle(
+                                                                                              style: const TextStyle(
                                                                                                 fontSize: 12,
                                                                                               ), // reply nickname
                                                                                             ),
@@ -428,7 +350,7 @@ class Post extends StatelessWidget {
                                                                                         ),
                                                                                         subtitle: Text(
                                                                                           reply[4], // reply text
-                                                                                          style: TextStyle(fontSize: 16, color: Colors.black),
+                                                                                          style: const TextStyle(fontSize: 16, color: Colors.black),
                                                                                         ),
                                                                                       ),
                                                                                     )),
@@ -447,7 +369,8 @@ class Post extends StatelessWidget {
                                                           ),
                                                         ),
                                                       ),
-                                                      SizedBox(height: 10),
+                                                      const SizedBox(
+                                                          height: 10),
                                                       Row(
                                                         children: [
                                                           Expanded(
@@ -462,7 +385,7 @@ class Post extends StatelessWidget {
                                                                         .textController,
                                                                 maxLines: 1,
                                                                 decoration:
-                                                                    InputDecoration(
+                                                                    const InputDecoration(
                                                                   hintText:
                                                                       'Enter comment',
                                                                 ),
@@ -479,35 +402,18 @@ class Post extends StatelessWidget {
                                                                 ElevatedButton(
                                                               onPressed:
                                                                   () async {
-                                                                if (controller
-                                                                    .textController
-                                                                    .text
-                                                                    .trim()
-                                                                    .isNotEmpty) {
-                                                                  await controller.insertCommnet(
-                                                                      post[0],
-                                                                      controller
-                                                                          .textController
-                                                                          .text
-                                                                          .trim(),
-                                                                      userId);
-                                                                  controller
-                                                                      .textController
-                                                                      .text = '';
-                                                                }
-                                                                vmHandler.selectedValue ==
-                                                                        '최신순'
-                                                                    ? controller
-                                                                        .getJSONData(
-                                                                            userId)
-                                                                    : controller
-                                                                        .getTopJSONData(
-                                                                            userId);
-                                                                await vmHandler
-                                                                    .getCommentReply(
-                                                                        post[
-                                                                            0]);
+                                                                // comment 입력 버튼 누르면 실행
+                                                                commnetInsertAction(
+                                                                    controller,
+                                                                    post,
+                                                                    userId,
+                                                                    vmHandler);
                                                               },
+                                                              style: ElevatedButton.styleFrom(
+                                                                  backgroundColor: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .primary),
                                                               child: Icon(
                                                                 Icons
                                                                     .arrow_upward,
@@ -516,11 +422,6 @@ class Post extends StatelessWidget {
                                                                     .colorScheme
                                                                     .onPrimary,
                                                               ),
-                                                              style: ElevatedButton.styleFrom(
-                                                                  backgroundColor: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .primary),
                                                             ),
                                                           ),
                                                         ],
@@ -535,8 +436,8 @@ class Post extends StatelessWidget {
                                             },
                                           );
                                         },
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
+                                        child: const Padding(
+                                          padding: EdgeInsets.only(
                                               left: 10, top: 10),
                                           child:
                                               Icon(Icons.chat_bubble_outline),
@@ -561,9 +462,6 @@ class Post extends StatelessWidget {
                                         ExpandableText(
                                           '${post[4]}',
                                           prefixText: '${post[6]}',
-                                          onPrefixTap: () {
-                                            print('prefix 클릭 시 발생할 이벤트');
-                                          },
                                           prefixStyle: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -575,13 +473,14 @@ class Post extends StatelessWidget {
                                           linkColor: Colors.grey,
                                         ),
                                         Text(
-                                            '${DateFormat("MMMM d").format(DateTime.parse(post[2]))}',
-                                            style: TextStyle(
+                                            DateFormat("MMMM d").format(
+                                                DateTime.parse(post[2])),
+                                            style: const TextStyle(
                                                 color: Colors.black54)),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 20,
                                   )
                                 ],
@@ -601,6 +500,76 @@ class Post extends StatelessWidget {
     );
   }
 
+  hateAction(vmHandler, post, userId, controller) async {
+    bool check = await vmHandler.checkHate(post[12] ?? 'null', post[13] ?? 0) ==
+        post[11];
+    int newHateValue = post[14] == '1' ? 0 : 1;
+    if (check) {
+      if (newHateValue == 1 && post[10] == '1') {
+        await vmHandler.updateFavorite(0, post[9], userId);
+        await vmHandler.updateHate(newHateValue, post[13], userId);
+      }
+      await vmHandler.updateHate(newHateValue, post[13], userId);
+    } else {
+      if (post[10] == '1') {
+        await vmHandler.updateFavorite(0, post[9], userId);
+        await vmHandler.insertHate(1, post[0], userId);
+      } else {
+        await vmHandler.insertHate(1, post[0], userId);
+      }
+    }
+    vmHandler.selectedValue == '최신순'
+        ? controller.getJSONData(userId)
+        : controller.getTopJSONData(userId);
+  }
+
+  favoriteAction(vmHandler, post, userId, controller) async {
+    bool check =
+        await vmHandler.checkFavorite(post[8] ?? 'null', post[9] ?? 0) ==
+            post[7];
+    int newFavoriteValue = post[10] == '1' ? 0 : 1;
+    // favorite 테이블이 있고 hate 테이블이 있는경우
+    // favorite 1이고 hate가 0이면 updateFavorite
+    // favorite 1이고 hate가 1이면 updatehate, updatefavorite
+    // favorite 0이고 hate가 0이면 updateFavorite
+    // favorite 0이고 hate가 1이면 updateFavorite
+    // favorite 테이블이 있고 hate 테이블이 없는경우 updateFavorite
+    if (check) {
+      if (newFavoriteValue == 1 && post[14] == '1') {
+        await vmHandler.updateHate(0, post[13], userId);
+        await vmHandler.updateFavorite(newFavoriteValue, post[9], userId);
+      }
+      await vmHandler.updateFavorite(newFavoriteValue, post[9], userId);
+      // favorite 테이블이 없고 hate 테이블이 없는경우 inserFavorite 1
+      // favorite 테이블이 없고 hate 테이블이 있는경우
+      // hate가 1이면 insertfavorite 1, updatehate
+      // hate가 0이면 insertfavofite 1
+    } else {
+      if (post[14] == '1') {
+        await vmHandler.updateHate(0, post[13], userId);
+        await vmHandler.insertFavorite(1, post[0], userId);
+      } else {
+        await vmHandler.insertFavorite(1, post[0], userId);
+      }
+    }
+    vmHandler.selectedValue == '최신순'
+        ? controller.getJSONData(userId)
+        : controller.getTopJSONData(userId);
+  }
+
+  commnetInsertAction(controller, post, userId, vmHandler) async {
+    if (controller.textController.text.trim().isNotEmpty) {
+      await controller.insertCommnet(
+          post[0], controller.textController.text.trim(), userId);
+      controller.textController.text = '';
+    }
+    vmHandler.selectedValue == '최신순'
+        ? controller.getJSONData(userId)
+        : controller.getTopJSONData(userId);
+    await vmHandler.getCommentReply(post[0]);
+  }
+
+// 답글 달때 나오는 bottomSheet
   showBottomeSheet(context, index, vmHandler, post, comment, userId) {
     showModalBottomSheet(
       context: context,
@@ -609,7 +578,7 @@ class Post extends StatelessWidget {
         return Wrap(
           children: [
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Padding(
                 padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -621,7 +590,7 @@ class Post extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Reply',
                             style: TextStyle(
                                 fontSize: 22, fontWeight: FontWeight.w600),
@@ -642,26 +611,26 @@ class Post extends StatelessWidget {
                                 Get.back();
                               }
                             },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary),
                             child: Icon(
                               Icons.check,
                               color: Theme.of(context).colorScheme.onPrimary,
                             ),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary),
                           )
                         ],
                       ),
                     ),
                     TextFormField(
                       controller: vmHandler.replyTextController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         contentPadding: EdgeInsets.symmetric(horizontal: 10),
                         enabledBorder:
                             UnderlineInputBorder(borderSide: BorderSide()),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 50,
                     )
                   ],
@@ -674,6 +643,7 @@ class Post extends StatelessWidget {
     );
   }
 
+// 댓글과 답글 삭제시 나오는 dialog
   _showDefaultDialog(context, index, controller, userId, post, comment,
       {bool isComment = false}) async {
     showDialog(
@@ -681,15 +651,15 @@ class Post extends StatelessWidget {
         builder: (context) {
           return AlertDialog(
             title:
-                Align(alignment: Alignment.center, child: const Text('Delete')),
+                const Align(alignment: Alignment.center, child: Text('Delete')),
             content: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 300), // 최대 너비 설정
+              constraints: const BoxConstraints(maxWidth: 300), // 최대 너비 설정
               child: isComment
-                  ? Text(
+                  ? const Text(
                       'Do you want to delete\nthe comment?',
                       textAlign: TextAlign.center,
                     )
-                  : Text(
+                  : const Text(
                       'Do you want to delete\nthe reply?',
                       textAlign: TextAlign.center,
                     ),
@@ -704,14 +674,13 @@ class Post extends StatelessWidget {
                       onPressed: () {
                         Get.back();
                       },
-                      child: Text('Cancel')),
+                      child: const Text('Cancel')),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary),
                     onPressed: () async {
                       if (isComment) {
                         // comment 삭제
-                        print('delete');
                         var result =
                             await controller.deleteComment(userId, comment[0]);
                         if (result == 'OK') {
@@ -725,7 +694,6 @@ class Post extends StatelessWidget {
                         }
                       } else {
                         // reply 삭제
-                        print('reply');
                         var result =
                             await controller.deleteReply(userId, comment[0]);
                         if (result == 'OK') {

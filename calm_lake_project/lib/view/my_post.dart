@@ -56,14 +56,14 @@ class MyPost extends StatelessWidget {
                                             'http://127.0.0.1:8000/login/view/${userpost[16]}')
                                         : null,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 10,
                                   ),
                                   Text(
                                     userpost[6],
-                                    style: TextStyle(fontSize: 15),
+                                    style: const TextStyle(fontSize: 15),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   PopupMenuButton(
                                     onSelected: (value) {
                                       if (value == 'Edit') {
@@ -71,8 +71,9 @@ class MyPost extends StatelessWidget {
                                       } else {
                                         Get.defaultDialog(
                                             title: 'Delete',
-                                            titleStyle: TextStyle(fontSize: 20),
-                                            content: Text(
+                                            titleStyle:
+                                                const TextStyle(fontSize: 20),
+                                            content: const Text(
                                                 'Do you want to delete the post?'),
                                             onCancel: () {},
                                             onConfirm: () async {
@@ -90,12 +91,15 @@ class MyPost extends StatelessWidget {
                                             },
                                             buttonColor: const Color.fromARGB(
                                                 255, 213, 150, 145),
-                                            contentPadding: EdgeInsets.all(10));
+                                            contentPadding:
+                                                const EdgeInsets.all(10));
                                       }
                                     },
                                     itemBuilder: (BuildContext bc) {
                                       return const [
+                                        // 포스팅 수정 및 삭제
                                         PopupMenuItem(
+                                          value: 'Edit',
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -104,9 +108,9 @@ class MyPost extends StatelessWidget {
                                               Icon(Icons.edit)
                                             ],
                                           ),
-                                          value: 'Edit',
                                         ),
                                         PopupMenuItem(
+                                          value: 'Delete',
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -115,7 +119,6 @@ class MyPost extends StatelessWidget {
                                               Icon(Icons.delete)
                                             ],
                                           ),
-                                          value: 'Delete',
                                         ),
                                       ];
                                     },
@@ -123,16 +126,14 @@ class MyPost extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            Container(
+                            SizedBox(
                               width: MediaQuery.of(context).size.width,
                               height: 300,
-                              child: Container(
-                                child: Image.network(
-                                  'http://127.0.0.1:8000/query/view/${userpost[3]}',
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: 300,
-                                ),
+                              child: Image.network(
+                                'http://127.0.0.1:8000/query/view/${userpost[3]}',
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: 300,
                               ),
                             ),
                             Row(
@@ -140,98 +141,28 @@ class MyPost extends StatelessWidget {
                                 // 좋아요 아이콘
                                 GestureDetector(
                                   onTap: () async {
-                                    bool check = await vmHandler.checkFavorite(
-                                            userpost[8] ?? 'null',
-                                            userpost[9] ?? 0) ==
-                                        userpost[7];
-                                    print(await vmHandler.checkFavorite(
-                                        userpost[8] ?? 'null',
-                                        userpost[9] ?? 0));
-                                    int newFavoriteValue =
-                                        userpost[10] == '1' ? 0 : 1;
-                                    // favorite 테이블이 있고 hate 테이블이 있는경우
-                                    // favorite 1이고 hate가 0이면 updateFavorite
-                                    // favorite 1이고 hate가 1이면 updatehate, updatefavorite
-                                    // favorite 0이고 hate가 0이면 updateFavorite
-                                    // favorite 0이고 hate가 1이면 updateFavorite
-                                    // favorite 테이블이 있고 hate 테이블이 없는경우 updateFavorite
-                                    if (check) {
-                                      if (newFavoriteValue == 1 &&
-                                          userpost[14] == '1') {
-                                        await vmHandler.updateHate(
-                                            0, userpost[13], userId);
-                                        await vmHandler.updateFavorite(
-                                            newFavoriteValue,
-                                            userpost[9],
-                                            userId);
-                                      }
-                                      await vmHandler.updateFavorite(
-                                          newFavoriteValue,
-                                          userpost[9],
-                                          userId);
-                                      // favorite 테이블이 없고 hate 테이블이 없는경우 inserFavorite 1
-                                      // favorite 테이블이 없고 hate 테이블이 있는경우
-                                      // hate가 1이면 insertfavorite 1, updatehate
-                                      // hate가 0이면 insertfavofite 1
-                                    } else {
-                                      if (userpost[14] == '1') {
-                                        await vmHandler.updateHate(
-                                            0, userpost[13], userId);
-                                        await vmHandler.insertFavorite(
-                                            1, userpost[0], userId);
-                                      } else {
-                                        await vmHandler.insertFavorite(
-                                            1, userpost[0], userId);
-                                      }
-                                    }
-                                    await vmHandler.getUserPostJSONData(userId);
+                                    favoriteAction(vmHandler, userpost, userId);
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 15, top: 10),
                                     child: userpost[10] == '1'
-                                        ? Icon(Icons.favorite)
-                                        : Icon(Icons.favorite_border),
+                                        ? const Icon(Icons.favorite)
+                                        : const Icon(Icons.favorite_border),
                                   ),
                                 ),
                                 // 싫어요 아이콘
                                 GestureDetector(
                                   onTap: () async {
-                                    bool check = await vmHandler.checkHate(
-                                            userpost[12] ?? 'null',
-                                            userpost[13] ?? 0) ==
-                                        userpost[11];
-                                    int newHateValue =
-                                        userpost[14] == '1' ? 0 : 1;
-                                    if (check) {
-                                      if (newHateValue == 1 &&
-                                          userpost[10] == '1') {
-                                        await vmHandler.updateFavorite(
-                                            0, userpost[9], userId);
-                                        await vmHandler.updateHate(
-                                            newHateValue, userpost[13], userId);
-                                      }
-                                      await vmHandler.updateHate(
-                                          newHateValue, userpost[13], userId);
-                                    } else {
-                                      if (userpost[10] == '1') {
-                                        await vmHandler.updateFavorite(
-                                            0, userpost[9], userId);
-                                        await vmHandler.insertHate(
-                                            1, userpost[0], userId);
-                                      } else {
-                                        await vmHandler.insertHate(
-                                            1, userpost[0], userId);
-                                      }
-                                    }
-                                    await vmHandler.getUserPostJSONData(userId);
+                                    hateAction(vmHandler, userpost, userId);
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 10, top: 10),
                                     child: userpost[14] == '1'
-                                        ? Icon(Icons.thumb_down)
-                                        : Icon(Icons.thumb_down_alt_outlined),
+                                        ? const Icon(Icons.thumb_down)
+                                        : const Icon(
+                                            Icons.thumb_down_alt_outlined),
                                   ),
                                 ),
                                 // 코멘트 아이콘
@@ -249,7 +180,7 @@ class MyPost extends StatelessWidget {
                                               bottom: MediaQuery.of(context)
                                                   .viewInsets
                                                   .bottom),
-                                          child: Container(
+                                          child: SizedBox(
                                             height: MediaQuery.of(context)
                                                         .size
                                                         .height *
@@ -260,10 +191,9 @@ class MyPost extends StatelessWidget {
                                                     1,
                                             child: Column(
                                               children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 15, bottom: 10),
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      top: 15, bottom: 10),
                                                   child: Text(
                                                     'Commnets',
                                                     style: TextStyle(
@@ -271,7 +201,7 @@ class MyPost extends StatelessWidget {
                                                             FontWeight.w600),
                                                   ),
                                                 ),
-                                                Divider(),
+                                                const Divider(),
                                                 Expanded(
                                                   child: SingleChildScrollView(
                                                     child: Column(
@@ -289,7 +219,8 @@ class MyPost extends StatelessWidget {
                                                                           .size
                                                                           .height *
                                                                       0.7,
-                                                                  child: Align(
+                                                                  child:
+                                                                      const Align(
                                                                     alignment:
                                                                         Alignment
                                                                             .center,
@@ -305,7 +236,7 @@ class MyPost extends StatelessWidget {
                                                                 .builder(
                                                               shrinkWrap: true,
                                                               physics:
-                                                                  NeverScrollableScrollPhysics(), // 부모 스크롤만 사용
+                                                                  const NeverScrollableScrollPhysics(), // 부모 스크롤만 사용
                                                               itemCount: controller
                                                                   .commentreply
                                                                   .length,
@@ -346,14 +277,14 @@ class MyPost extends StatelessWidget {
                                                                           children: [
                                                                             Text(
                                                                               comment[1],
-                                                                              style: TextStyle(fontSize: 14),
+                                                                              style: const TextStyle(fontSize: 14),
                                                                             ),
-                                                                            SizedBox(
+                                                                            const SizedBox(
                                                                               width: 10,
                                                                             ),
                                                                             Text(
                                                                               comment[4],
-                                                                              style: TextStyle(fontSize: 13),
+                                                                              style: const TextStyle(fontSize: 13),
                                                                             ),
                                                                           ],
                                                                         ),
@@ -361,7 +292,7 @@ class MyPost extends StatelessWidget {
                                                                             Text(
                                                                           comment[
                                                                               3],
-                                                                          style: TextStyle(
+                                                                          style: const TextStyle(
                                                                               fontSize: 16,
                                                                               color: Colors.black),
                                                                         ),
@@ -371,7 +302,7 @@ class MyPost extends StatelessWidget {
                                                                               controller.replyTextController.text = '';
                                                                               showBottomeSheet(context, index, vmHandler, userpost, comment, userId);
                                                                             },
-                                                                            child: Text('reply')),
+                                                                            child: const Text('reply')),
                                                                       ),
                                                                     ),
                                                                     // Replies List
@@ -402,16 +333,16 @@ class MyPost extends StatelessWidget {
                                                                                     children: [
                                                                                       Text(
                                                                                         reply[2],
-                                                                                        style: TextStyle(
+                                                                                        style: const TextStyle(
                                                                                           fontSize: 14,
                                                                                         ), // reply nickname
                                                                                       ),
-                                                                                      SizedBox(
+                                                                                      const SizedBox(
                                                                                         width: 10,
                                                                                       ),
                                                                                       Text(
                                                                                         reply[5],
-                                                                                        style: TextStyle(
+                                                                                        style: const TextStyle(
                                                                                           fontSize: 12,
                                                                                         ), // reply nickname
                                                                                       ),
@@ -419,7 +350,7 @@ class MyPost extends StatelessWidget {
                                                                                   ),
                                                                                   subtitle: Text(
                                                                                     reply[4], // reply text
-                                                                                    style: TextStyle(fontSize: 16, color: Colors.black),
+                                                                                    style: const TextStyle(fontSize: 16, color: Colors.black),
                                                                                   ),
                                                                                 ),
                                                                               )),
@@ -438,7 +369,7 @@ class MyPost extends StatelessWidget {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(height: 10),
+                                                const SizedBox(height: 10),
                                                 Row(
                                                   children: [
                                                     Expanded(
@@ -451,7 +382,7 @@ class MyPost extends StatelessWidget {
                                                               .textController,
                                                           maxLines: 1,
                                                           decoration:
-                                                              InputDecoration(
+                                                              const InputDecoration(
                                                             hintText:
                                                                 'Enter comment',
                                                           ),
@@ -490,6 +421,12 @@ class MyPost extends StatelessWidget {
                                                               .getCommentReply(
                                                                   userpost[0]);
                                                         },
+                                                        style: ElevatedButton.styleFrom(
+                                                            backgroundColor:
+                                                                Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .primary),
                                                         child: Icon(
                                                           Icons.arrow_upward,
                                                           color:
@@ -497,12 +434,6 @@ class MyPost extends StatelessWidget {
                                                                   .colorScheme
                                                                   .onPrimary,
                                                         ),
-                                                        style: ElevatedButton.styleFrom(
-                                                            backgroundColor:
-                                                                Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .primary),
                                                       ),
                                                     ),
                                                   ],
@@ -517,9 +448,8 @@ class MyPost extends StatelessWidget {
                                       },
                                     );
                                   },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10, top: 10),
+                                  child: const Padding(
+                                    padding: EdgeInsets.only(left: 10, top: 10),
                                     child: Icon(Icons.chat_bubble_outline),
                                   ),
                                 ),
@@ -541,9 +471,6 @@ class MyPost extends StatelessWidget {
                                   ExpandableText(
                                     '${userpost[4]}',
                                     prefixText: '${userpost[6]}',
-                                    onPrefixTap: () {
-                                      print('prefix 클릭 시 발생할 이벤트');
-                                    },
                                     prefixStyle: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -555,8 +482,10 @@ class MyPost extends StatelessWidget {
                                     linkColor: Colors.grey,
                                   ),
                                   Text(
-                                      '${DateFormat("MMMM d").format(DateTime.parse(userpost[2]))}',
-                                      style: TextStyle(color: Colors.black54)),
+                                      DateFormat("MMMM d")
+                                          .format(DateTime.parse(userpost[2])),
+                                      style: const TextStyle(
+                                          color: Colors.black54)),
                                 ],
                               ),
                             ),
@@ -575,6 +504,50 @@ class MyPost extends StatelessWidget {
         },
       ),
     );
+  }
+
+  hateAction(vmHandler, userpost, userId) async {
+    bool check =
+        await vmHandler.checkHate(userpost[12] ?? 'null', userpost[13] ?? 0) ==
+            userpost[11];
+    int newHateValue = userpost[14] == '1' ? 0 : 1;
+    if (check) {
+      if (newHateValue == 1 && userpost[10] == '1') {
+        await vmHandler.updateFavorite(0, userpost[9], userId);
+        await vmHandler.updateHate(newHateValue, userpost[13], userId);
+      }
+      await vmHandler.updateHate(newHateValue, userpost[13], userId);
+    } else {
+      if (userpost[10] == '1') {
+        await vmHandler.updateFavorite(0, userpost[9], userId);
+        await vmHandler.insertHate(1, userpost[0], userId);
+      } else {
+        await vmHandler.insertHate(1, userpost[0], userId);
+      }
+    }
+    await vmHandler.getUserPostJSONData(userId);
+  }
+
+  favoriteAction(vmHandler, userpost, userId) async {
+    bool check = await vmHandler.checkFavorite(
+            userpost[8] ?? 'null', userpost[9] ?? 0) ==
+        userpost[7];
+    int newFavoriteValue = userpost[10] == '1' ? 0 : 1;
+    if (check) {
+      if (newFavoriteValue == 1 && userpost[14] == '1') {
+        await vmHandler.updateHate(0, userpost[13], userId);
+        await vmHandler.updateFavorite(newFavoriteValue, userpost[9], userId);
+      }
+      await vmHandler.updateFavorite(newFavoriteValue, userpost[9], userId);
+    } else {
+      if (userpost[14] == '1') {
+        await vmHandler.updateHate(0, userpost[13], userId);
+        await vmHandler.insertFavorite(1, userpost[0], userId);
+      } else {
+        await vmHandler.insertFavorite(1, userpost[0], userId);
+      }
+    }
+    await vmHandler.getUserPostJSONData(userId);
   }
 
   showBottomeSheet(context, index, vmHandler, userpost, comment, userId) {

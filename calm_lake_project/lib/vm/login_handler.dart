@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:calm_lake_project/model/activity.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
