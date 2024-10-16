@@ -1,5 +1,3 @@
-import 'package:calm_lake_project/view/edit_post.dart';
-import 'package:calm_lake_project/view/insert.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
@@ -58,26 +56,24 @@ class FavoriteList extends StatelessWidget {
                                             'http://127.0.0.1:8000/login/view/${userpost[16]}')
                                         : null,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 10,
                                   ),
                                   Text(
                                     userpost[6],
-                                    style: TextStyle(fontSize: 15),
+                                    style: const TextStyle(fontSize: 15),
                                   ),
                                 ],
                               ),
                             ),
-                            Container(
+                            SizedBox(
                               width: MediaQuery.of(context).size.width,
                               height: 300,
-                              child: Container(
-                                child: Image.network(
-                                  'http://127.0.0.1:8000/query/view/${userpost[3]}',
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: 300,
-                                ),
+                              child: Image.network(
+                                'http://127.0.0.1:8000/query/view/${userpost[3]}',
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: 300,
                               ),
                             ),
                             Row(
@@ -89,9 +85,7 @@ class FavoriteList extends StatelessWidget {
                                             userpost[8] ?? 'null',
                                             userpost[9] ?? 0) ==
                                         userpost[7];
-                                    print(await vmHandler.checkFavorite(
-                                        userpost[8] ?? 'null',
-                                        userpost[9] ?? 0));
+
                                     int newFavoriteValue =
                                         userpost[10] == '1' ? 0 : 1;
                                     // favorite 테이블이 있고 hate 테이블이 있는경우
@@ -135,8 +129,8 @@ class FavoriteList extends StatelessWidget {
                                     padding: const EdgeInsets.only(
                                         left: 15, top: 10),
                                     child: userpost[10] == '1'
-                                        ? Icon(Icons.favorite)
-                                        : Icon(Icons.favorite_border),
+                                        ? const Icon(Icons.favorite)
+                                        : const Icon(Icons.favorite_border),
                                   ),
                                 ),
                                 // 싫어요 아이콘
@@ -175,8 +169,9 @@ class FavoriteList extends StatelessWidget {
                                     padding: const EdgeInsets.only(
                                         left: 10, top: 10),
                                     child: userpost[14] == '1'
-                                        ? Icon(Icons.thumb_down)
-                                        : Icon(Icons.thumb_down_alt_outlined),
+                                        ? const Icon(Icons.thumb_down)
+                                        : const Icon(
+                                            Icons.thumb_down_alt_outlined),
                                   ),
                                 ),
                                 // 코멘트 아이콘
@@ -185,6 +180,7 @@ class FavoriteList extends StatelessWidget {
                                     await controller
                                         .getCommentReply(userpost[0]);
                                     await showModalBottomSheet(
+                                      // ignore: use_build_context_synchronously
                                       context: context,
                                       isScrollControlled:
                                           true, // 키보드가 나타날 때 modal 크기를 조정
@@ -194,7 +190,7 @@ class FavoriteList extends StatelessWidget {
                                               bottom: MediaQuery.of(context)
                                                   .viewInsets
                                                   .bottom),
-                                          child: Container(
+                                          child: SizedBox(
                                             height: MediaQuery.of(context)
                                                         .size
                                                         .height *
@@ -205,10 +201,9 @@ class FavoriteList extends StatelessWidget {
                                                     1,
                                             child: Column(
                                               children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 15, bottom: 10),
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      top: 15, bottom: 10),
                                                   child: Text(
                                                     'Commnets',
                                                     style: TextStyle(
@@ -216,7 +211,7 @@ class FavoriteList extends StatelessWidget {
                                                             FontWeight.w600),
                                                   ),
                                                 ),
-                                                Divider(),
+                                                const Divider(),
                                                 Expanded(
                                                   child: SingleChildScrollView(
                                                     child: Column(
@@ -234,7 +229,8 @@ class FavoriteList extends StatelessWidget {
                                                                           .size
                                                                           .height *
                                                                       0.7,
-                                                                  child: Align(
+                                                                  child:
+                                                                      const Align(
                                                                     alignment:
                                                                         Alignment
                                                                             .center,
@@ -250,7 +246,7 @@ class FavoriteList extends StatelessWidget {
                                                                 .builder(
                                                               shrinkWrap: true,
                                                               physics:
-                                                                  NeverScrollableScrollPhysics(), // 부모 스크롤만 사용
+                                                                  const NeverScrollableScrollPhysics(), // 부모 스크롤만 사용
                                                               itemCount: controller
                                                                   .commentreply
                                                                   .length,
@@ -304,14 +300,14 @@ class FavoriteList extends StatelessWidget {
                                                                           children: [
                                                                             Text(
                                                                               comment[1],
-                                                                              style: TextStyle(fontSize: 14),
+                                                                              style: const TextStyle(fontSize: 14),
                                                                             ),
-                                                                            SizedBox(
+                                                                            const SizedBox(
                                                                               width: 10,
                                                                             ),
                                                                             Text(
                                                                               comment[4],
-                                                                              style: TextStyle(fontSize: 13),
+                                                                              style: const TextStyle(fontSize: 13),
                                                                             ),
                                                                           ],
                                                                         ),
@@ -319,7 +315,7 @@ class FavoriteList extends StatelessWidget {
                                                                             Text(
                                                                           comment[
                                                                               3],
-                                                                          style: TextStyle(
+                                                                          style: const TextStyle(
                                                                               fontSize: 16,
                                                                               color: Colors.black),
                                                                         ),
@@ -329,7 +325,7 @@ class FavoriteList extends StatelessWidget {
                                                                               controller.replyTextController.text = '';
                                                                               showBottomeSheet(context, index, vmHandler, userpost, comment, userId);
                                                                             },
-                                                                            child: Text('reply')),
+                                                                            child: const Text('reply')),
                                                                       ),
                                                                     ),
                                                                     // Replies List
@@ -370,16 +366,16 @@ class FavoriteList extends StatelessWidget {
                                                                                     children: [
                                                                                       Text(
                                                                                         reply[2],
-                                                                                        style: TextStyle(
+                                                                                        style: const TextStyle(
                                                                                           fontSize: 14,
                                                                                         ), // reply nickname
                                                                                       ),
-                                                                                      SizedBox(
+                                                                                      const SizedBox(
                                                                                         width: 10,
                                                                                       ),
                                                                                       Text(
                                                                                         reply[5],
-                                                                                        style: TextStyle(
+                                                                                        style: const TextStyle(
                                                                                           fontSize: 12,
                                                                                         ), // reply nickname
                                                                                       ),
@@ -387,7 +383,7 @@ class FavoriteList extends StatelessWidget {
                                                                                   ),
                                                                                   subtitle: Text(
                                                                                     reply[4], // reply text
-                                                                                    style: TextStyle(fontSize: 16, color: Colors.black),
+                                                                                    style: const TextStyle(fontSize: 16, color: Colors.black),
                                                                                   ),
                                                                                 ),
                                                                               )),
@@ -406,7 +402,7 @@ class FavoriteList extends StatelessWidget {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(height: 10),
+                                                const SizedBox(height: 10),
                                                 Row(
                                                   children: [
                                                     Expanded(
@@ -419,7 +415,7 @@ class FavoriteList extends StatelessWidget {
                                                               .textController,
                                                           maxLines: 1,
                                                           decoration:
-                                                              InputDecoration(
+                                                              const InputDecoration(
                                                             hintText:
                                                                 'Enter comment',
                                                           ),
@@ -458,6 +454,12 @@ class FavoriteList extends StatelessWidget {
                                                               .getCommentReply(
                                                                   userpost[0]);
                                                         },
+                                                        style: ElevatedButton.styleFrom(
+                                                            backgroundColor:
+                                                                Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .primary),
                                                         child: Icon(
                                                           Icons.arrow_upward,
                                                           color:
@@ -465,12 +467,6 @@ class FavoriteList extends StatelessWidget {
                                                                   .colorScheme
                                                                   .onPrimary,
                                                         ),
-                                                        style: ElevatedButton.styleFrom(
-                                                            backgroundColor:
-                                                                Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .primary),
                                                       ),
                                                     ),
                                                   ],
@@ -485,9 +481,8 @@ class FavoriteList extends StatelessWidget {
                                       },
                                     );
                                   },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10, top: 10),
+                                  child: const Padding(
+                                    padding: EdgeInsets.only(left: 10, top: 10),
                                     child: Icon(Icons.chat_bubble_outline),
                                   ),
                                 ),
@@ -509,9 +504,6 @@ class FavoriteList extends StatelessWidget {
                                   ExpandableText(
                                     '${userpost[4]}',
                                     prefixText: '${userpost[6]}',
-                                    onPrefixTap: () {
-                                      print('prefix 클릭 시 발생할 이벤트');
-                                    },
                                     prefixStyle: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -523,12 +515,14 @@ class FavoriteList extends StatelessWidget {
                                     linkColor: Colors.grey,
                                   ),
                                   Text(
-                                      '${DateFormat("MMMM d").format(DateTime.parse(userpost[2]))}',
-                                      style: TextStyle(color: Colors.black54)),
+                                      DateFormat("MMMM d")
+                                          .format(DateTime.parse(userpost[2])),
+                                      style: const TextStyle(
+                                          color: Colors.black54)),
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             )
                           ],
@@ -538,7 +532,7 @@ class FavoriteList extends StatelessWidget {
                   },
                 );
               } else {
-                return Center(child: Text('No favorite posts yet.'));
+                return const Center(child: Text('No favorite posts yet.'));
               }
             },
           );
@@ -555,7 +549,7 @@ class FavoriteList extends StatelessWidget {
         return Wrap(
           children: [
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Padding(
                 padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -567,7 +561,7 @@ class FavoriteList extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Reply',
                             style: TextStyle(
                                 fontSize: 22, fontWeight: FontWeight.w600),
@@ -588,26 +582,26 @@ class FavoriteList extends StatelessWidget {
                                 Get.back();
                               }
                             },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary),
                             child: Icon(
                               Icons.check,
                               color: Theme.of(context).colorScheme.onPrimary,
                             ),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary),
                           )
                         ],
                       ),
                     ),
                     TextFormField(
                       controller: vmHandler.replyTextController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         contentPadding: EdgeInsets.symmetric(horizontal: 10),
                         enabledBorder:
                             UnderlineInputBorder(borderSide: BorderSide()),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 50,
                     )
                   ],
@@ -627,15 +621,15 @@ class FavoriteList extends StatelessWidget {
         builder: (context) {
           return AlertDialog(
             title:
-                Align(alignment: Alignment.center, child: const Text('Delete')),
+                const Align(alignment: Alignment.center, child: Text('Delete')),
             content: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 300), // 최대 너비 설정
+              constraints: const BoxConstraints(maxWidth: 300), // 최대 너비 설정
               child: isComment
-                  ? Text(
+                  ? const Text(
                       'Do you want to delete\nthe comment?',
                       textAlign: TextAlign.center,
                     )
-                  : Text(
+                  : const Text(
                       'Do you want to delete\nthe reply?',
                       textAlign: TextAlign.center,
                     ),
@@ -650,14 +644,13 @@ class FavoriteList extends StatelessWidget {
                       onPressed: () {
                         Get.back();
                       },
-                      child: Text('Cancel')),
+                      child: const Text('Cancel')),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary),
                     onPressed: () async {
                       if (isComment) {
                         // comment 삭제
-                        print('comment');
                         var result = await controller.deleteComment(
                             comment[6], comment[0]);
                         if (result == 'OK') {
@@ -669,7 +662,6 @@ class FavoriteList extends StatelessWidget {
                         }
                       } else {
                         // reply 삭제
-                        print('reply');
                         var result = await controller.deleteReply(
                             comment[7], comment[0]);
                         if (result == 'OK') {

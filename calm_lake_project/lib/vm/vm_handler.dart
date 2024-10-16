@@ -1,13 +1,9 @@
 import 'dart:convert';
-import 'package:calm_lake_project/vm/button_controller.dart';
 import 'package:calm_lake_project/vm/comment_controller.dart';
-import 'package:calm_lake_project/vm/musicinsert.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-import 'list_handler.dart';
-
-class VmHandler extends commentcontroller {
+class VmHandler extends commentController {
   var posts = [].obs;
   var user = [].obs;
   var userposts = [].obs;
@@ -24,7 +20,7 @@ class VmHandler extends commentcontroller {
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List result = dataCovertedJSON['results'];
     posts.addAll(result);
-    print(posts);
+    //print(posts);
   }
 
 // 인기순 정렬시 가져오는 데이터
@@ -36,7 +32,7 @@ class VmHandler extends commentcontroller {
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List result = dataCovertedJSON['results'];
     posts.addAll(result);
-    print(posts);
+    //print(posts);
   }
 
 // 검색시 나오는 데이터
@@ -48,7 +44,7 @@ class VmHandler extends commentcontroller {
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List result = dataCovertedJSON['results'];
     searchPost.addAll(result);
-    print(searchPost);
+    //print(searchPost);
   }
 
 // 각 유저가 좋아요 누른 post
@@ -60,7 +56,7 @@ class VmHandler extends commentcontroller {
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List result = dataCovertedJSON['results'];
     favoritePost.addAll(result);
-    print(favoritePost);
+    //print(favoritePost);
   }
 
   getPostJSONData(String userId) async {
@@ -103,6 +99,7 @@ class VmHandler extends commentcontroller {
       'password': userData[1],
       'email': userData[2],
       'nickname': userData[3],
+      // ignore: unnecessary_null_in_if_null_operators
       'user_image': userData[4] ?? null,
       'pw_answer': userData[5]
     });
@@ -126,15 +123,16 @@ class VmHandler extends commentcontroller {
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
-    print(dataConvertedJSON);
+    //print(dataConvertedJSON);
     if (result == 'OK') {
-      print('Success');
+      //print('Success');
     } else {
-      print('Error');
+      // print('Error');
     }
   }
 
 // 사용자가 좋아요를 누른적이 있는지 확인
+  // ignore: non_constant_identifier_names
   checkFavorite(String userId, int post_id) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/checkfavorite?user_id=$userId&post_seq=$post_id');
@@ -152,9 +150,9 @@ class VmHandler extends commentcontroller {
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
     if (result == 'OK') {
-      print('success');
+      //print('success');
     } else {
-      print('error');
+      //print('error');
     }
   }
 
@@ -164,10 +162,12 @@ class VmHandler extends commentcontroller {
         'http://127.0.0.1:8000/query/update_favorite?favorite=$favorite&post_seq=$postSeq&user_id=$userId');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    // ignore: unused_local_variable
     var result = dataConvertedJSON['results'];
   }
 
 // 사용자가 기존에 싫어요 누른 적이 있는지 확인
+  // ignore: non_constant_identifier_names
   checkHate(String userId, int post_id) async {
     var url = Uri.parse(
         'http://127.0.0.1:8000/query/checkhate?user_id=$userId&post_seq=$post_id');
@@ -183,6 +183,7 @@ class VmHandler extends commentcontroller {
         'http://127.0.0.1:8000/query/update_hate?hate=$hate&post_seq=$postSeq&user_id=$userId');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    // ignore: unused_local_variable
     var result = dataConvertedJSON['results'];
   }
 
@@ -194,9 +195,9 @@ class VmHandler extends commentcontroller {
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
     if (result == 'OK') {
-      print('success');
+      //print('success');
     } else {
-      print('error');
+      //print('error');
     }
   }
 
@@ -208,9 +209,9 @@ class VmHandler extends commentcontroller {
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
     if (result == 'OK') {
-      print('Success');
+      //print('Success');
     } else {
-      print('Error');
+      //print('Error');
     }
   }
 
@@ -222,9 +223,9 @@ class VmHandler extends commentcontroller {
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
     if (result == 'OK') {
-      print('Success');
+      //print('Success');
     } else {
-      print('Error');
+      //print('Error');
     }
   }
 

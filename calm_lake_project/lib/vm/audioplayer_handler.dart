@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AudioplayerHandler extends GetxController {
   PlayerState? playerState;
@@ -11,7 +12,6 @@ class AudioplayerHandler extends GetxController {
   double imageLocation = 0;
   int gifImageState = 0;
   String selectCat = 'images/stopmovecat.png';
-  
 
   StreamSubscription? durationSubscription;
   StreamSubscription? positionSubscription;
@@ -73,8 +73,10 @@ class AudioplayerHandler extends GetxController {
     });
   }
 
-  changeImageCat(){
-    gifImageState == 0 ? selectCat = 'images/stopmovecat.png': selectCat = 'images/movecat.gif';
+  changeImageCat() {
+    gifImageState == 0
+        ? selectCat = 'images/stopmovecat.png'
+        : selectCat = 'images/movecat.gif';
     update();
     return selectCat;
   }

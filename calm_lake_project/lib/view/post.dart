@@ -1,14 +1,10 @@
-import 'package:calm_lake_project/view/insert.dart';
 import 'package:calm_lake_project/view/search.dart';
-import 'package:calm_lake_project/vm/comment_controller.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:get_storage/get_storage.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class Post extends StatelessWidget {
