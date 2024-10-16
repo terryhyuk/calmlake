@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:calm_lake_project/vm/button_controller.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:http/http.dart' as http;
 
-class commentcontroller extends ButtonController {
+// ignore: camel_case_types
+class commentController extends ButtonController {
   var commentreply = [].obs; // comment와 reply 함께 저장
   TextEditingController textController =
       TextEditingController(); // comment controlloer
@@ -30,7 +30,7 @@ class commentcontroller extends ButtonController {
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List result = dataCovertedJSON['results'];
     commentreply.addAll(result);
-    print(commentreply);
+    //print(commentreply);
     update();
   }
 
@@ -41,11 +41,11 @@ class commentcontroller extends ButtonController {
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
-    print(dataConvertedJSON);
+    //print(dataConvertedJSON);
     if (result == 'OK') {
-      print('Success');
+      //print('Success');
     } else {
-      print('Error');
+      //print('Error');
     }
   }
 
@@ -56,11 +56,11 @@ class commentcontroller extends ButtonController {
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
-    print(dataConvertedJSON);
+    //print(dataConvertedJSON);
     if (result == 'OK') {
-      print('Success');
+      //print('Success');
     } else {
-      print('Error');
+      //print('Error');
     }
   }
 
@@ -70,7 +70,7 @@ class commentcontroller extends ButtonController {
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
-    print(result);
+    //print(result);
     return result;
   }
 
@@ -80,7 +80,7 @@ class commentcontroller extends ButtonController {
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
-    print(result);
+    //print(result);
     return result;
   }
 }

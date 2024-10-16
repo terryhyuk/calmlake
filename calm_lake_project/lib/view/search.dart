@@ -1,5 +1,3 @@
-import 'package:calm_lake_project/view/edit_post.dart';
-import 'package:calm_lake_project/view/insert.dart';
 import 'package:calm_lake_project/vm/vm_handler.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';

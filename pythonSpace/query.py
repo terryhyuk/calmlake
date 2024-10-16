@@ -116,7 +116,7 @@ async def selecttop(user_id: str=None):
         h.post_seq AS hate_post_seq, 
         h.hate,
         count(distinct c.seq) + count(distinct r.seq) as comment_count,
-        u.user_image,
+        u.user_image
     FROM 
         post AS p 
     LEFT JOIN 

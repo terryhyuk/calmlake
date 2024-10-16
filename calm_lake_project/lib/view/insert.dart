@@ -13,8 +13,7 @@ class Insert extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    @override
-    final VmHandler vmHandler = Get.put(VmHandler());
+    Get.put(VmHandler());
     String userId = box.read('userId');
     return Scaffold(
       appBar: AppBar(
