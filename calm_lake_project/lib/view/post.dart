@@ -67,7 +67,7 @@ class Post extends StatelessWidget {
             child: GetBuilder<VmHandler>(
               builder: (controller) {
                 return FutureBuilder(
-                  future: vmHandler.selectedValue.value == '최신순'
+                  future: vmHandler.selectedValue == '최신순'
                       ? controller.getJSONData(userId)
                       : controller.getTopJSONData(userId),
                   builder: (context, snapshot) {
@@ -102,17 +102,17 @@ class Post extends StatelessWidget {
                                                   'http://127.0.0.1:8000/login/view/${post[16]}')
                                               : null,
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                         Text(
                                           post[6],
-                                          style: TextStyle(fontSize: 15),
+                                          style: const TextStyle(fontSize: 15),
                                         )
                                       ],
                                     ),
                                   ),
-                                  Container(
+                                  SizedBox(
                                     width: MediaQuery.of(context).size.width,
                                     height: 300,
                                     child: Container(
@@ -138,13 +138,15 @@ class Post extends StatelessWidget {
                                           padding: const EdgeInsets.only(
                                               left: 15, top: 10),
                                           child: post[10] == '1'
-                                              ? Icon(Icons.favorite)
-                                              : Icon(Icons.favorite_border),
+                                              ? const Icon(Icons.favorite)
+                                              : const Icon(
+                                                  Icons.favorite_border),
                                         ),
                                       ),
                                       // 싫어요 아이콘
                                       GestureDetector(
                                         onTap: () async {
+                                          // 싫어요 아이콘 눌렀을때 실행
                                           hateAction(vmHandler, post, userId,
                                               controller);
                                         },
@@ -152,8 +154,8 @@ class Post extends StatelessWidget {
                                           padding: const EdgeInsets.only(
                                               left: 10, top: 10),
                                           child: post[14] == '1'
-                                              ? Icon(Icons.thumb_down)
-                                              : Icon(Icons
+                                              ? const Icon(Icons.thumb_down)
+                                              : const Icon(Icons
                                                   .thumb_down_alt_outlined),
                                         ),
                                       ),
@@ -175,7 +177,7 @@ class Post extends StatelessWidget {
                                                         MediaQuery.of(context)
                                                             .viewInsets
                                                             .bottom),
-                                                child: Container(
+                                                child: SizedBox(
                                                   height: MediaQuery.of(context)
                                                               .size
                                                               .height *
@@ -199,7 +201,7 @@ class Post extends StatelessWidget {
                                                                       .w600),
                                                         ),
                                                       ),
-                                                      Divider(),
+                                                      const Divider(),
                                                       Expanded(
                                                         child:
                                                             SingleChildScrollView(
@@ -218,7 +220,7 @@ class Post extends StatelessWidget {
                                                                         height: MediaQuery.of(context).size.height *
                                                                             0.7,
                                                                         child:
-                                                                            Align(
+                                                                            const Align(
                                                                           alignment:
                                                                               Alignment.center,
                                                                           child:
@@ -234,7 +236,7 @@ class Post extends StatelessWidget {
                                                                     shrinkWrap:
                                                                         true,
                                                                     physics:
-                                                                        NeverScrollableScrollPhysics(), // 부모 스크롤만 사용
+                                                                        const NeverScrollableScrollPhysics(), // 부모 스크롤만 사용
                                                                     itemCount: controller
                                                                         .commentreply
                                                                         .length,
@@ -251,6 +253,7 @@ class Post extends StatelessWidget {
                                                                           GestureDetector(
                                                                             onLongPress:
                                                                                 () {
+                                                                              // 댓글 길게 눌렀을때 유저 확인 후 삭제 가능
                                                                               if (comment[6] == userId) {
                                                                                 _showDefaultDialog(context, index, vmHandler, userId, post, comment, isComment: T);
                                                                               } else {
@@ -272,31 +275,32 @@ class Post extends StatelessWidget {
                                                                                 children: [
                                                                                   Text(
                                                                                     comment[1],
-                                                                                    style: TextStyle(fontSize: 14),
+                                                                                    style: const TextStyle(fontSize: 14),
                                                                                   ),
-                                                                                  SizedBox(
+                                                                                  const SizedBox(
                                                                                     width: 10,
                                                                                   ),
                                                                                   Text(
                                                                                     comment[4],
-                                                                                    style: TextStyle(fontSize: 13),
+                                                                                    style: const TextStyle(fontSize: 13),
                                                                                   ),
                                                                                 ],
                                                                               ), // nickname
                                                                               subtitle: Text(
                                                                                 comment[3],
-                                                                                style: TextStyle(fontSize: 16, color: Colors.black),
+                                                                                style: const TextStyle(fontSize: 16, color: Colors.black),
                                                                               ), // text
                                                                               trailing: TextButton(
                                                                                   onPressed: () {
+                                                                                    // reply 버튼 누르면 새로운 bottomSheet가 나옴
                                                                                     controller.commentIndex = index;
                                                                                     controller.replyTextController.text = '';
                                                                                     showBottomeSheet(context, index, vmHandler, post, comment, userId);
                                                                                   },
-                                                                                  child: Text('reply')),
+                                                                                  child: const Text('reply')),
                                                                             ),
                                                                           ),
-                                                                          // Replies List
+                                                                          // Replies List가 있는 확인 후 댓글 리스트 생성
                                                                           if (comment[7]
                                                                               .isNotEmpty) ...[
                                                                             for (var reply
@@ -308,7 +312,6 @@ class Post extends StatelessWidget {
                                                                                     Expanded(
                                                                                         child: GestureDetector(
                                                                                       onLongPress: () {
-                                                                                        print(comment);
                                                                                         if (reply[7] == userId) {
                                                                                           _showDefaultDialog(context, index, vmHandler, userId, post, reply, isComment: F);
                                                                                         } else {
@@ -330,16 +333,16 @@ class Post extends StatelessWidget {
                                                                                           children: [
                                                                                             Text(
                                                                                               reply[2],
-                                                                                              style: TextStyle(
+                                                                                              style: const TextStyle(
                                                                                                 fontSize: 14,
                                                                                               ), // reply nickname
                                                                                             ),
-                                                                                            SizedBox(
+                                                                                            const SizedBox(
                                                                                               width: 10,
                                                                                             ),
                                                                                             Text(
                                                                                               reply[5],
-                                                                                              style: TextStyle(
+                                                                                              style: const TextStyle(
                                                                                                 fontSize: 12,
                                                                                               ), // reply nickname
                                                                                             ),
@@ -347,7 +350,7 @@ class Post extends StatelessWidget {
                                                                                         ),
                                                                                         subtitle: Text(
                                                                                           reply[4], // reply text
-                                                                                          style: TextStyle(fontSize: 16, color: Colors.black),
+                                                                                          style: const TextStyle(fontSize: 16, color: Colors.black),
                                                                                         ),
                                                                                       ),
                                                                                     )),
@@ -366,7 +369,8 @@ class Post extends StatelessWidget {
                                                           ),
                                                         ),
                                                       ),
-                                                      SizedBox(height: 10),
+                                                      const SizedBox(
+                                                          height: 10),
                                                       Row(
                                                         children: [
                                                           Expanded(
@@ -381,7 +385,7 @@ class Post extends StatelessWidget {
                                                                         .textController,
                                                                 maxLines: 1,
                                                                 decoration:
-                                                                    InputDecoration(
+                                                                    const InputDecoration(
                                                                   hintText:
                                                                       'Enter comment',
                                                                 ),
@@ -398,35 +402,18 @@ class Post extends StatelessWidget {
                                                                 ElevatedButton(
                                                               onPressed:
                                                                   () async {
-                                                                if (controller
-                                                                    .textController
-                                                                    .text
-                                                                    .trim()
-                                                                    .isNotEmpty) {
-                                                                  await controller.insertCommnet(
-                                                                      post[0],
-                                                                      controller
-                                                                          .textController
-                                                                          .text
-                                                                          .trim(),
-                                                                      userId);
-                                                                  controller
-                                                                      .textController
-                                                                      .text = '';
-                                                                }
-                                                                vmHandler.selectedValue ==
-                                                                        '최신순'
-                                                                    ? controller
-                                                                        .getJSONData(
-                                                                            userId)
-                                                                    : controller
-                                                                        .getTopJSONData(
-                                                                            userId);
-                                                                await vmHandler
-                                                                    .getCommentReply(
-                                                                        post[
-                                                                            0]);
+                                                                // comment 입력 버튼 누르면 실행
+                                                                commnetInsertAction(
+                                                                    controller,
+                                                                    post,
+                                                                    userId,
+                                                                    vmHandler);
                                                               },
+                                                              style: ElevatedButton.styleFrom(
+                                                                  backgroundColor: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .primary),
                                                               child: Icon(
                                                                 Icons
                                                                     .arrow_upward,
@@ -435,11 +422,6 @@ class Post extends StatelessWidget {
                                                                     .colorScheme
                                                                     .onPrimary,
                                                               ),
-                                                              style: ElevatedButton.styleFrom(
-                                                                  backgroundColor: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .primary),
                                                             ),
                                                           ),
                                                         ],
@@ -454,8 +436,8 @@ class Post extends StatelessWidget {
                                             },
                                           );
                                         },
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
+                                        child: const Padding(
+                                          padding: EdgeInsets.only(
                                               left: 10, top: 10),
                                           child:
                                               Icon(Icons.chat_bubble_outline),
@@ -480,9 +462,6 @@ class Post extends StatelessWidget {
                                         ExpandableText(
                                           '${post[4]}',
                                           prefixText: '${post[6]}',
-                                          onPrefixTap: () {
-                                            print('prefix 클릭 시 발생할 이벤트');
-                                          },
                                           prefixStyle: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -494,13 +473,14 @@ class Post extends StatelessWidget {
                                           linkColor: Colors.grey,
                                         ),
                                         Text(
-                                            '${DateFormat("MMMM d").format(DateTime.parse(post[2]))}',
-                                            style: TextStyle(
+                                            DateFormat("MMMM d").format(
+                                                DateTime.parse(post[2])),
+                                            style: const TextStyle(
                                                 color: Colors.black54)),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 20,
                                   )
                                 ],
@@ -547,7 +527,6 @@ class Post extends StatelessWidget {
     bool check =
         await vmHandler.checkFavorite(post[8] ?? 'null', post[9] ?? 0) ==
             post[7];
-    print(await vmHandler.checkFavorite(post[8] ?? 'null', post[9] ?? 0));
     int newFavoriteValue = post[10] == '1' ? 0 : 1;
     // favorite 테이블이 있고 hate 테이블이 있는경우
     // favorite 1이고 hate가 0이면 updateFavorite
@@ -578,6 +557,19 @@ class Post extends StatelessWidget {
         : controller.getTopJSONData(userId);
   }
 
+  commnetInsertAction(controller, post, userId, vmHandler) async {
+    if (controller.textController.text.trim().isNotEmpty) {
+      await controller.insertCommnet(
+          post[0], controller.textController.text.trim(), userId);
+      controller.textController.text = '';
+    }
+    vmHandler.selectedValue == '최신순'
+        ? controller.getJSONData(userId)
+        : controller.getTopJSONData(userId);
+    await vmHandler.getCommentReply(post[0]);
+  }
+
+// 답글 달때 나오는 bottomSheet
   showBottomeSheet(context, index, vmHandler, post, comment, userId) {
     showModalBottomSheet(
       context: context,
@@ -586,7 +578,7 @@ class Post extends StatelessWidget {
         return Wrap(
           children: [
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Padding(
                 padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -598,7 +590,7 @@ class Post extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Reply',
                             style: TextStyle(
                                 fontSize: 22, fontWeight: FontWeight.w600),
@@ -619,26 +611,26 @@ class Post extends StatelessWidget {
                                 Get.back();
                               }
                             },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary),
                             child: Icon(
                               Icons.check,
                               color: Theme.of(context).colorScheme.onPrimary,
                             ),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary),
                           )
                         ],
                       ),
                     ),
                     TextFormField(
                       controller: vmHandler.replyTextController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         contentPadding: EdgeInsets.symmetric(horizontal: 10),
                         enabledBorder:
                             UnderlineInputBorder(borderSide: BorderSide()),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 50,
                     )
                   ],
@@ -651,6 +643,7 @@ class Post extends StatelessWidget {
     );
   }
 
+// 댓글과 답글 삭제시 나오는 dialog
   _showDefaultDialog(context, index, controller, userId, post, comment,
       {bool isComment = false}) async {
     showDialog(
@@ -658,15 +651,15 @@ class Post extends StatelessWidget {
         builder: (context) {
           return AlertDialog(
             title:
-                Align(alignment: Alignment.center, child: const Text('Delete')),
+                const Align(alignment: Alignment.center, child: Text('Delete')),
             content: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 300), // 최대 너비 설정
+              constraints: const BoxConstraints(maxWidth: 300), // 최대 너비 설정
               child: isComment
-                  ? Text(
+                  ? const Text(
                       'Do you want to delete\nthe comment?',
                       textAlign: TextAlign.center,
                     )
-                  : Text(
+                  : const Text(
                       'Do you want to delete\nthe reply?',
                       textAlign: TextAlign.center,
                     ),
@@ -681,14 +674,13 @@ class Post extends StatelessWidget {
                       onPressed: () {
                         Get.back();
                       },
-                      child: Text('Cancel')),
+                      child: const Text('Cancel')),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary),
                     onPressed: () async {
                       if (isComment) {
                         // comment 삭제
-                        print('delete');
                         var result =
                             await controller.deleteComment(userId, comment[0]);
                         if (result == 'OK') {
@@ -702,7 +694,6 @@ class Post extends StatelessWidget {
                         }
                       } else {
                         // reply 삭제
-                        print('reply');
                         var result =
                             await controller.deleteReply(userId, comment[0]);
                         if (result == 'OK') {

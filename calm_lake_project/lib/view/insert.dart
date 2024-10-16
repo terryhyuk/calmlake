@@ -18,9 +18,9 @@ class Insert extends StatelessWidget {
     String userId = box.read('userId');
     return Scaffold(
       appBar: AppBar(
-        title: Text("New Post"),
+        title: const Text("New Post"),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () {
             Get.delete<VmHandler>(); // 컨트롤러 삭제
             Get.back(); // 페이지 뒤로가기
@@ -40,26 +40,17 @@ class Insert extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              /*
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  spreadRadius: 2,
-                                  blurRadius: 10,
-                                  offset: Offset(0, 5),
-                                ),
-                              ],*/
                               border: Border.all(
                                   color: const Color.fromARGB(
                                       255, 204, 203, 203))),
                           child: Column(
                             children: [
-                              Container(
+                              SizedBox(
                                 width: MediaQuery.of(context).size.width,
                                 height: 300,
                                 child: Center(
                                   child: controller.imageFile == null
-                                      ? Column(
+                                      ? const Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
@@ -73,7 +64,7 @@ class Insert extends StatelessWidget {
                                           ],
                                         )
                                       : ClipRRect(
-                                          borderRadius: BorderRadius.only(
+                                          borderRadius: const BorderRadius.only(
                                               topLeft: Radius.circular(20),
                                               topRight: Radius.circular(20)),
                                           child: Image.file(
@@ -90,6 +81,7 @@ class Insert extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
+                                    // 전체 공유 버튼
                                     Obx(() => ElevatedButton(
                                         onPressed: controller
                                                 .isButtonEnabled.value
@@ -104,13 +96,14 @@ class Insert extends StatelessWidget {
                                                   : const Color.fromARGB(
                                                       255, 116, 169, 171),
                                         ),
-                                        child: Text(
+                                        child: const Text(
                                           'All',
                                           style: TextStyle(color: Colors.white),
                                         ))),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 10,
                                     ),
+                                    // 나만 보기 버튼
                                     Obx(() => ElevatedButton(
                                         onPressed: controller
                                                 .isButtonEnabled.value
@@ -125,12 +118,13 @@ class Insert extends StatelessWidget {
                                                   : const Color.fromARGB(
                                                       255, 116, 169, 171),
                                         ),
-                                        child: Text('Me',
+                                        child: const Text('Me',
                                             style: TextStyle(
                                                 color: Colors.white)))),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 10,
                                     ),
+                                    // 친구만 공유 버튼
                                     Obx(() => ElevatedButton(
                                         onPressed: controller
                                                 .isButtonEnabled.value
@@ -145,22 +139,20 @@ class Insert extends StatelessWidget {
                                                   : const Color.fromARGB(
                                                       255, 116, 169, 171),
                                         ),
-                                        child: Text('Friends',
+                                        child: const Text('Friends',
                                             style: TextStyle(
                                                 color: Colors.white)))),
                                   ],
                                 ),
                               ),
-                              Container(
-                                child: TextField(
-                                  controller: contentController,
-                                  maxLines: null,
-                                  decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.all(20),
-                                      hintText: '오늘 힐링되었던 내용을 입력해주세요',
-                                      enabledBorder: InputBorder.none,
-                                      focusedBorder: InputBorder.none),
-                                ),
+                              TextField(
+                                controller: contentController,
+                                maxLines: null,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(20),
+                                    hintText: '오늘 힐링되었던 내용을 입력해주세요',
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none),
                               ),
                             ],
                           ),
@@ -175,33 +167,14 @@ class Insert extends StatelessWidget {
                                     controller.getImageFromGallery(
                                         ImageSource.gallery);
                                   },
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.image,
                                   )),
                               ElevatedButton(
                                   onPressed: () async {
-                                    if (controller.imageFile != null &&
-                                        contentController.text.trim() != '' &&
-                                        controller.selectedButton.value != -1) {
-                                      await controller.getUserJSONData(userId);
-                                      await controller.uploadImage();
-                                      await controller.insertJSONData(
-                                          controller.image,
-                                          contentController.text.trim(),
-                                          controller.selectedButton.value,
-                                          controller.user[0]['id'],
-                                          controller.user[0]['nickname']);
-                                      controller.imageFile = null;
-                                      controller.selectedButton.value = -1;
-                                      controller.isButtonEnabled.value = true;
-                                      Get.back();
-                                    } else {
-                                      Get.snackbar(
-                                          'Error', 'please complete the form',
-                                          duration: Duration(seconds: 2));
-                                    }
+                                    insertAction(controller, userId);
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     'Post',
                                   )),
                               ElevatedButton(
@@ -209,7 +182,7 @@ class Insert extends StatelessWidget {
                                     controller.getImageFromGallery(
                                         ImageSource.camera);
                                   },
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.add_a_photo_outlined,
                                   )),
                             ],
@@ -225,5 +198,27 @@ class Insert extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  insertAction(controller, userId) async {
+    if (controller.imageFile != null &&
+        contentController.text.trim() != '' &&
+        controller.selectedButton.value != -1) {
+      await controller.getUserJSONData(userId);
+      await controller.uploadImage();
+      await controller.insertJSONData(
+          controller.image,
+          contentController.text.trim(),
+          controller.selectedButton.value,
+          controller.user[0]['id'],
+          controller.user[0]['nickname']);
+      controller.imageFile = null;
+      controller.selectedButton.value = -1;
+      controller.isButtonEnabled.value = true;
+      Get.back();
+    } else {
+      Get.snackbar('Error', 'please complete the form',
+          duration: const Duration(seconds: 2));
+    }
   }
 }

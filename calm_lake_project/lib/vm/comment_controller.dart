@@ -13,14 +13,14 @@ class commentcontroller extends ButtonController {
   int commentIndex = 0; // reply 입력시 comment index 가져옴
   TextEditingController replyTextController =
       TextEditingController(); // reply controller
-
+/*
   @override
   void onClose() {
     textController.dispose(); // 메모리 누수를 방지하기 위해 컨트롤러 해제
     replyTextController.dispose();
     super.onClose();
   }
-
+*/
   // comment 와 reply 가져오는 함수
   getCommentReply(int postSeq) async {
     var url =
