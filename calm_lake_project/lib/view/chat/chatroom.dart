@@ -16,12 +16,12 @@ class Chatroom extends StatelessWidget {
   final String roomName;
   final bool isDefaultRoom;
 
-  Chatroom({
-    Key? key, 
-    required this.roomId, 
-    required this.roomName, 
-    required this.isDefaultRoom
-  }) : super(key: key);
+  Chatroom(
+      {Key? key,
+      required this.roomId,
+      required this.roomName,
+      required this.isDefaultRoom})
+      : super(key: key);
 
   final ChatingController chatController = Get.find<ChatingController>();
   final loginhandler = Get.find<LoginHandler>();
@@ -39,10 +39,10 @@ class Chatroom extends StatelessWidget {
           IconButton(
             onPressed: () {
               Get.to(() => AddChatroomFriends(
-                roomId: roomId,
-                roomName: roomName,
-                isDefaultRoom: isDefaultRoom,
-              ));
+                    roomId: roomId,
+                    roomName: roomName,
+                    isDefaultRoom: isDefaultRoom,
+                  ));
             },
             icon: const Icon(Icons.group_add_outlined),
           )
@@ -57,37 +57,42 @@ class Chatroom extends StatelessWidget {
                 itemCount: chatController.messages.length,
                 itemBuilder: (context, index) {
                   Message message = chatController.messages[index];
+                  bool isCurrentUser =
+                      message.userID == loginhandler.box.read('userId');
                   return ListTile(
                     title: Column(
+                      crossAxisAlignment: isCurrentUser
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
                       children: [
+                        Text(
+                          message.nickname, // 닉네임사용
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         Row(
-                          mainAxisAlignment:
-                              message.userID == loginhandler.box.read('userId')
-                                  ? MainAxisAlignment.end
-                                  : MainAxisAlignment.start,
+                          mainAxisAlignment: isCurrentUser
+                              ? MainAxisAlignment.end
+                              : MainAxisAlignment.start,
                           children: [
                             BubbleSpecialThree(
                               text: message.contents,
-                              color: message.userID ==
-                                      loginhandler.box.read('userId')
+                              color: isCurrentUser
                                   ? const Color(0xFF90CAF9)
                                   : const Color(0xFF2196F3),
                               tail: true,
-                              textStyle: const TextStyle(color: Colors.white, fontSize: 16),
+                              textStyle: const TextStyle(
+                                  color: Colors.white, fontSize: 16),
                             ),
                           ],
                         ),
-                        Row(
-                          mainAxisAlignment:
-                              message.userID == loginhandler.box.read('userId')
-                                  ? MainAxisAlignment.end
-                                  : MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              DateFormat('h:mm a').format(message.timestamp),
-                              style: const TextStyle(fontSize: 10, color: Colors.grey),
-                            ),
-                          ],
+                        Text(
+                          DateFormat('h:mm a').format(message.timestamp),
+                          style:
+                              const TextStyle(fontSize: 10, color: Colors.grey),
                         ),
                       ],
                     ),
@@ -126,20 +131,19 @@ class Chatroom extends StatelessWidget {
     );
   }
 
-sendMessage() {
-  if (sendController.text.isNotEmpty) {
-    String userId = loginhandler.box.read('userId');
-    String userNickname = loginhandler.box.read('nickname') ?? 'Anonymous';
-    
-    chatController.addMessage(
-      roomId,
-      userId,
-      userNickname,
-      sendController.text,
-      isDefaultRoom,
-    );
-    sendController.clear();
+  sendMessage() {
+    if (sendController.text.isNotEmpty) {
+      String userId = loginhandler.box.read('userId');
+      String userNickname = loginhandler.box.read('nickname') ?? 'Anonymous';
+
+      chatController.addMessage(
+        roomId,
+        userId,
+        userNickname,
+        sendController.text,
+        isDefaultRoom,
+      );
+      sendController.clear();
+    }
   }
 }
-}
-

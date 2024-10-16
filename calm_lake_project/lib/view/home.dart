@@ -83,7 +83,7 @@ class Home extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                               child: Text(
-                                '${musicHandler.firendList} Request',
+                                '${friendsController.addfriend.length} Request',
                                 style: const TextStyle(
                                   fontSize: 20,
                                 ),

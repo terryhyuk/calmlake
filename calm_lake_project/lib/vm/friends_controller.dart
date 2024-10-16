@@ -103,4 +103,27 @@ acceptFriendRequest(String add_id) async {
     return false;
   }
 }
+
+deletefriendsJSONData(String userId, String addId) async {
+  var url = Uri.parse('http://127.0.0.1:8000/friends/deletefriend?user_id=$userId&add_id=$addId');
+  try {
+    var response = await http.delete(url);
+    if (response.statusCode == 200) {
+      var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+      if (dataConvertedJSON['message'] == "Friend deleted successfully") {
+        print("Friend deleted successfully");
+        return true;
+      } else {
+        print("Error deleting friend: ${dataConvertedJSON['error']}");
+        return false;
+      }
+    } else {
+      print("HTTP Error: ${response.statusCode}");
+      return false;
+    }
+  } catch (e) {
+    print("Exception: $e");
+    return false;
+  }
+}
 }
