@@ -27,31 +27,6 @@ class Chat extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: roomNameController,
-                    decoration: const InputDecoration(
-                      hintText: '새 채팅방 이름',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 255, 250, 198),
-                    foregroundColor: Colors.black
-                  ),
-                  onPressed: () => _showCreateRoomDialog(context),
-                  child: const Text('채팅방 생성'),
-                ),
-              ],
-            ),
-          ),
           Expanded(
             child: Obx(() {
               if (chatController.chatRooms.isEmpty) {

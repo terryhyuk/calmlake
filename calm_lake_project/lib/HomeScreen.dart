@@ -12,7 +12,7 @@ import 'model/activity.dart';
 
 class HomeScreen extends StatelessWidget {
   final NavigationController controller = Get.put(NavigationController());
-  final LoginHandler loginHandler=Get.put(LoginHandler());
+  final LoginHandler loginHandler = Get.put(LoginHandler());
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,6 @@ class HomeScreen extends StatelessWidget {
         children: [Home(), Friends(), Chat(), Post(), Profile()],
       ),
       bottomNavigationBar: Obx(() => BottomNavigationBar(
-        backgroundColor: Colors.white,
             type: BottomNavigationBarType.fixed,
             backgroundColor: const Color.fromARGB(255, 245, 245, 245),
             //showSelectedLabels: F,
@@ -37,7 +36,10 @@ class HomeScreen extends StatelessWidget {
               activityInsert(index);
             },
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home',),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
               BottomNavigationBarItem(
                   icon: Icon(Icons.people), label: 'Friends'),
               BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
@@ -49,11 +51,20 @@ class HomeScreen extends StatelessWidget {
           )),
     );
   }
-  activityInsert(int index)async{
-    var activity=Activity(
-      userId: loginHandler.box.read('userId'), 
-      activity: index==0? 'home': index==1 ? 'friends' : index==2 ? 'chat' : index==3 ? 'posting' : 'my profile', 
-      datetime: DateTime.now().toString());    
+
+  activityInsert(int index) async {
+    var activity = Activity(
+        userId: loginHandler.box.read('userId'),
+        activity: index == 0
+            ? 'home'
+            : index == 1
+                ? 'friends'
+                : index == 2
+                    ? 'chat'
+                    : index == 3
+                        ? 'posting'
+                        : 'my profile',
+        datetime: DateTime.now().toString());
     await loginHandler.useractivityJSONData(activity);
   }
 }

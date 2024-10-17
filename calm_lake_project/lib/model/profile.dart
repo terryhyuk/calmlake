@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 class Profile {
   String id;
   String pw;
@@ -8,12 +6,11 @@ class Profile {
   String? pwAnswer;
   String? image;
 
-  Profile({
-    required this.id,
-    required this.pw,
-    required this.email,
-    required this.nickName,
-    this.pwAnswer,
-    this.image
-  });
+  Profile(
+      {required this.id,
+      required this.pw,
+      required this.email,
+      required this.nickName,
+      this.pwAnswer,
+      this.image});
 }
