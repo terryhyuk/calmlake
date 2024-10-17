@@ -24,7 +24,7 @@ class HomeScreen extends StatelessWidget {
       ),
       bottomNavigationBar: Obx(() => BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
-
+            backgroundColor: const Color.fromARGB(255, 245, 245, 245),
             //showSelectedLabels: F,
             //showUnselectedLabels: F,
             iconSize: 25,

@@ -129,14 +129,14 @@ class LoginHandler extends ValidateCheck {
     update();
   }
 
-  findAwJSONData(String answer) async {
-    var url = Uri.parse('http://127.0.0.1:8000/login/findid?nickname=$answer');
-    var response = await http.get(url);
-    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    var result = dataConvertedJSON['results'];
-    findPw.value = result.toString();
-    update();
-  }
+  // findAwJSONData(String answer) async {
+  //   var url = Uri.parse('http://127.0.0.1:8000/login/findid?nickname=$answer');
+  //   var response = await http.get(url);
+  //   var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+  //   var result = dataConvertedJSON['results'];
+  //   findPw.value = result.toString();
+  //   update();
+  // }
 
   //Password 재설정
   changePwJSONData(String newPw, String id) async {

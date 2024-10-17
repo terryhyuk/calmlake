@@ -19,33 +19,39 @@ class Chat extends StatelessWidget {
     });
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text('Chats'),
         centerTitle: false,
       ),
       body: Column(
         children: [
-          // Padding(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: Row(
-          //     children: [
-          //       Expanded(
-          //         child: TextField(
-          //           controller: roomNameController,
-          //           decoration: const InputDecoration(
-          //             hintText: '새 채팅방 이름',
-          //             border: OutlineInputBorder(),
-          //           ),
-          //         ),
-          //       ),
-          //       const SizedBox(width: 8),
-          //       ElevatedButton(
-          //         onPressed: () => _showCreateRoomDialog(context),
-          //         child: const Text('채팅방 생성'),
-          //       ),
-          //     ],
-          //   ),
-          // ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: roomNameController,
+                    decoration: const InputDecoration(
+                      hintText: '새 채팅방 이름',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 250, 198),
+                    foregroundColor: Colors.black
+                  ),
+                  onPressed: () => _showCreateRoomDialog(context),
+                  child: const Text('채팅방 생성'),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: Obx(() {
               if (chatController.chatRooms.isEmpty) {
@@ -62,6 +68,7 @@ class Chat extends StatelessWidget {
                       _showDeleteDialog(context, room['roomId'], isDefaultRoom);
                     },
                     child: Card(
+                      color: index%2==1?const Color.fromARGB(255, 235, 249, 255):Colors.white,
                       elevation: 4.0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.0),
@@ -139,43 +146,43 @@ class Chat extends StatelessWidget {
     );
   }
 
-  // _showCreateRoomDialog(BuildContext context) {
-  //   List<String> selectedFriends = [];
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('채팅방 생성'),
-  //         content: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             TextField(
-  //               controller: roomNameController,
-  //               decoration: const InputDecoration(hintText: '채팅방 이름'),
-  //             ),
-  //           ],
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             child: const Text('취소'),
-  //             onPressed: () => Navigator.of(context).pop(),
-  //           ),
-  //           TextButton(
-  //             child: const Text('생성'),
-  //             onPressed: () {
-  //               if (roomNameController.text.isNotEmpty) {
-  //                 chatController.createChatRoom(roomNameController.text,
-  //                     selectedFriends); // false는 기본 채팅방이 아님을 의미
-  //                 roomNameController.clear();
-  //                 Navigator.of(context).pop();
-  //               }
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  _showCreateRoomDialog(BuildContext context) {
+    List<String> selectedFriends = [];
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('채팅방 생성'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: roomNameController,
+                decoration: const InputDecoration(hintText: '채팅방 이름'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text('취소'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: const Text('생성'),
+              onPressed: () {
+                if (roomNameController.text.isNotEmpty) {
+                  chatController.createChatRoom(roomNameController.text,
+                      selectedFriends); // false는 기본 채팅방이 아님을 의미
+                  roomNameController.clear();
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   _showDeleteDialog(BuildContext context, String roomId, bool isDefaultRoom) {
     showDialog(

@@ -167,8 +167,8 @@ class Login extends StatelessWidget {
           colorText: Colors.white);}
           else{
             await loginHandler.box.write('userId', id);
-            await loginHandler.logoutJSONData(id);
-            await loginHandler.activeUserJSONData(id);
+            // await loginHandler.logoutJSONData(id);
+            // await loginHandler.activeUserJSONData(id);
             await activityInsert();
             Get.to(HomeScreen());
             idController.text = '';
