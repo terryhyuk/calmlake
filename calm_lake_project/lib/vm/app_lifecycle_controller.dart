@@ -22,7 +22,7 @@ class AppLifecycleController extends LoginHandler with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.paused) {
       loginHandler.logoutJSONData(loginHandler.box.read('userId'));
       loginHandler.disposeSave();
       Get.offAll(()=> Login());
