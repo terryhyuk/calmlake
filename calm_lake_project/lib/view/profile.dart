@@ -119,7 +119,7 @@ class Profile extends StatelessWidget {
                                   const Color.fromARGB(255, 255, 255, 255),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
-                              fixedSize: const Size(110, 50)),
+                              fixedSize: const Size(105, 50)),
                           child: const Text(
                             'Favorite',
                             style: TextStyle(
@@ -136,8 +136,9 @@ class Profile extends StatelessWidget {
                               backgroundColor:
                                   const Color.fromARGB(255, 220, 235, 202),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15)),
-                              fixedSize: const Size(130, 50)),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              fixedSize: const Size(125, 50)),
                           child: const Text(
                             'Edit Profile',
                             style: TextStyle(
@@ -155,7 +156,7 @@ class Profile extends StatelessWidget {
                                   const Color.fromARGB(255, 234, 165, 165),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
-                              fixedSize: const Size(110, 50)),
+                              fixedSize: const Size(105, 50)),
                           child: const Text(
                             'Logout',
                             style: TextStyle(

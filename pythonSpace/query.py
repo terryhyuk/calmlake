@@ -1,7 +1,7 @@
 """
-author : ppochcco
-Description : query 홈 화면
-Date : 0926
+author : Angie
+Description : Query related to Posing
+Date : 2024.10.02~2024.10.17
 Usage : 
 """
 

@@ -651,7 +651,7 @@ class Search extends StatelessWidget {
                             comment[6], comment[0]);
                         if (result == 'OK') {
                           await controller.getCommentReply(userpost[0]);
-                          await controller.getSerchJSONData(
+                          await controller.getSearchJSONData(
                               userId, controller.search.value);
                           Get.back();
                         } else {

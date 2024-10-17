@@ -219,7 +219,10 @@ class EditPost extends StatelessWidget {
           contentController.text.trim(),
           controller.selectedButton.value,
           post_seq);
+
       controller.firstDisp = 0;
+      controller.selectedButton.value = -1;
+      controller.image = '';
       Get.back();
     } else {
       Get.snackbar('Error', 'please complete the form',

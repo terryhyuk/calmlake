@@ -604,7 +604,6 @@ class Post extends StatelessWidget {
                                     comment[0],
                                     vmHandler.replyTextController.text.trim());
                                 vmHandler.replyTextController.text = '';
-                                //await controller.getComment(post[0]);
                                 await vmHandler.getCommentReply(post[0]);
                                 Get.back();
                               }
