@@ -1,8 +1,8 @@
 """
 author      : ws
 Description : 회원 관리
-Date        :
-Usage       :
+Date        : 1002~1017
+Usage       : 로그인, 프로필 수정
 """
 from fastapi import APIRouter, File, UploadFile
 from fastapi.responses import FileResponse

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:calm_lake_project/model/profile.dart';
+import 'package:calm_lake_project/view/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -124,6 +125,7 @@ class ProfileEdit extends StatelessWidget {
                           ),
                           TextField(
                             controller: newPwController,
+                            obscureText: true,
                             decoration: InputDecoration(
                                 labelText: '비밀번호를 입력하세요.',
                                 errorText: controller.checkResult.isNotEmpty
@@ -162,7 +164,7 @@ class ProfileEdit extends StatelessWidget {
                           ),
                           TextButton(
                               onPressed: () {
-                                deleteAction(result.id, result.image!);
+                                deleteAction(result.id, result.image);
                               },
                               child: const Text('회원 탈퇴',
                               style: TextStyle(
@@ -223,7 +225,7 @@ class ProfileEdit extends StatelessWidget {
         await loginHandler.nickDoublecheck(nickNameController.text.trim());
         if(loginHandler.nickLabel=='사용할 수 없는 Nickname입니다.'){
           await deleteImage(imageFilename);
-          loginHandler.imageFile=null;       
+          // loginHandler.imageFile=null;       
           nickErrorSnackBar();
         print('nickname 중복');}
       }
@@ -272,9 +274,10 @@ class ProfileEdit extends StatelessWidget {
             ),
             onPressed: () async {
               await deleteUser(userId);
-              await deleteImage(filename);
+              if(filename!=null){
+              await deleteImage(filename);}
               await loginHandler.logoutJSONData(userId);
-              Get.back();
+              Get.offAll(Login());
             },
           ),
         ],
@@ -285,8 +288,7 @@ class ProfileEdit extends StatelessWidget {
   deleteUser(String userId) async {
     var result = await loginHandler.deleteUserJSONData(userId);
     if (result == 'OK') {
-      Get.back();
-      Get.back();
+      Get.offAll(Login());
     } else {
       errorSnackBar();
       print('Error');
