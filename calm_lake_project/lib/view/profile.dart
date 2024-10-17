@@ -115,7 +115,8 @@ class Profile extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () => Get.to(FavoriteList()),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 255, 255, 255),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
                               fixedSize: const Size(110, 50)),
@@ -132,7 +133,8 @@ class Profile extends StatelessWidget {
                                 (value) => vmHandler.getUserJSONData(userId));
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 220, 235, 202),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 220, 235, 202),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
                               fixedSize: const Size(130, 50)),
@@ -149,7 +151,8 @@ class Profile extends StatelessWidget {
                             Get.offAll(Login());
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 234, 165, 165),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 234, 165, 165),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
                               fixedSize: const Size(110, 50)),
@@ -216,7 +219,7 @@ class Profile extends StatelessWidget {
   logOut(String id, vmHandler) async {
     await activityInsert();
     var result = await loginHandler.logoutJSONData(id);
-    await vmHandler.resetDropdown();
+    await vmHandler.reset();
     if (result == 'OK') {
       Get.back();
     } else {

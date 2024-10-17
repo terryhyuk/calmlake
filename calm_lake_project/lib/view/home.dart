@@ -34,7 +34,9 @@ class Home extends StatelessWidget {
     print(friendsController.addfriend);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
             onPressed: () {
               logOut(loginHandler.box.read('userId'));
@@ -88,11 +90,11 @@ class Home extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                               child: Text(
-                                  '${friendsController.friendrequst} Request',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                  ),
+                                '${friendsController.friendrequst} Request',
+                                style: const TextStyle(
+                                  fontSize: 20,
                                 ),
+                              ),
                             ),
                           ],
                         ),
@@ -103,55 +105,55 @@ class Home extends StatelessWidget {
                             color: Color.fromARGB(255, 201, 201, 201),
                           ),
                         ),
-                          SizedBox(
-                            height:
-                                friendsController.addfriend.isEmpty ? 10 : 100,
-                            width: MediaQuery.of(context).size.width,
-                            child: Obx(
-                              () => friendsController.addfriend.isEmpty
-                                  ? const Center(
-                                      child: Text(''),
-                                    )
-                                  : ListView.builder(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount:
-                                          friendsController.addfriend.length,
-                                      itemBuilder: (context, index) {
-                                        return Container(
-                                          // width: 100,
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          child: Column(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Row(
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(
-                                                          friendsController
-                                                                  .addfriend[
-                                                              index][0]),
-                                                    ),
-                                                    IconButton(
-                                                      onPressed: () {
-                                                        _showDialog(index);
-                                                      },
-                                                      icon: const Icon(
-                                                          Icons.check_circle),
-                                                    ),
-                                                  ],
-                                                ),
+                        SizedBox(
+                          height:
+                              friendsController.addfriend.isEmpty ? 10 : 100,
+                          width: MediaQuery.of(context).size.width,
+                          child: Obx(
+                            () => friendsController.addfriend.isEmpty
+                                ? const Center(
+                                    child: Text(''),
+                                  )
+                                : ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount:
+                                        friendsController.addfriend.length,
+                                    itemBuilder: (context, index) {
+                                      return Container(
+                                        // width: 100,
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 8),
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Text(
+                                                        friendsController
+                                                                .addfriend[
+                                                            index][0]),
+                                                  ),
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      _showDialog(index);
+                                                    },
+                                                    icon: const Icon(
+                                                        Icons.check_circle),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
                           ),
                         ),
                         const Padding(
