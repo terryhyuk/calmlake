@@ -1,6 +1,5 @@
 
 import 'package:calm_lake_project/model/message.dart';
-import 'package:calm_lake_project/view/chat/add_chatroom_friends.dart';
 import 'package:calm_lake_project/vm/chating_controller.dart';
 import 'package:calm_lake_project/vm/friends_controller.dart';
 import 'package:calm_lake_project/vm/login_handler.dart';
@@ -38,18 +37,6 @@ class Chatroom extends StatelessWidget {
         backgroundColor: Colors.white,
         title: Text(roomName),
         centerTitle: false,
-        actions: [
-          IconButton(
-            onPressed: () {
-              Get.to(() => AddChatroomFriends(
-                    roomId: roomId,
-                    roomName: roomName,
-                    isDefaultRoom: isDefaultRoom,
-                  ));
-            },
-            icon: const Icon(Icons.group_add_outlined),
-          )
-        ],
       ),
       body: Column(
         children: [

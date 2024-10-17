@@ -31,14 +31,16 @@ class Home extends StatelessWidget {
     musicHandler.stateCheck();
     friendsController.requstfriendsJSONData(loginHandler.box.read('userId'));
 
+    print(friendsController.addfriend);
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         leading: IconButton(
             onPressed: () {
               logOut(loginHandler.box.read('userId'));
-              musicHandler.isPlaying || musicHandler.isPaused ? musicHandler.stop : null;
+              musicHandler.isPlaying || musicHandler.isPaused
+                  ? musicHandler.stop
+                  : null;
               Get.back();
             },
             icon: const Icon(Icons.logout_outlined)),
@@ -86,11 +88,11 @@ class Home extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                               child: Text(
-                                '${friendsController.addfriend.length} Request',
-                                style: const TextStyle(
-                                  fontSize: 20,
+                                  '${friendsController.friendrequst} Request',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
                                 ),
-                              ),
                             ),
                           ],
                         ),
@@ -101,62 +103,55 @@ class Home extends StatelessWidget {
                             color: Color.fromARGB(255, 201, 201, 201),
                           ),
                         ),
-                        SizedBox(
-                          height: 100,
-                          width: MediaQuery.of(context).size.width,
-                          child: Obx(
-                            () => friendsController.addfriend.isEmpty
-                                ? const Center(
-                                    child: Text(''),
-                                  )
-                                : ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount:
-                                        friendsController.addfriend.length,
-                                    itemBuilder: (context, index) {
-                                      return Container(
-                                        // width: 100,
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 8),
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Row(
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text(
-                                                        friendsController
-                                                                .addfriend[
-                                                            index][0]),
-                                                  ),
-                                                  IconButton(
-                                                    onPressed: () {
-                                                      //
-                                                    },
-                                                    icon: const Icon(
-                                                      Icons.cancel,
+                          SizedBox(
+                            height:
+                                friendsController.addfriend.isEmpty ? 10 : 100,
+                            width: MediaQuery.of(context).size.width,
+                            child: Obx(
+                              () => friendsController.addfriend.isEmpty
+                                  ? const Center(
+                                      child: Text(''),
+                                    )
+                                  : ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount:
+                                          friendsController.addfriend.length,
+                                      itemBuilder: (context, index) {
+                                        return Container(
+                                          // width: 100,
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 8),
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Text(
+                                                          friendsController
+                                                                  .addfriend[
+                                                              index][0]),
                                                     ),
-                                                  ),
-                                                  IconButton(
-                                                    onPressed: () {
-                                                      _showDialog(index);
-                                                    },
-                                                    icon: const Icon(
-                                                        Icons.check_circle),
-                                                  ),
-                                                ],
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        _showDialog(index);
+                                                      },
+                                                      icon: const Icon(
+                                                          Icons.check_circle),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
                           ),
                         ),
                         const Padding(
@@ -318,10 +313,10 @@ class Home extends StatelessWidget {
         content:
             Text('${friendsController.addfriend[index][0]}님을 친구로 추가하시겠습니까?'),
         actions: [
-          TextButton(
-            child: const Text('취소'),
-            onPressed: () => Get.back(),
-          ),
+          // TextButton(
+          //   child: const Text('취소'),
+          //   onPressed: () => Get.back(),
+          // ),
           TextButton(
             child: const Text('추가'),
             onPressed: () async {
@@ -361,7 +356,7 @@ class Home extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 206, 53, 42),
         colorText: Colors.white);
   }
-  
+
   // 음악 변경하고 돌아왔을 때 변경한 음악으로 재설정
   reloadData(MusicHandler musicHandler) {
     musicHandler.checkaudioPlayer(musicHandler.firebaseMusic);

@@ -145,57 +145,57 @@ initializeDefaultRooms() async {
   loadUserChatRooms();
 }
 
-addFriendsToChatRoom(String roomId, List<String> friendIds) async {
-  DocumentReference roomRef = FirebaseFirestore.instance
-      .collection('chat')
-      .doc('grup')
-      .collection('rooms')
-      .doc(roomId);
+// addFriendsToChatRoom(String roomId, List<String> friendIds) async {
+//   DocumentReference roomRef = FirebaseFirestore.instance
+//       .collection('chat')
+//       .doc('grup')
+//       .collection('rooms')
+//       .doc(roomId);
   
-  try {
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      // 현재 채팅방 데이터 가져오기
-      DocumentSnapshot roomSnapshot = await transaction.get(roomRef);
+//   try {
+//     await FirebaseFirestore.instance.runTransaction((transaction) async {
+//       // 현재 채팅방 데이터 가져오기
+//       DocumentSnapshot roomSnapshot = await transaction.get(roomRef);
       
-      if (!roomSnapshot.exists) {
-        throw Exception('Chat room does not exist');
-      }
+//       if (!roomSnapshot.exists) {
+//         throw Exception('Chat room does not exist');
+//       }
       
-      Map<String, dynamic> roomData = roomSnapshot.data() as Map<String, dynamic>;
-      List<String> currentParticipants = List<String>.from(roomData['participants'] ?? []);
+//       Map<String, dynamic> roomData = roomSnapshot.data() as Map<String, dynamic>;
+//       List<String> currentParticipants = List<String>.from(roomData['participants'] ?? []);
       
-      // 새 친구들 추가 (중복 제거)
-      Set<String> updatedParticipants = Set<String>.from(currentParticipants)..addAll(friendIds);
+//       // 새 친구들 추가 (중복 제거)
+//       Set<String> updatedParticipants = Set<String>.from(currentParticipants)..addAll(friendIds);
       
-      // 채팅방 참가자 목록 업데이트
-      transaction.update(roomRef, {'participants': updatedParticipants.toList()});
+//       // 채팅방 참가자 목록 업데이트
+//       transaction.update(roomRef, {'participants': updatedParticipants.toList()});
       
-      // 각 친구의 chatRooms에 이 방 추가
-      for (String friendId in friendIds) {
-        if (!currentParticipants.contains(friendId)) {
-          DocumentReference friendRef = FirebaseFirestore.instance
-              .collection('users')
-              .doc(friendId)
-              .collection('chatRooms')
-              .doc(roomId);
-          transaction.set(friendRef, {
-            'roomId': roomId,
-            'roomName': roomData['roomName'],
-            'joinedAt': Timestamp.now(),
-          }, SetOptions(merge: true));
-        }
-      }
-    });
+//       // 각 친구의 chatRooms에 이 방 추가
+//       for (String friendId in friendIds) {
+//         if (!currentParticipants.contains(friendId)) {
+//           DocumentReference friendRef = FirebaseFirestore.instance
+//               .collection('users')
+//               .doc(friendId)
+//               .collection('chatRooms')
+//               .doc(roomId);
+//           transaction.set(friendRef, {
+//             'roomId': roomId,
+//             'roomName': roomData['roomName'],
+//             'joinedAt': Timestamp.now(),
+//           }, SetOptions(merge: true));
+//         }
+//       }
+//     });
     
-    // 시스템 메시지 추가
-    String addedFriends = friendIds.join(', ');
-    await addMessage(roomId, 'system', 'System', '$addedFriends 님이 채팅방에 추가되었습니다.', true);
+//     // 시스템 메시지 추가
+//     String addedFriends = friendIds.join(', ');
+//     await addMessage(roomId, 'system', 'System', '$addedFriends 님이 채팅방에 추가되었습니다.', true);
     
-    // print('Friends added successfully');
-  } catch (e) {
-    // print('Error adding friends to chat room: $e');
-  }
-}
+//     // print('Friends added successfully');
+//   } catch (e) {
+//     // print('Error adding friends to chat room: $e');
+//   }
+// }
 
 loadUserChatRooms() {
   String userId = loginhandler.box.read('userId');
@@ -392,46 +392,46 @@ updateLocalChatRoomsList(String roomId, String roomName, String lastMessage, Tim
     updateLocalChatRoomsList(roomRef.id, roomName, '$nickname님이 채팅방을 생성했습니다.', Timestamp.now());
   }
 
-joinChatRoom(String roomId, String roomName, bool isDefaultRoom) async {
-  String userId = loginhandler.box.read('userId');
-  String nickname = loginhandler.box.read('nickname') ?? 'nickname';
+// joinChatRoom(String roomId, String roomName, bool isDefaultRoom) async {
+//   String userId = loginhandler.box.read('userId');
+//   String nickname = loginhandler.box.read('nickname') ?? 'nickname';
 
-  if (isDefaultRoom) {
-    // 기본 채팅방의 경우
-    await FirebaseFirestore.instance
-        .collection('chat')
-        .doc('grup')
-        .collection('rooms')
-        .doc(roomId)
-        .update({
-      'participants': FieldValue.arrayUnion([userId]),
-    });
-  }
+//   if (isDefaultRoom) {
+//     // 기본 채팅방의 경우
+//     await FirebaseFirestore.instance
+//         .collection('chat')
+//         .doc('grup')
+//         .collection('rooms')
+//         .doc(roomId)
+//         .update({
+//       'participants': FieldValue.arrayUnion([userId]),
+//     });
+//   }
 
-  // 사용자의 채팅방 목록에 추가 (기본 채팅방과 개인 채팅방 모두)
-  await FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('chatRooms')
-      .doc(roomId)
-      .set({
-    'joinedAt': Timestamp.now(),
-    'roomName': roomName,
-    'lastMessage': '$nickname님이 채팅방에 참여했습니다.',
-    'lastMessageTime': Timestamp.now(),
-  }, SetOptions(merge: true));
+//   // 사용자의 채팅방 목록에 추가 (기본 채팅방과 개인 채팅방 모두)
+//   await FirebaseFirestore.instance
+//       .collection('users')
+//       .doc(userId)
+//       .collection('chatRooms')
+//       .doc(roomId)
+//       .set({
+//     'joinedAt': Timestamp.now(),
+//     'roomName': roomName,
+//     'lastMessage': '$nickname님이 채팅방에 참여했습니다.',
+//     'lastMessageTime': Timestamp.now(),
+//   }, SetOptions(merge: true));
 
-  // 참여 메시지 추가
-  await addMessage(roomId, userId, nickname, '$nickname님이 채팅방에 참여했습니다.', isDefaultRoom);
+//   // 참여 메시지 추가
+//   await addMessage(roomId, userId, nickname, '$nickname님이 채팅방에 참여했습니다.', isDefaultRoom);
 
-  // 로컬 채팅방 목록 업데이트
-  updateLocalChatRoomsList(
-    roomId,
-    roomName,
-    '$nickname님이 채팅방에 참여했습니다.',
-    Timestamp.now(),
-  );
-}
+//   // 로컬 채팅방 목록 업데이트
+//   updateLocalChatRoomsList(
+//     roomId,
+//     roomName,
+//     '$nickname님이 채팅방에 참여했습니다.',
+//     Timestamp.now(),
+//   );
+// }
 
 addMessage(String roomId, String userId, String nickname, String contents, bool isDefaultRoom) async {
   await getMessagesRef(roomId, isDefaultRoom).add({

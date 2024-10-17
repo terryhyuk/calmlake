@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 class FriendsController extends SearchFriendsController {
   List allfriendsdata = [].obs; // 전체친구보기
   List addfriend = [].obs;  // 친구추가요청 리스트
+  int friendrequst = 0;
 
 // 전체 친구보기
 selectfriendsJSONData(String userId) async {
@@ -39,6 +40,8 @@ selectfriendsJSONData(String userId) async {
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List results = dataConvertedJSON['results'];
     addfriend.addAll(results);
+    friendrequst=addfriend.length;
+    update();
   }
 
 // 친구신청 요청
@@ -88,6 +91,7 @@ acceptFriendRequest(String add_id) async {
       if (dataConvertedJSON['results'][0] == 'Success') {
         print(dataConvertedJSON['message']);
         await requstfriendsJSONData(user_id); 
+        update();
         return true;
       } else {
         print('Error: ${dataConvertedJSON['message']}');
