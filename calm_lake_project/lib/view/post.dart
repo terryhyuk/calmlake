@@ -17,7 +17,9 @@ class Post extends StatelessWidget {
     String userId = box.read('userId');
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text('Posting',
             style: TextStyle(
                 fontSize: 25, fontWeight: FontWeight.w500, letterSpacing: 1)),

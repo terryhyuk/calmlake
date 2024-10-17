@@ -5,6 +5,7 @@ import 'package:calm_lake_project/vm/chating_controller.dart';
 import 'package:calm_lake_project/vm/friends_controller.dart';
 import 'package:calm_lake_project/vm/login_handler.dart';
 import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
+import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -32,7 +33,9 @@ class Chatroom extends StatelessWidget {
     chatController.loadMessages(roomId, isDefaultRoom);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text(roomName),
         centerTitle: false,
         actions: [
@@ -50,6 +53,10 @@ class Chatroom extends StatelessWidget {
       ),
       body: Column(
         children: [
+                DateChip(
+                  date: DateTime.now(),
+                  color: const Color.fromARGB(255, 221, 241, 194),
+                  ),          
           Expanded(
             child: Obx(
               () => ListView.builder(
@@ -81,8 +88,8 @@ class Chatroom extends StatelessWidget {
                             BubbleSpecialThree(
                               text: message.contents,
                               color: isCurrentUser
-                                  ? const Color(0xFF90CAF9)
-                                  : const Color(0xFF2196F3),
+                                  ? const Color.fromARGB(255, 71, 168, 248)
+                                  : const Color.fromARGB(255, 172, 172, 172),
                               tail: true,
                               textStyle: const TextStyle(
                                   color: Colors.white, fontSize: 16),
@@ -107,7 +114,7 @@ class Chatroom extends StatelessWidget {
               height: MediaQuery.of(context).size.height * 0.07,
               decoration: const BoxDecoration(
                 boxShadow: [
-                  BoxShadow(color: Color.fromARGB(18, 0, 0, 0), blurRadius: 10)
+                  BoxShadow(color: Color.fromARGB(8, 0, 0, 0), blurRadius: 10)
                 ],
               ),
               child: TextField(
@@ -126,6 +133,7 @@ class Chatroom extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(height: 5,)
         ],
       ),
     );

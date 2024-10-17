@@ -64,11 +64,11 @@ class ProfileEdit extends StatelessWidget {
                               child: ClipOval(
                                 child: controller.imageFile != null
                                     ? Image.file(File(controller.imageFile!.path),
-                                    fit: BoxFit.fitWidth,)
+                                    fit: BoxFit.fill,)
                                     : result.image != null && result.image != 'null'
                                         ? Image.network(
                                             'http://127.0.0.1:8000/login/view/${result.image}',
-                                            fit: BoxFit.fitWidth,)
+                                            fit: BoxFit.fill,)
                                         : const Icon(Icons.person, size: 200),
                               )),
                           Row(

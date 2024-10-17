@@ -32,7 +32,9 @@ class Home extends StatelessWidget {
     friendsController.requstfriendsJSONData(loginHandler.box.read('userId'));
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
             onPressed: () {
               logOut(loginHandler.box.read('userId'));

@@ -46,17 +46,17 @@ ImageProvider getRoomImageProvider(String roomName) {
 TextStyle getRoomDescriptionStyle(String roomName) {
   switch (roomName) {
     case '직장인 채팅방':
-      return const TextStyle(fontSize: 13, color: Colors.blue, fontWeight: FontWeight.w500);
+      return const TextStyle(fontSize: 13, color: Color.fromARGB(255, 112, 162, 200), fontWeight: FontWeight.w700);
     case '맛집 공유':
-      return const TextStyle(fontSize: 12, color: Colors.green, fontStyle: FontStyle.italic);
+      return const TextStyle(fontSize: 13, color: Color.fromARGB(255, 110, 170, 113), fontWeight: FontWeight.w700);
     case '취미 공유':
-      return const TextStyle(fontSize: 13, color: Colors.orange, letterSpacing: 0.5);
+      return const TextStyle(fontSize: 13, color: Color.fromARGB(255, 244, 143, 85), fontWeight: FontWeight.w700);
     case '힐링 여행지 추천':
-      return const TextStyle(fontSize: 14, color: Colors.purple, fontWeight: FontWeight.w500);
+      return const TextStyle(fontSize: 13, color: Color.fromARGB(255, 167, 126, 174), fontWeight: FontWeight.w700);
     default:
       return const TextStyle(fontSize: 12, color: Colors.grey);
   }
-}
+} 
 
   String formatTimestamp(Timestamp timestamp) {
   DateTime dateTime = timestamp.toDate();

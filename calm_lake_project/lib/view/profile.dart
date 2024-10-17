@@ -23,7 +23,9 @@ class Profile extends StatelessWidget {
     vmHandler.getUserJSONData(userId);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Padding(
           padding: EdgeInsets.only(left: 10, bottom: 15, top: 10),
           child: Text('Profile',
@@ -113,6 +115,7 @@ class Profile extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () => Get.to(FavoriteList()),
                           style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
                               fixedSize: const Size(110, 50)),
@@ -129,6 +132,7 @@ class Profile extends StatelessWidget {
                                 (value) => vmHandler.getUserJSONData(userId));
                           },
                           style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 220, 235, 202),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
                               fixedSize: const Size(130, 50)),
@@ -145,6 +149,7 @@ class Profile extends StatelessWidget {
                             Get.offAll(Login());
                           },
                           style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 234, 165, 165),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
                               fixedSize: const Size(110, 50)),
