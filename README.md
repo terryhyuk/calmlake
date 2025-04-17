@@ -111,10 +111,10 @@ Key features include music appreciation, social interaction, real-time chat, and
 ### MySQL EER Diagram  
 _Only the EER diagram is provided; actual database dump is not included._
 
-![MySQL EER Diagram](database/MySQL_EER.png)
+![MySQL EER Diagram](image/MySQL_EER.png)
 
 ### Firebase Structure  
-![Firebase Structure](database/Firebase.png)
+![Firebase Structure](image/Firebase.png)
 
 ---
 
@@ -127,12 +127,6 @@ _Only the EER diagram is provided; actual database dump is not included._
 3. Run the app  
    `flutter run`
 4. Backend and Firebase setup required for full functionality (see `/backend` and `/Firebase` folders for details)
-
----
-
-## License
-
-This project is licensed under the MIT License.
 
 ---
 
