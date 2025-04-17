@@ -10,6 +10,7 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Demo Video](#demo-video)
 - [Features](#features)
 - [My Roles & Responsibilities](#my-roles--responsibilities)
 - [Tech Stack](#tech-stack)
@@ -30,6 +31,10 @@ Key features include music appreciation, social interaction, real-time chat, and
 
 - **Team Size:** 4 members  
 - **Project Duration:** October 2, 2024 – October 17, 2024
+
+---
+
+## Demo Video
 
 **Links:**  
 - [Demo Video](https://youtu.be/zySfBs3fqRo)
