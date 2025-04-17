@@ -16,9 +16,9 @@
 - [Tech Stack](#tech-stack)
 - [Main Packages](#main-packages)
 - [System Architecture](#system-architecture)
+- [Database](#database)
 - [Screen Flow Diagram](#screen-flow-diagram)
 - [Screenshots](#screenshots)
-- [Database](#database)
 - [How to Run](#how-to-run)
 - [Contact](#contact)
 
@@ -112,6 +112,18 @@ Key features include music appreciation, social interaction, real-time chat, and
 
 ---
 
+## Database
+
+### MySQL EER Diagram  
+_Only the EER diagram is provided; actual database dump is not included._
+
+![MySQL EER Diagram](image/MySQL_EER.png)
+
+### Firebase Structure  
+![Firebase Structure](image/Firebase.png)
+
+---
+
 ## Screen Flow Diagram
 
 ![Screen Flow Diagram](image/SFD.png)
@@ -124,18 +136,6 @@ Key features include music appreciation, social interaction, real-time chat, and
 
 ![Page 1](image/page1.png)
 ![Page 2](image/page2.png)
-
----
-
-## Database
-
-### MySQL EER Diagram  
-_Only the EER diagram is provided; actual database dump is not included._
-
-![MySQL EER Diagram](image/MySQL_EER.png)
-
-### Firebase Structure  
-![Firebase Structure](image/Firebase.png)
 
 ---
 
