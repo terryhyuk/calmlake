@@ -14,8 +14,8 @@ Key features include music appreciation, social interaction, real-time chat, and
 - **Project Duration:** October 2, 2024 – October 17, 2024
 
 **Links:**  
-[![Watch the demo](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
-
+Links:
+- [Demo Video](https://youtu.be/zySfBs3fqRo)
 
 ---
 
