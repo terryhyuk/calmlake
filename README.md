@@ -121,7 +121,7 @@ _Only the EER diagram is provided; actual database dump is not included._
 ## How to Run
 
 1. Clone the repository  
-   `git clone https://github.com/Angie-st/calmlake_project.git`
+   `git clone https://github.com/terryhyuk/calmlake.git`
 2. Install dependencies  
    `flutter pub get`
 3. Run the app  
