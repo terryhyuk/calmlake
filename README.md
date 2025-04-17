@@ -126,7 +126,19 @@ _Only the EER diagram is provided; actual database dump is not included._
    `flutter pub get`
 3. Run the app  
    `flutter run`
-4. Backend and Firebase setup required for full functionality (see `/backend` and `/Firebase` folders for details)
+4. Backend setup required for full functionality:
+   - The backend (FastAPI) source code is in the `/pythonSpace` directory.
+   - To run the backend:
+     1. Open a terminal and go to the `pythonSpace` folder.
+     2. (Optional) Create a virtual environment:
+        `python3 -m venv venv`
+        `source venv/bin/activate`
+     3. Install dependencies:
+        `pip install -r requirements.txt`
+     4. Start the FastAPI server:
+        `uvicorn calmlake:app --reload`
+   - The Flutter app uses Firebase directly; there is **no separate Firebase folder**.  
+     Make sure your Firebase project is set up and configured in your Flutter app as described in the Flutter/Firebase documentation.
 
 ---
 
