@@ -7,6 +7,22 @@
 
 ---
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [My Roles & Responsibilities](#my-roles--responsibilities)
+- [Tech Stack](#tech-stack)
+- [Main Packages](#main-packages)
+- [System Architecture](#system-architecture)
+- [Screen Flow Diagram](#screen-flow-diagram)
+- [Screenshots](#screenshots)
+- [Database](#database)
+- [How to Run](#how-to-run)
+- [Contact](#contact)
+
+---
+
 ## Overview
 
 CalmLake is a Flutter-based mobile app that provides a space for users to relieve stress by enjoying healing music and communicating with others.  
