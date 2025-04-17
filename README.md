@@ -5,6 +5,8 @@
 [![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com/)
 
+---
+
 ## Overview
 
 CalmLake is a Flutter-based mobile app that provides a space for users to relieve stress by enjoying healing music and communicating with others.  
@@ -14,7 +16,6 @@ Key features include music appreciation, social interaction, real-time chat, and
 - **Project Duration:** October 2, 2024 – October 17, 2024
 
 **Links:**  
-Links:
 - [Demo Video](https://youtu.be/zySfBs3fqRo)
 
 ---
@@ -84,17 +85,36 @@ Links:
 
 ---
 
+## System Architecture
+
+![System Configuration](image/system_configuration.png)
+
+---
+
+## Screen Flow Diagram
+
+![Screen Flow Diagram](image/SFD.png)
+
+---
+
 ## Screenshots
 
-<!-- Add relevant screenshots or GIFs here to showcase UI/UX and main features. -->
+### Main Screenshots (Features I Developed)
+
+![Page 1](image/page1.png)
+![Page 2](image/page2.png)
 
 ---
 
 ## Database
 
-- **MySQL EER Diagram:**  
-  _[Add EER diagram image or link here]_  
-  > Only the EER diagram is provided; actual database dump is not included.
+### MySQL EER Diagram  
+_Only the EER diagram is provided; actual database dump is not included._
+
+![MySQL EER Diagram](database/MySQL_EER.png)
+
+### Firebase Structure  
+![Firebase Structure](database/Firebase.png)
 
 ---
 
@@ -106,7 +126,7 @@ Links:
    `flutter pub get`
 3. Run the app  
    `flutter run`
-4. Backend and Firebase setup required for full functionality (see `/backend` and `/firebase` folders for details)
+4. Backend and Firebase setup required for full functionality (see `/backend` and `/Firebase` folders for details)
 
 ---
 
